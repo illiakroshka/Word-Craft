@@ -1,0 +1,15 @@
+{
+  "name": "wordcraft",
+  "version": "1.0.0",
+  "description": "",
+  "main": "tgBot.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Illia Kroshka",
+  "license": "MIT",
+  "dependencies": {
+    "telegraf": "^4.12.2"
+  }
+}
