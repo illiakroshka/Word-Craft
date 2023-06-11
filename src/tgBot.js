@@ -12,7 +12,14 @@ const receiveParameter = (parameterName, parameterValue) => {
     parameters[parameterName] = parameterValue;
 }
 
-bot.start(async (ctx)=>{
+const handleLevelAction = async (ctx) => {
+  const level = ctx.match[0].toUpperCase();
+  await ctx.reply(`Your level is ${level}`);
+  receiveParameter('level', level);
+  await chooseLanguage(ctx);
+};
+
+const chooseLevel = async (ctx) => {
   await ctx.reply('What is your level of English?',{
     reply_markup:{
       inline_keyboard:[
@@ -41,33 +48,7 @@ bot.start(async (ctx)=>{
       ]
     }
   })
-})
-
-bot.action('a1',async (ctx)=>{
-  await ctx.reply('Your level is A1');
-  receiveParameter('level','A1');
-  await chooseLanguage(ctx);
-})
-bot.action('a2',async (ctx)=>{
-  await ctx.reply('Your level is A2');
-  receiveParameter('level','A2');
-  await chooseLanguage(ctx);
-})
-bot.action('b1',async (ctx)=>{
-  await ctx.reply('Your level is B1');
-  receiveParameter('level','B1');
-  await chooseLanguage(ctx);
-})
-bot.action('b2',async (ctx)=>{
-  await ctx.reply('Your level is B2');
-  receiveParameter('level','B2');
-  await chooseLanguage(ctx);
-})
-bot.action('c1',async (ctx)=>{
-  await ctx.reply('Your level is C1');
-  receiveParameter('level','C1');
-  await chooseLanguage(ctx);
-})
+}
 
 const chooseLanguage = async (ctx) =>{
   await ctx.reply('To which language to translate?',{
@@ -88,6 +69,16 @@ const chooseLanguage = async (ctx) =>{
   })
 }
 
+const chooseTopic = async (ctx) => {
+  await ctx.reply('Write the topic of words that you want to learn')
+}
+
+bot.start(async (ctx)=>{
+  await chooseLevel(ctx);
+})
+
+bot.action(/^[abc][1-2]$/, handleLevelAction);
+
 bot.action('ukrainian', async (ctx)=>{
   await ctx.reply('Ukrainian language has been set');
   receiveParameter('language','Ukrainian');
@@ -98,10 +89,6 @@ bot.action('without translation',async (ctx)=>{
   receiveParameter('language','without translation');
   await chooseTopic(ctx);
 })
-
-const chooseTopic = async (ctx) => {
-  await ctx.reply('Write the topic of words that you want to learn')
-}
 
 bot.on(message('text'),async (ctx)=>{
   await ctx.reply(`Prepare word list with topic ${ctx.update.message.text}`);
