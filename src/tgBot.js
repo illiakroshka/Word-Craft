@@ -12,6 +12,15 @@ const receiveParameter = (parameterName, parameterValue) => {
     parameters[parameterName] = parameterValue;
 }
 
+const createPrompt = ({ level, language, topic }) => {
+  if (level && language && topic){
+    return `Can you send ${level} level words that are used in the topic of ${topic}.
+    Send me the response in format (english word - translation in ${language})`;
+  }else {
+    return 'Error';
+  }
+}
+
 const handleLevelAction = async (ctx) => {
   const level = ctx.match[0].toUpperCase();
   await ctx.reply(`Your level is ${level}`);
@@ -93,7 +102,8 @@ bot.action('without translation',async (ctx)=>{
 bot.on(message('text'),async (ctx)=>{
   await ctx.reply(`Prepare word list with topic ${ctx.update.message.text}`);
   receiveParameter('topic', ctx.update.message.text);
-  console.log(parameters);
+  const prompt = createPrompt(parameters);
+  console.log(prompt);
 })
 
 bot.launch();
