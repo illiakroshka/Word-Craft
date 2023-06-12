@@ -6,7 +6,9 @@ const {message} = require("telegraf/filters");
 
 const bot = new Telegraf(config.TELEGRAM_TOKEN);
 
-const parameters = {};
+const parameters = {
+  isTopicSelected: false,
+};
 
 const receiveParameter = (parameterName, parameterValue) => {
     parameters[parameterName] = parameterValue;
@@ -79,7 +81,8 @@ const chooseLanguage = async (ctx) =>{
 }
 
 const chooseTopic = async (ctx) => {
-  await ctx.reply('Write the topic of words that you want to learn')
+  await ctx.reply('Write the topic of words that you want to learn');
+  parameters.isTopicSelected = true;
 }
 
 bot.start(async (ctx)=>{
@@ -100,10 +103,15 @@ bot.action('without translation',async (ctx)=>{
 })
 
 bot.on(message('text'),async (ctx)=>{
-  await ctx.reply(`Prepare word list with topic ${ctx.update.message.text}`);
-  receiveParameter('topic', ctx.update.message.text);
-  const prompt = createPrompt(parameters);
-  console.log(prompt);
+  if (!parameters.isTopicSelected) {
+    await ctx.reply('Wrong input');
+  } else {
+    await ctx.reply(`Prepare word list with topic ${ctx.update.message.text}`);
+    receiveParameter('topic', ctx.update.message.text);
+    const prompt = createPrompt(parameters);
+    console.log(prompt);
+    parameters.isTopicSelected = false;
+  }
 })
 
 bot.launch();
