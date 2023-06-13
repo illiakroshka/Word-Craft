@@ -92,8 +92,22 @@ bot.start(async (ctx)=>{
 bot.command('changeTopic',async (ctx) => {
   if (parameters.level && parameters.language){
     await chooseTopic(ctx);
+  }else{
+    await ctx.reply('Set your English level and to which language to translate first.')
   }
 });
+
+bot.command('info',async (ctx) => {
+ await ctx.reply('This bot is used to generate word lists on a specific topic for a specific level of English.' +
+   'Also you can choose the language in which to translate these words.\n' +
+   '/help - command for navigation')
+})
+
+bot.command('help', async (ctx) => {
+  await ctx.reply('/changeTopic - is used to change topic \n' +
+    '/info - information about bot \n' +
+    '/start - to run the bot ')
+})
 
 bot.action(/^[abc][1-2]$/, handleLevelAction);
 
@@ -102,6 +116,7 @@ bot.action('ukrainian', async (ctx)=>{
   receiveParameter('language','Ukrainian');
   await chooseTopic(ctx);
 })
+
 bot.action('without translation',async (ctx)=>{
   await ctx.reply('You won`t get translation');
   receiveParameter('language','without translation');
