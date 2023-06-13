@@ -2,6 +2,7 @@
 
 const { Telegraf } = require('telegraf');
 const config = require('../config/default.json');
+const { Markup } = require('telegraf');
 const {message} = require("telegraf/filters");
 
 const bot = new Telegraf(config.TELEGRAM_TOKEN);
@@ -25,7 +26,7 @@ const createPrompt = ({ level, language, topic }) => {
 
 const handleLevelAction = async (ctx) => {
   const level = ctx.match[0].toUpperCase();
-  await ctx.reply(`Your level is ${level}`);
+  await ctx.reply(`Level ${level} has been set`);
   receiveParameter('level', level);
   await chooseLanguage(ctx);
 };
@@ -85,9 +86,19 @@ const chooseTopic = async (ctx) => {
   parameters.isTopicSelected = true;
 }
 
-bot.start(async (ctx)=>{
-  await chooseLevel(ctx);
+bot.start(async (ctx) => {
+  const welcomeMessage = `Welcome to the bot, ${ctx.from.first_name}!`;
+  const menuOptions = Markup.keyboard([
+    ['/runBot'],
+    ['/help', '/info', '/changeTopic'],
+  ]).resize();
+
+  await ctx.reply(welcomeMessage, menuOptions);
 })
+
+bot.command('runBot', async (ctx) => {
+  await chooseLevel(ctx);
+});
 
 bot.command('changeTopic',async (ctx) => {
   if (parameters.level && parameters.language){
@@ -106,7 +117,7 @@ bot.command('info',async (ctx) => {
 bot.command('help', async (ctx) => {
   await ctx.reply('/changeTopic - is used to change topic \n' +
     '/info - information about bot \n' +
-    '/start - to run the bot ')
+    '/runBot - to run the bot ')
 })
 
 bot.action(/^[abc][1-2]$/, handleLevelAction);
