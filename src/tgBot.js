@@ -16,13 +16,17 @@ const receiveParameter = (parameterName, parameterValue) => {
 }
 
 const createPrompt = ({ level, language, topic }) => {
-  if (level && language && topic){
-    return `Can you send ${level} level words that are used in the topic of ${topic}.
-    Send me the response in format (english word - translation in ${language})`;
-  }else {
+  if (!level || !language || !topic) {
     return 'Error';
   }
-}
+
+  if (language === 'without translation') {
+    return `Can you send ${level} level words that are used in the topic of ${topic}.`;
+  }
+
+  return `Can you send ${level} level words that are used in the topic of ${topic}.\n
+  Send me the response in format (english word - translation in ${language})`;
+};
 
 const handleLevelAction = async (ctx) => {
   const level = ctx.match[0].toUpperCase();
