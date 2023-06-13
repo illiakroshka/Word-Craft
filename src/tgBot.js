@@ -89,6 +89,12 @@ bot.start(async (ctx)=>{
   await chooseLevel(ctx);
 })
 
+bot.command('changeTopic',async (ctx) => {
+  if (parameters.level && parameters.language){
+    await chooseTopic(ctx);
+  }
+});
+
 bot.action(/^[abc][1-2]$/, handleLevelAction);
 
 bot.action('ukrainian', async (ctx)=>{
