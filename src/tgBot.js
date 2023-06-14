@@ -3,7 +3,8 @@
 const { Telegraf } = require('telegraf');
 const config = require('../config/default.json');
 const { Markup } = require('telegraf');
-const { message } = require("telegraf/filters");
+const { message } = require('telegraf/filters');
+const { code } = require('telegraf/format')
 const { openAI } = require('./openAI');
 
 const bot = new Telegraf(config.TELEGRAM_TOKEN);
@@ -37,7 +38,7 @@ const sendPrompt = async (text) => {
 
 const handleLevelAction = async (ctx) => {
   const level = ctx.match[0].toUpperCase();
-  await ctx.reply(`Level ${level} has been set`);
+  await ctx.reply(code(`Level ${level} has been set`));
   receiveParameter('level', level);
   await chooseLanguage(ctx);
 };
@@ -134,22 +135,22 @@ bot.command('help', async (ctx) => {
 bot.action(/^[abc][1-2]$/, handleLevelAction);
 
 bot.action('ukrainian', async (ctx)=>{
-  await ctx.reply('Ukrainian language has been set');
+  await ctx.reply(code('Ukrainian language has been set'));
   receiveParameter('language','Ukrainian');
   await chooseTopic(ctx);
 })
 
 bot.action('without translation',async (ctx)=>{
-  await ctx.reply('You won`t get translation');
+  await ctx.reply(code('You won`t get translation'));
   receiveParameter('language','without translation');
   await chooseTopic(ctx);
 })
 
 bot.on(message('text'),async (ctx)=>{
   if (!parameters.isTopicSelected) {
-    await ctx.reply('Wrong input');
+    await ctx.reply(code('Wrong input'));
   } else {
-    await ctx.reply(`Prepare word list with topic ${ctx.update.message.text}`);
+    await ctx.reply(code(`Prepare word list with topic ${ctx.update.message.text}`));
     receiveParameter('topic', ctx.update.message.text);
     const prompt = createPrompt(parameters);
     console.log(prompt);
