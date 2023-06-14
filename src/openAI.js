@@ -3,6 +3,8 @@
 const { Configuration, OpenAIApi } = require("openai");
 const config = require('../config/default.json');
 
+const CHAT_GPT_MODEL = 'gpt-3.5-turbo'
+
 class OpenAI {
   constructor(apiKey) {
     const configuration = new Configuration({
@@ -14,7 +16,7 @@ class OpenAI {
   async chat(messages){
     try {
       const response = await this.openai.createChatCompletion({
-        model: "gpt-3.5-turbo",
+        model: CHAT_GPT_MODEL,
         messages,
       });
       return response.data.choices[0].message
