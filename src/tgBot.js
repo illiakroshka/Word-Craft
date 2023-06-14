@@ -3,7 +3,8 @@
 const { Telegraf } = require('telegraf');
 const config = require('../config/default.json');
 const { Markup } = require('telegraf');
-const {message} = require("telegraf/filters");
+const { message } = require("telegraf/filters");
+const { openAI } = require('./openAI');
 
 const bot = new Telegraf(config.TELEGRAM_TOKEN);
 
@@ -27,6 +28,12 @@ const createPrompt = ({ level, language, topic }) => {
   return `Can you send ${level} level words that are used in the topic of ${topic}.\n
   Send me the response in format (english word - translation in ${language})`;
 };
+
+const sendPrompt = async (text) => {
+  const message = [{ role: "user", content: text }];
+  const response = await openAI.chat(message);
+  return response.content
+}
 
 const handleLevelAction = async (ctx) => {
   const level = ctx.match[0].toUpperCase();
@@ -146,6 +153,8 @@ bot.on(message('text'),async (ctx)=>{
     receiveParameter('topic', ctx.update.message.text);
     const prompt = createPrompt(parameters);
     console.log(prompt);
+    const reply = await sendPrompt(prompt);
+    await ctx.reply(reply);
     parameters.isTopicSelected = false;
   }
 })
