@@ -30,7 +30,7 @@ const createPrompt = ({ level, language, topic }) => {
 };
 
 const sendPrompt = async (text) => {
-  const message = [{ role: "user", content: text }];
+  const message = [{ role: openAI.roles.USER, content: text }];
   const response = await openAI.chat(message);
   return response.content
 }

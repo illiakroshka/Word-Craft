@@ -6,6 +6,12 @@ const config = require('../config/default.json');
 const CHAT_GPT_MODEL = 'gpt-3.5-turbo'
 
 class OpenAI {
+  roles = {
+    ASSISTANT: 'assistant',
+    SYSTEM: 'system',
+    USER: 'user',
+  }
+
   constructor(apiKey) {
     const configuration = new Configuration({
       apiKey: apiKey,
