@@ -36,6 +36,14 @@ const createPrompt = ({ level, language, topic }) => {
   Send me the response in format (english word - translation in ${language})`;
 };
 
+const improveListPrompt = ({ level }) => {
+  if (!level) {
+    return 'Error';
+  }
+  return `In the previous answer, the words did not correspond to level ${level}. 
+  Regenerate the word list.`;
+}
+
 const sendPrompt = async (ctx , text) => {
   ctx.session.messages.push({ role: openAI.roles.USER, content: text });
   const response = await openAI.chat(ctx.session.messages);
@@ -138,6 +146,21 @@ bot.command('help', async (ctx) => {
   await ctx.reply('/changeTopic - is used to change topic \n' +
     '/info - information about bot \n' +
     '/runBot - to run the bot ')
+})
+
+bot.command('regenerateList', async (ctx) => {
+  const { language, level, topic } = parameters;
+
+  if (language && level && topic) {
+    ctx.session ??= INITIAL_SESSION;
+    await ctx.reply(code('Regenerating your word list'));
+    const prompt = improveListPrompt(parameters);
+    console.log(prompt);
+    const reply = await sendPrompt(ctx, prompt);
+    await ctx.reply(reply);
+  }else{
+    await ctx.reply('You can not regenerate defunct word list');
+  }
 })
 
 bot.action(/^[abc][1-2]$/, handleLevelAction);
