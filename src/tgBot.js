@@ -117,7 +117,8 @@ bot.start(async (ctx) => {
   const welcomeMessage = `Welcome to the bot, ${ctx.from.first_name}!`;
   const menuOptions = Markup.keyboard([
     ['/runBot'],
-    ['/help', '/info', '/changeTopic'],
+    ['/changeTopic', '/regenerateList'],
+    ['/help', '/info'],
   ]).resize();
 
   await ctx.reply(welcomeMessage, menuOptions);
@@ -145,7 +146,8 @@ bot.command('info',async (ctx) => {
 bot.command('help', async (ctx) => {
   await ctx.reply('/changeTopic - is used to change topic \n' +
     '/info - information about bot \n' +
-    '/runBot - to run the bot ')
+    '/runBot - to run the bot \n' +
+    '/regenerateList - to regenerate list if you know most of the words')
 })
 
 bot.command('regenerateList', async (ctx) => {
