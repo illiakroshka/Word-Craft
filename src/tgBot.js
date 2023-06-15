@@ -1,13 +1,19 @@
 'use strict';
 
-const { Telegraf } = require('telegraf');
+const { Telegraf, session } = require('telegraf');
 const config = require('../config/default.json');
 const { Markup } = require('telegraf');
 const { message } = require('telegraf/filters');
 const { code } = require('telegraf/format')
 const { openAI } = require('./openAI');
 
+const INITIAL_SESSION = {
+  messages: [],
+}
+
 const bot = new Telegraf(config.TELEGRAM_TOKEN);
+
+bot.use(session());
 
 const parameters = {
   isTopicSelected: false,
@@ -30,9 +36,10 @@ const createPrompt = ({ level, language, topic }) => {
   Send me the response in format (english word - translation in ${language})`;
 };
 
-const sendPrompt = async (text) => {
-  const message = [{ role: openAI.roles.USER, content: text }];
-  const response = await openAI.chat(message);
+const sendPrompt = async (ctx , text) => {
+  ctx.session.messages.push({ role: openAI.roles.USER, content: text });
+  const response = await openAI.chat(ctx.session.messages);
+  ctx.session.messages.push({ role: openAI.roles.ASSISTANT, content: response.content })
   return response.content
 }
 
@@ -109,6 +116,7 @@ bot.start(async (ctx) => {
 })
 
 bot.command('runBot', async (ctx) => {
+  ctx.session = INITIAL_SESSION;
   await chooseLevel(ctx);
 });
 
@@ -150,11 +158,12 @@ bot.on(message('text'),async (ctx)=>{
   if (!parameters.isTopicSelected) {
     await ctx.reply(code('Wrong input'));
   } else {
+    ctx.session ??= INITIAL_SESSION;
     await ctx.reply(code(`Prepare word list with topic ${ctx.update.message.text}`));
     receiveParameter('topic', ctx.update.message.text);
     const prompt = createPrompt(parameters);
     console.log(prompt);
-    const reply = await sendPrompt(prompt);
+    const reply = await sendPrompt(ctx, prompt);
     await ctx.reply(reply);
     parameters.isTopicSelected = false;
   }
