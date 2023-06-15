@@ -41,7 +41,7 @@ const improveListPrompt = ({ level }) => {
     return 'Error';
   }
   return `In the previous answer, the words did not correspond to level ${level}. 
-  Regenerate the word list.`;
+  Regenerate the word list. And send only words`;
 }
 
 const sendPrompt = async (ctx , text) => {
