@@ -29,19 +29,39 @@ const createPrompt = ({ level, language, topic }) => {
   }
 
   if (language === 'without translation') {
-    return `Can you send ${level} level words that are used in the topic of ${topic}.`;
+    return `Your output should use the following template:
+    Word list
+    [English word]
+    [English word]
+    
+    Your task is to generate a list of 15 words that are related to ${topic} for ${level} level of English.`;
   }
 
-  return `Can you send ${level} level words that are used in the topic of ${topic}.\n
-  Send me the response in format (english word - translation in ${language})`;
+  return `Your output should use the following template:
+  Word list
+  [English word] - [translation in ${language}]
+
+  Your task is to generate a list of 15 words that are related to ${topic} for ${level} level of English. 
+  And to translate these words in ${language} language. `;
 };
 
-const improveListPrompt = ({ level }) => {
-  if (!level) {
+const improveListPrompt = ({ language }) => {
+  if (!language) {
     return 'Error';
   }
-  return `In the previous answer, the words did not correspond to level ${level}. 
-  Regenerate the word list. And send only words`;
+  if (language === 'without translation') {
+    return `Your output should use the following template:
+    Word list
+    [English word]
+    [English word]
+    
+    Your task is to regenerate the previous list of words by replacing the previous words with new ones.`;
+  }
+  return `Your output should use the following template:
+    Word list
+    [English word] - [translation in ${language}]
+    
+    Your task is to regenerate the previous list of words by replacing the previous words with new ones.`;
 }
 
 const sendPrompt = async (ctx , text) => {
