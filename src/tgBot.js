@@ -19,6 +19,14 @@ const parameters = {
   isTopicSelected: false,
 };
 
+const topics = {
+  A1: 'food',
+  A2: 'traveling',
+  B1: 'education',
+  B2: 'business',
+  C1: 'politics'
+}
+
 const receiveParameter = (parameterName, parameterValue) => {
     parameters[parameterName] = parameterValue;
 }
@@ -129,7 +137,8 @@ const chooseLanguage = async (ctx) =>{
 }
 
 const chooseTopic = async (ctx) => {
-  await ctx.reply('Write the topic of words that you want to learn');
+  await ctx.reply('Write the topic of words that you want to learn\n'+
+  '/topics - suggests popular example topics for your level');
   parameters.isTopicSelected = true;
 }
 
@@ -170,6 +179,7 @@ bot.command('help', async (ctx) => {
   await ctx.reply(
     '/runBot - to run the bot \n' +
     '/changeTopic - to change topic \n' +
+    '/topics - suggests popular example topics for your level \n' +
     '/regenerateList - to regenerate list if you know most of the words \n'+
     '/info - information about bot ')
 })
@@ -188,6 +198,16 @@ bot.command('regenerateList', async (ctx) => {
     await ctx.reply('You can not regenerate defunct word list');
   }
 })
+
+bot.command('topics', async (ctx) => {
+  const { level } = parameters;
+  if (level){
+    await ctx.reply(`Topics you might be interested in:\n`+
+    `${topics[level]}`)
+  }else {
+    await ctx.reply('Set your English level first');
+  }
+});
 
 bot.action(/^[abc][1-2]$/, handleLevelAction);
 
