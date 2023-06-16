@@ -134,7 +134,10 @@ const chooseTopic = async (ctx) => {
 }
 
 bot.start(async (ctx) => {
-  const welcomeMessage = `Welcome to the bot, ${ctx.from.first_name}!`;
+  const welcomeMessage = `Welcome to the bot, ${ctx.from.first_name}!\n`+
+  `This bot is used to generate word lists on a specific topic for a specific level of English.\n`+
+  `/runBot - to run the bot\n` +
+  `/help - commands navigation`;
   const menuOptions = Markup.keyboard([
     ['/runBot'],
     ['/changeTopic', '/regenerateList'],
@@ -164,10 +167,11 @@ bot.command('info',async (ctx) => {
 })
 
 bot.command('help', async (ctx) => {
-  await ctx.reply('/changeTopic - is used to change topic \n' +
-    '/info - information about bot \n' +
+  await ctx.reply(
     '/runBot - to run the bot \n' +
-    '/regenerateList - to regenerate list if you know most of the words')
+    '/changeTopic - to change topic \n' +
+    '/regenerateList - to regenerate list if you know most of the words \n'+
+    '/info - information about bot ')
 })
 
 bot.command('regenerateList', async (ctx) => {
@@ -204,7 +208,7 @@ bot.on(message('text'),async (ctx)=>{
     await ctx.reply(code('Wrong input'));
   } else {
     ctx.session ??= INITIAL_SESSION;
-    await ctx.reply(code(`Prepare word list with topic ${ctx.update.message.text}`));
+    await ctx.reply(code(`Prepare word list with topic ${ctx.update.message.text},it can take some time`));
     receiveParameter('topic', ctx.update.message.text);
     const prompt = createPrompt(parameters);
     console.log(prompt);
