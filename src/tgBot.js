@@ -7,6 +7,8 @@ const { message } = require('telegraf/filters');
 const { code } = require('telegraf/format')
 const { openAI } = require('./openAI');
 
+const requestQueue = [];
+
 const INITIAL_SESSION = {
   messages: [],
 }
@@ -17,6 +19,7 @@ bot.use(session());
 
 const parameters = {
   isTopicSelected: false,
+  isPromptRunning: false,
 };
 
 const topics = {
@@ -184,11 +187,8 @@ bot.command('help', async (ctx) => {
     '/info - information about bot ')
 })
 
-let isPromptRunning = false;
-const requestQueue = [];
-
 bot.command('regenerateList', async (ctx) => {
-  if (isPromptRunning) {
+  if (parameters.isPromptRunning) {
     requestQueue.unshift(ctx);
     return;
   }
@@ -196,16 +196,16 @@ bot.command('regenerateList', async (ctx) => {
 
   if (language && level && topic) {
     ctx.session ??= INITIAL_SESSION;
-    await ctx.reply(code('Regenerating your word list'));
+    await ctx.reply(code('Regenerating your word list, it can take some time'));
     const prompt = improveListPrompt(parameters);
     console.log(prompt);
-    isPromptRunning = true;
+    parameters.isPromptRunning = true;
     const reply = await sendPrompt(ctx, prompt);
     await ctx.reply(reply);
-    isPromptRunning = false;
+    parameters.isPromptRunning = false;
     await processRequestQueue();
   }else{
-    await ctx.reply('You can not regenerate defunct word list');
+    await ctx.reply(code('You can not regenerate defunct word list'));
   }
 })
 
@@ -235,7 +235,7 @@ bot.action('without translation',async (ctx)=>{
 })
 
 bot.on(message('text'), async (ctx) => {
-  if (isPromptRunning) {
+  if (parameters.isPromptRunning) {
     requestQueue.unshift(ctx);
     return;
   }
@@ -249,12 +249,12 @@ bot.on(message('text'), async (ctx) => {
     const prompt = createPrompt(parameters);
     console.log(prompt);
 
-    isPromptRunning = true;
+    parameters.isPromptRunning = true;
 
     const reply = await sendPrompt(ctx, prompt);
     await ctx.reply(reply);
 
-    isPromptRunning = false;
+    parameters.isPromptRunning = false;
 
     parameters.isTopicSelected = false;
 
@@ -263,13 +263,13 @@ bot.on(message('text'), async (ctx) => {
 });
 
 const processRequestQueue = async () => {
-  if (requestQueue.length > 0 && !isPromptRunning) {
-    isPromptRunning = true;
+  if (requestQueue.length > 0 && !parameters.isPromptRunning) {
+    parameters.isPromptRunning = true;
 
     const ctx = requestQueue.shift();
     await bot.handleUpdate(ctx.update);
 
-    isPromptRunning = false;
+    parameters.isPromptRunning = false;
 
     await processRequestQueue();
   }
