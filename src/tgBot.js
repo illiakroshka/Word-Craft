@@ -184,7 +184,14 @@ bot.command('help', async (ctx) => {
     '/info - information about bot ')
 })
 
+let isPromptRunning = false;
+const requestQueue = [];
+
 bot.command('regenerateList', async (ctx) => {
+  if (isPromptRunning) {
+    requestQueue.unshift(ctx);
+    return;
+  }
   const { language, level, topic } = parameters;
 
   if (language && level && topic) {
@@ -192,8 +199,11 @@ bot.command('regenerateList', async (ctx) => {
     await ctx.reply(code('Regenerating your word list'));
     const prompt = improveListPrompt(parameters);
     console.log(prompt);
+    isPromptRunning = true;
     const reply = await sendPrompt(ctx, prompt);
     await ctx.reply(reply);
+    isPromptRunning = false;
+    processRequestQueue();
   }else{
     await ctx.reply('You can not regenerate defunct word list');
   }
@@ -223,9 +233,6 @@ bot.action('without translation',async (ctx)=>{
   receiveParameter('language','without translation');
   await chooseTopic(ctx);
 })
-
-let isPromptRunning = false;
-const requestQueue = [];
 
 bot.on(message('text'), async (ctx) => {
   if (isPromptRunning) {
