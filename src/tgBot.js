@@ -203,7 +203,7 @@ bot.command('regenerateList', async (ctx) => {
     const reply = await sendPrompt(ctx, prompt);
     await ctx.reply(reply);
     isPromptRunning = false;
-    processRequestQueue();
+    await processRequestQueue();
   }else{
     await ctx.reply('You can not regenerate defunct word list');
   }
@@ -258,7 +258,7 @@ bot.on(message('text'), async (ctx) => {
 
     parameters.isTopicSelected = false;
 
-    processRequestQueue();
+    await processRequestQueue();
   }
 });
 
@@ -271,7 +271,7 @@ const processRequestQueue = async () => {
 
     isPromptRunning = false;
 
-    processRequestQueue();
+    await processRequestQueue();
   }
 };
 
