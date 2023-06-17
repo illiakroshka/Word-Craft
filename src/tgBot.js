@@ -20,12 +20,12 @@ const parameters = {
 };
 
 const topics = {
-  A1: 'food',
-  A2: 'traveling',
-  B1: 'education',
-  B2: 'business',
-  C1: 'politics'
-}
+  A1: ['Food', 'Animals', 'Family', 'Daily routine', 'Clothes'],
+  A2: ['Hobbies', 'Places', 'Jobs', 'Describing people', 'House'],
+  B1: ['Education','Health','Travel', 'Music', 'Transportation'],
+  B2: ['Business','Environment','Relationships','Politics','Media and entertainment'],
+  C1: ['Global issues', 'Economics', 'Science and technology','Critical thinking','Psychology']
+};
 
 const receiveParameter = (parameterName, parameterValue) => {
     parameters[parameterName] = parameterValue;
@@ -202,8 +202,9 @@ bot.command('regenerateList', async (ctx) => {
 bot.command('topics', async (ctx) => {
   const { level } = parameters;
   if (level){
+    const topicList = topics[level].join('\n');
     await ctx.reply(`Topics you might be interested in:\n`+
-    `${topics[level]}`)
+    `${topicList}`)
   }else {
     await ctx.reply('Set your English level first');
   }
