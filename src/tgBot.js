@@ -224,20 +224,49 @@ bot.action('without translation',async (ctx)=>{
   await chooseTopic(ctx);
 })
 
-bot.on(message('text'),async (ctx)=>{
+let isPromptRunning = false;
+const requestQueue = [];
+
+bot.on(message('text'), async (ctx) => {
+  if (isPromptRunning) {
+    requestQueue.unshift(ctx);
+    return;
+  }
+
   if (!parameters.isTopicSelected) {
     await ctx.reply(code('Wrong input'));
   } else {
     ctx.session ??= INITIAL_SESSION;
-    await ctx.reply(code(`Prepare word list with topic ${ctx.update.message.text},it can take some time`));
+    await ctx.reply(code(`Prepare word list with topic ${ctx.update.message.text}, it can take some time`));
     receiveParameter('topic', ctx.update.message.text);
     const prompt = createPrompt(parameters);
     console.log(prompt);
+
+    isPromptRunning = true;
+
     const reply = await sendPrompt(ctx, prompt);
     await ctx.reply(reply);
+
+    isPromptRunning = false;
+
     parameters.isTopicSelected = false;
+
+    processRequestQueue();
   }
-})
+});
+
+const processRequestQueue = async () => {
+  if (requestQueue.length > 0 && !isPromptRunning) {
+    isPromptRunning = true;
+
+    const ctx = requestQueue.shift();
+    await bot.handleUpdate(ctx.update);
+
+    isPromptRunning = false;
+
+    processRequestQueue();
+  }
+};
 
 bot.launch();
 
