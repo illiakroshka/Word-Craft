@@ -6,7 +6,7 @@ const { message } = require('telegraf/filters');
 const { code } = require('telegraf/format')
 const { openAI } = require('./openAI');
 const config = require('../config/default.json');
-const botReplies = require('./botReplies.json');
+const botReplies = require('../config/botReplies.json');
 
 const requestQueue = [];
 
@@ -23,14 +23,6 @@ const parameters = {
   isTopicSelected: false,
   isPromptRunning: false,
   botLanguage: botReplies.en,
-};
-
-const topics = {
-  A1: ['Food', 'Animals', 'Family', 'Daily routine', 'Clothes'],
-  A2: ['Hobbies', 'Places', 'Jobs', 'Describing people', 'House'],
-  B1: ['Education','Health','Travel', 'Music', 'Transportation'],
-  B2: ['Business','Environment','Relationships','Politics','Media and entertainment'],
-  C1: ['Global issues', 'Economics', 'Science and technology','Critical thinking','Psychology']
 };
 
 const receiveParameter = (parameterName, parameterValue) => {
@@ -87,7 +79,6 @@ const sendPrompt = async (ctx , text) => {
 
 const handleLevelAction = async (ctx) => {
   const level = ctx.match[0].toUpperCase();
-  await ctx.reply(code(`Level ${level} has been set`));
   receiveParameter('level', level);
   await chooseLanguage(ctx);
 };
@@ -163,7 +154,7 @@ const setBotLanguage = async (ctx) => {
 
 const chooseTopic = async (ctx) => {
   await ctx.reply(`${parameters.botLanguage.topic}\n`+
-  `/topics - suggests popular example topics for your level`);
+  `${parameters.botLanguage.topicInfo}`);
   parameters.isTopicSelected = true;
 }
 
@@ -195,24 +186,16 @@ bot.command('changeTopic',async (ctx) => {
   if (parameters.level && parameters.language){
     await chooseTopic(ctx);
   }else{
-    await ctx.reply('Set your English level and to which language to translate first.')
+    await ctx.reply(parameters.botLanguage.changeTopicErr)
   }
 });
 
 bot.command('info',async (ctx) => {
- await ctx.reply('This bot is used to generate word lists on a specific topic for a specific level of English.' +
-   'Also you can choose the language in which to translate these words.\n' +
-   '/help - command for navigation')
+ await ctx.reply(parameters.botLanguage.info)
 })
 
 bot.command('help', async (ctx) => {
-  await ctx.reply(
-    '/runBot - to run the bot \n' +
-    '/changeTopic - to change topic \n' +
-    '/setBotLanguage - to translate bot \n' +
-    '/topics - suggests popular example topics for your level \n' +
-    '/regenerateList - to regenerate list if you know most of the words \n'+
-    '/info - information about bot ')
+  await ctx.reply(parameters.botLanguage.help)
 })
 
 bot.command('regenerateList', async (ctx) => {
@@ -224,7 +207,7 @@ bot.command('regenerateList', async (ctx) => {
 
   if (language && level && topic) {
     ctx.session ??= INITIAL_SESSION;
-    await ctx.reply(code('Regenerating your word list, it can take some time'));
+    await ctx.reply(code(`${parameters.botLanguage.ackReg}. ${parameters.botLanguage.warning}`));
     const prompt = improveListPrompt(parameters);
     console.log(prompt);
     parameters.isPromptRunning = true;
@@ -233,18 +216,18 @@ bot.command('regenerateList', async (ctx) => {
     parameters.isPromptRunning = false;
     await processRequestQueue();
   }else{
-    await ctx.reply(code('You can not regenerate defunct word list'));
+    await ctx.reply(code(`${parameters.botLanguage.RegErr}`));
   }
 })
 
 bot.command('topics', async (ctx) => {
   const { level } = parameters;
   if (level){
-    const topicList = topics[level].join('\n');
-    await ctx.reply(`Topics you might be interested in:\n`+
+    const topicList = parameters.botLanguage.topics[level].join('\n');
+    await ctx.reply(`${parameters.botLanguage.topicsR}\n`+
     `${topicList}`)
   }else {
-    await ctx.reply('Set your English level first');
+    await ctx.reply(parameters.botLanguage.topicsErr);
   }
 });
 
@@ -261,13 +244,11 @@ bot.action('en', async (ctx) => {
 bot.action(/^[abc][1-2]$/, handleLevelAction);
 
 bot.action('ukrainian', async (ctx)=>{
-  await ctx.reply(code('Ukrainian language has been set'));
   receiveParameter('language','Ukrainian');
   await chooseTopic(ctx);
 })
 
 bot.action('without translation',async (ctx)=>{
-  await ctx.reply(code('You won`t get translation'));
   receiveParameter('language','without translation');
   await chooseTopic(ctx);
 })
@@ -282,7 +263,7 @@ bot.on(message('text'), async (ctx) => {
     await ctx.reply(code('Wrong input'));
   } else {
     ctx.session ??= INITIAL_SESSION;
-    await ctx.reply(code(`Prepare word list with topic ${ctx.update.message.text}, it can take some time`));
+    await ctx.reply(code(`${parameters.botLanguage.ack} ${ctx.update.message.text}. ${parameters.botLanguage.warning}`));
     receiveParameter('topic', ctx.update.message.text);
     const prompt = createPrompt(parameters);
     console.log(prompt);
