@@ -148,12 +148,12 @@ const setBotLanguage = async (ctx) => {
       inline_keyboard:[
         [
           {
-            text: 'Ukrainian (demo)',
-            callback_data: 'ukr'
-          },
-          {
             text: 'English',
             callback_data: 'en'
+          },
+          {
+            text: 'Ukrainian (demo)',
+            callback_data: 'ukr'
           }
         ]
       ]
@@ -171,11 +171,12 @@ bot.start(async (ctx) => {
   const welcomeMessage = `Welcome to the bot, ${ctx.from.first_name}!\n`+
   `This bot is used to generate word lists on a specific topic for a specific level of English.\n`+
   `/runBot - to run the bot\n` +
+  `/setBotLanguage - to translate bot\n`+
   `/help - commands navigation`;
   const menuOptions = Markup.keyboard([
     ['/runBot'],
     ['/changeTopic', '/regenerateList'],
-    ['/help', '/info'],
+    ['/help', '/info','/setBotLanguage'],
   ]).resize();
 
   await ctx.reply(welcomeMessage, menuOptions);
@@ -208,6 +209,7 @@ bot.command('help', async (ctx) => {
   await ctx.reply(
     '/runBot - to run the bot \n' +
     '/changeTopic - to change topic \n' +
+    '/setBotLanguage - to translate bot \n' +
     '/topics - suggests popular example topics for your level \n' +
     '/regenerateList - to regenerate list if you know most of the words \n'+
     '/info - information about bot ')
