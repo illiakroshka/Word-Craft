@@ -1,13 +1,15 @@
 'use strict';
 
 const { Telegraf, session } = require('telegraf');
-const config = require('../config/default.json');
 const { Markup } = require('telegraf');
 const { message } = require('telegraf/filters');
 const { code } = require('telegraf/format')
 const { openAI } = require('./openAI');
+const config = require('../config/default.json');
+const botReplies = require('./botReplies.json');
 
 const requestQueue = [];
+
 
 const INITIAL_SESSION = {
   messages: [],
@@ -20,6 +22,7 @@ bot.use(session());
 const parameters = {
   isTopicSelected: false,
   isPromptRunning: false,
+  botLanguage: botReplies.en,
 };
 
 const topics = {
@@ -90,7 +93,7 @@ const handleLevelAction = async (ctx) => {
 };
 
 const chooseLevel = async (ctx) => {
-  await ctx.reply('What is your level of English?',{
+  await ctx.reply(parameters.botLanguage.level,{
     reply_markup:{
       inline_keyboard:[
         [
@@ -121,7 +124,7 @@ const chooseLevel = async (ctx) => {
 }
 
 const chooseLanguage = async (ctx) =>{
-  await ctx.reply('To which language to translate?',{
+  await ctx.reply(parameters.botLanguage.language,{
     reply_markup:{
       inline_keyboard: [
         [
@@ -139,9 +142,28 @@ const chooseLanguage = async (ctx) =>{
   })
 }
 
+const setBotLanguage = async (ctx) => {
+  await ctx.reply('Set bot language',{
+    reply_markup:{
+      inline_keyboard:[
+        [
+          {
+            text: 'Ukrainian (demo)',
+            callback_data: 'ukr'
+          },
+          {
+            text: 'English',
+            callback_data: 'en'
+          }
+        ]
+      ]
+    }
+  })
+}
+
 const chooseTopic = async (ctx) => {
-  await ctx.reply('Write the topic of words that you want to learn\n'+
-  '/topics - suggests popular example topics for your level');
+  await ctx.reply(`${parameters.botLanguage.topic}\n`+
+  `/topics - suggests popular example topics for your level`);
   parameters.isTopicSelected = true;
 }
 
@@ -163,6 +185,10 @@ bot.command('runBot', async (ctx) => {
   ctx.session = INITIAL_SESSION;
   await chooseLevel(ctx);
 });
+
+bot.command('setBotLanguage',async (ctx) => {
+  await setBotLanguage(ctx);
+})
 
 bot.command('changeTopic',async (ctx) => {
   if (parameters.level && parameters.language){
@@ -219,6 +245,16 @@ bot.command('topics', async (ctx) => {
     await ctx.reply('Set your English level first');
   }
 });
+
+bot.action('ukr', async (ctx) => {
+  parameters.botLanguage = botReplies.ukr;
+  await ctx.reply('Бот переведено на Українську мову')
+})
+
+bot.action('en', async (ctx) => {
+  parameters.botLanguage = botReplies.en;
+  await ctx.reply('Bot has been translated to English')
+})
 
 bot.action(/^[abc][1-2]$/, handleLevelAction);
 

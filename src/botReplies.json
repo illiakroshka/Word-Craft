@@ -1,0 +1,12 @@
+{
+  "en": {
+    "level": "What is your level of English?",
+    "language": "To which language to translate?",
+    "topic": "Write the topic of words that you want to learn"
+  },
+  "ukr": {
+    "level": "Який ваший рівень англійської?",
+    "language": "На яку мову переводити?",
+    "topic": "Напишіть тему слів слова з якої хочете вивчити"
+  }
+}
