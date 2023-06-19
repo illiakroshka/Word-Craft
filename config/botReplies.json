@@ -1,5 +1,7 @@
 {
   "en": {
+    "welcome": "Welcome to the bot",
+    "introduction": "This bot is used to generate word lists on a specific topic for a specific level of English.\n/runBot - to run the bot\n/setBotLanguage - to translate bot\n/help - commands navigation",
     "level": "What is your level of English?",
     "language": "To which language to translate?",
     "topic": "Write the topic of words that you want to learn",
@@ -22,8 +24,10 @@
     "RegErr": "You can not regenerate defunct word list"
   },
   "ukr": {
+    "welcome": "Ласкаво просимо до бота",
+    "introduction": "Цей бот використовується для генерації списків слів на конкретну тему для певного рівня англійської мови.\n/runBot - для запуску бота\n/setBotLanguage - для перекладу бота\n/help - навігація команд",
     "level": "Який ваший рівень англійської?",
-    "language": "На яку мову переводити?",
+    "language": "На яку мову перекладати?",
     "topic": "Напишіть тему слів, слова з якої хочете вивчити",
     "topicsR": "Теми, які можуть вас зацікавити:",
     "topicInfo": "/topics - пропонує популярні приклади тем для вашого рівня",

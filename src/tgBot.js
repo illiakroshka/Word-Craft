@@ -159,11 +159,11 @@ const chooseTopic = async (ctx) => {
 }
 
 bot.start(async (ctx) => {
-  const welcomeMessage = `Welcome to the bot, ${ctx.from.first_name}!\n`+
-  `This bot is used to generate word lists on a specific topic for a specific level of English.\n`+
-  `/runBot - to run the bot\n` +
-  `/setBotLanguage - to translate bot\n`+
-  `/help - commands navigation`;
+  if (ctx.from.language_code === 'ru'){
+    parameters.botLanguage = botReplies.ukr;
+  }
+  const welcomeMessage = `${parameters.botLanguage.welcome}, ${ctx.from.first_name}!\n`+
+  `${parameters.botLanguage.introduction}`;
   const menuOptions = Markup.keyboard([
     ['/runBot'],
     ['/changeTopic', '/regenerateList'],
