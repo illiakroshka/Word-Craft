@@ -21,13 +21,16 @@
     "warning": "it can take some time",
     "ack": "Prepare word list with topic",
     "ackReg": "Regenerating your word list",
-    "RegErr": "You can not regenerate defunct word list"
+    "RegErr": "You can not regenerate defunct word list",
+    "inputErr": "Wrong input",
+    "activeInput": "Click to activate input",
+    "inputAck": "Input is active"
   },
   "ukr": {
     "welcome": "Ласкаво просимо до бота",
     "introduction": "Цей бот використовується для генерації списків слів на конкретну тему для певного рівня англійської мови.\n/runBot - для запуску бота\n/setBotLanguage - для перекладу бота\n/help - навігація команд",
     "level": "Який ваший рівень англійської?",
-    "language": "На яку мову перекладати?",
+    "language": "На яку мову перекладати слова?",
     "topic": "Напишіть тему слів, слова з якої хочете вивчити",
     "topicsR": "Теми, які можуть вас зацікавити:",
     "topicInfo": "/topics - пропонує популярні приклади тем для вашого рівня",
@@ -45,6 +48,9 @@
     "warning": "Це може зайняти деякий час",
     "ack": "Готується список слів на тему",
     "ackReg": "Список слів регенерується",
-    "RegErr": "Ви не можете регенерувати неіснуючий список слів"
+    "RegErr": "Ви не можете регенерувати неіснуючий список слів",
+    "inputErr": "Неправильне введення",
+    "activeInput": "Натисніть , щоб активувати введення",
+    "inputAck": "Введення активне"
   }
 }

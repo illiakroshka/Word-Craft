@@ -212,7 +212,7 @@ bot.command('help', async (ctx) => {
 
 bot.command('setInput',async (ctx) => {
   parameters.isPromptRunning = false;
-  await ctx.reply('Input is active');
+  await ctx.reply(code(parameters.botLanguage.inputAck));
 })
 
 bot.command('regenerateList', async (ctx) => {
@@ -229,6 +229,7 @@ bot.command('regenerateList', async (ctx) => {
     parameters.isPromptRunning = true;
     const reply = await sendPrompt(ctx, prompt);
     await ctx.reply(reply);
+    await ctx.reply(`/setInput - ${parameters.botLanguage.activeInput}`);
   }else{
     await ctx.reply(code(`${parameters.botLanguage.RegErr}`));
   }
@@ -250,12 +251,12 @@ bot.command('topics', async (ctx) => {
 
 bot.action('ukr', async (ctx) => {
   parameters.botLanguage = botReplies.ukr;
-  await ctx.reply('Бот переведено на Українську мову')
+  await ctx.reply(code('Бот переведено на Українську мову'))
 })
 
 bot.action('en', async (ctx) => {
   parameters.botLanguage = botReplies.en;
-  await ctx.reply('Bot has been translated to English')
+  await ctx.reply(code('Bot has been translated to English'))
 })
 
 bot.action(/^[abc][1-2]$/, handleLevelAction);
@@ -275,7 +276,7 @@ bot.on(message('text'), async (ctx) => {
     return;
   }
   if (!parameters.isTopicSelected) {
-    await ctx.reply(code('Wrong input'));
+    await ctx.reply(code(parameters.botLanguage.inputErr));
   } else {
     ctx.session ??= INITIAL_SESSION;
     await ctx.reply(code(`${parameters.botLanguage.ack} ${ctx.update.message.text}. ${parameters.botLanguage.warning}`));
@@ -287,6 +288,7 @@ bot.on(message('text'), async (ctx) => {
 
     const reply = await sendPrompt(ctx, prompt);
     await ctx.reply(reply);
+    await ctx.reply(`/setInput - ${parameters.botLanguage.activeInput}`);
     parameters.isTopicSelected = false;
   }
 });
