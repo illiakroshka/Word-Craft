@@ -8,9 +8,6 @@ const { openAI } = require('./openAI');
 const config = require('../config/default.json');
 const botReplies = require('../config/botReplies.json');
 
-const requestQueue = [];
-
-
 const INITIAL_SESSION = {
   messages: [],
 }
@@ -174,15 +171,24 @@ bot.start(async (ctx) => {
 })
 
 bot.command('runBot', async (ctx) => {
+  if (parameters.isPromptRunning) {
+    return;
+  }
   ctx.session = INITIAL_SESSION;
   await chooseLevel(ctx);
 });
 
 bot.command('setBotLanguage',async (ctx) => {
+  if (parameters.isPromptRunning) {
+    return;
+  }
   await setBotLanguage(ctx);
 })
 
 bot.command('changeTopic',async (ctx) => {
+  if (parameters.isPromptRunning) {
+    return;
+  }
   if (parameters.level && parameters.language){
     await chooseTopic(ctx);
   }else{
@@ -191,16 +197,26 @@ bot.command('changeTopic',async (ctx) => {
 });
 
 bot.command('info',async (ctx) => {
+  if (parameters.isPromptRunning) {
+    return;
+  }
  await ctx.reply(parameters.botLanguage.info)
 })
 
 bot.command('help', async (ctx) => {
+  if (parameters.isPromptRunning) {
+    return;
+  }
   await ctx.reply(parameters.botLanguage.help)
+})
+
+bot.command('setInput',async (ctx) => {
+  parameters.isPromptRunning = false;
+  await ctx.reply('Input is active');
 })
 
 bot.command('regenerateList', async (ctx) => {
   if (parameters.isPromptRunning) {
-    requestQueue.unshift(ctx);
     return;
   }
   const { language, level, topic } = parameters;
@@ -213,14 +229,15 @@ bot.command('regenerateList', async (ctx) => {
     parameters.isPromptRunning = true;
     const reply = await sendPrompt(ctx, prompt);
     await ctx.reply(reply);
-    parameters.isPromptRunning = false;
-    await processRequestQueue();
   }else{
     await ctx.reply(code(`${parameters.botLanguage.RegErr}`));
   }
 })
 
 bot.command('topics', async (ctx) => {
+  if (parameters.isPromptRunning) {
+    return;
+  }
   const { level } = parameters;
   if (level){
     const topicList = parameters.botLanguage.topics[level].join('\n');
@@ -255,10 +272,8 @@ bot.action('without translation',async (ctx)=>{
 
 bot.on(message('text'), async (ctx) => {
   if (parameters.isPromptRunning) {
-    requestQueue.unshift(ctx);
     return;
   }
-
   if (!parameters.isTopicSelected) {
     await ctx.reply(code('Wrong input'));
   } else {
@@ -272,27 +287,9 @@ bot.on(message('text'), async (ctx) => {
 
     const reply = await sendPrompt(ctx, prompt);
     await ctx.reply(reply);
-
-    parameters.isPromptRunning = false;
-
     parameters.isTopicSelected = false;
-
-    await processRequestQueue();
   }
 });
-
-const processRequestQueue = async () => {
-  if (requestQueue.length > 0 && !parameters.isPromptRunning) {
-    parameters.isPromptRunning = true;
-
-    const ctx = requestQueue.shift();
-    await bot.handleUpdate(ctx.update);
-
-    parameters.isPromptRunning = false;
-
-    await processRequestQueue();
-  }
-};
 
 bot.launch();
 
