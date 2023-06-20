@@ -227,9 +227,14 @@ bot.command('regenerateList', async (ctx) => {
     const prompt = improveListPrompt(parameters);
     console.log(prompt);
     parameters.isPromptRunning = true;
-    const reply = await sendPrompt(ctx, prompt);
-    await ctx.reply(reply);
-    await ctx.reply(`/setInput - ${parameters.botLanguage.activeInput}`);
+    try {
+      const reply = await sendPrompt(ctx, prompt);
+      await ctx.reply(reply);
+      await ctx.reply(`/setInput - ${parameters.botLanguage.activeInput}`);
+    }catch (err){
+      await ctx.reply('An error occurred during generating list.');
+      await ctx.reply(`/setInput - ${parameters.botLanguage.activeInput}`);
+    }
   }else{
     await ctx.reply(code(`${parameters.botLanguage.RegErr}`));
   }
@@ -285,10 +290,14 @@ bot.on(message('text'), async (ctx) => {
     console.log(prompt);
 
     parameters.isPromptRunning = true;
-
-    const reply = await sendPrompt(ctx, prompt);
-    await ctx.reply(reply);
-    await ctx.reply(`/setInput - ${parameters.botLanguage.activeInput}`);
+    try {
+      const reply = await sendPrompt(ctx, prompt);
+      await ctx.reply(reply);
+      await ctx.reply(`/setInput - ${parameters.botLanguage.activeInput}`);
+    }catch (err){
+      await ctx.reply('An error occurred during generating list.');
+      await ctx.reply(`/setInput - ${parameters.botLanguage.activeInput}`);
+    }
     parameters.isTopicSelected = false;
   }
 });
