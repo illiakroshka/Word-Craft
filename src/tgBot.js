@@ -1,12 +1,12 @@
 'use strict';
 
-const { Telegraf, session } = require('telegraf');
-const { Markup } = require('telegraf');
+const { Telegraf, session, Markup } = require('telegraf');
 const { message } = require('telegraf/filters');
 const { code } = require('telegraf/format')
 const { openAI } = require('./openAI');
 const config = require('../config/default.json');
 const botReplies = require('../config/botReplies.json');
+const prompts = require('./aiPromptUtils');
 
 const INITIAL_SESSION = {
   messages: [],
@@ -24,47 +24,6 @@ const parameters = {
 
 const receiveParameter = (parameterName, parameterValue) => {
     parameters[parameterName] = parameterValue;
-}
-
-const createPrompt = ({ level, language, topic }) => {
-  if (!level || !language || !topic) {
-    return 'Error';
-  }
-
-  if (language === 'without translation') {
-    return `Your output should use the following template:
-    Word list
-    [English word]
-    [English word]
-    
-    Your task is to generate a list of 15 words that are related to ${topic} for ${level} level of English.`;
-  }
-
-  return `Your output should use the following template:
-  Word list
-  [English word] - [translation in ${language}]
-
-  Your task is to generate a list of 15 words that are related to ${topic} for ${level} level of English. 
-  And to translate these words in ${language} language. `;
-};
-
-const improveListPrompt = ({ language }) => {
-  if (!language) {
-    return 'Error';
-  }
-  if (language === 'without translation') {
-    return `Your output should use the following template:
-    Word list
-    [English word]
-    [English word]
-    
-    Your task is to regenerate the previous list of words by replacing the previous words with new ones.`;
-  }
-  return `Your output should use the following template:
-    Word list
-    [English word] - [translation in ${language}]
-    
-    Your task is to regenerate the previous list of words by replacing the previous words with new ones.`;
 }
 
 const sendPrompt = async (ctx , text) => {
@@ -85,26 +44,11 @@ const chooseLevel = async (ctx) => {
     reply_markup:{
       inline_keyboard:[
         [
-          {
-            text: 'A1',
-            callback_data: 'a1'
-          },
-          {
-            text: 'A2',
-            callback_data: 'a1'
-          },
-          {
-            text: 'B1',
-            callback_data: 'b1'
-          },
-          {
-            text: 'B2',
-            callback_data: 'b2'
-          },
-          {
-            text: 'C1',
-            callback_data: 'c1'
-          },
+          { text: 'A1', callback_data: 'a1' },
+          { text: 'A2', callback_data: 'a1' },
+          { text: 'B1', callback_data: 'b1' },
+          { text: 'B2', callback_data: 'b2' },
+          { text: 'C1', callback_data: 'c1' },
         ],
       ]
     }
@@ -116,14 +60,8 @@ const chooseLanguage = async (ctx) =>{
     reply_markup:{
       inline_keyboard: [
         [
-          {
-            text: 'Ukrainian',
-            callback_data: 'ukrainian'
-          },
-          {
-            text: 'Without translation',
-            callback_data: 'without translation'
-          }
+          { text: 'Ukrainian', callback_data: 'ukrainian' },
+          { text: 'Without translation', callback_data: 'without translation' }
         ]
       ]
     }
@@ -131,18 +69,12 @@ const chooseLanguage = async (ctx) =>{
 }
 
 const setBotLanguage = async (ctx) => {
-  await ctx.reply('Set bot language',{
+  await ctx.reply(`${parameters.botLanguage.botLang}`,{
     reply_markup:{
       inline_keyboard:[
         [
-          {
-            text: 'English',
-            callback_data: 'en'
-          },
-          {
-            text: 'Ukrainian (demo)',
-            callback_data: 'ukr'
-          }
+          { text: 'English', callback_data: 'en' },
+          { text: 'Ukrainian (demo)', callback_data: 'ukr' }
         ]
       ]
     }
@@ -224,7 +156,7 @@ bot.command('regenerateList', async (ctx) => {
   if (language && level && topic) {
     ctx.session ??= INITIAL_SESSION;
     await ctx.reply(code(`${parameters.botLanguage.ackReg}. ${parameters.botLanguage.warning}`));
-    const prompt = improveListPrompt(parameters);
+    const prompt = prompts.improveListPrompt(parameters);
     console.log(prompt);
     parameters.isPromptRunning = true;
     try {
@@ -232,7 +164,7 @@ bot.command('regenerateList', async (ctx) => {
       await ctx.reply(reply);
       await ctx.reply(`/setInput - ${parameters.botLanguage.activeInput}`);
     }catch (err){
-      await ctx.reply('An error occurred during generating list.');
+      await ctx.reply(`${parameters.botLanguage.genErr}`);
       await ctx.reply(`/setInput - ${parameters.botLanguage.activeInput}`);
     }
   }else{
@@ -286,7 +218,7 @@ bot.on(message('text'), async (ctx) => {
     ctx.session ??= INITIAL_SESSION;
     await ctx.reply(code(`${parameters.botLanguage.ack} ${ctx.update.message.text}. ${parameters.botLanguage.warning}`));
     receiveParameter('topic', ctx.update.message.text);
-    const prompt = createPrompt(parameters);
+    const prompt = prompts.createPrompt(parameters);
     console.log(prompt);
 
     parameters.isPromptRunning = true;
@@ -295,7 +227,7 @@ bot.on(message('text'), async (ctx) => {
       await ctx.reply(reply);
       await ctx.reply(`/setInput - ${parameters.botLanguage.activeInput}`);
     }catch (err){
-      await ctx.reply('An error occurred during generating list.');
+      await ctx.reply(`${parameters.botLanguage.genErr}`);
       await ctx.reply(`/setInput - ${parameters.botLanguage.activeInput}`);
     }
     parameters.isTopicSelected = false;

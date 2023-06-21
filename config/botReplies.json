@@ -24,7 +24,9 @@
     "RegErr": "You can not regenerate defunct word list",
     "inputErr": "Wrong input",
     "activeInput": "Click to activate input",
-    "inputAck": "Input is active"
+    "inputAck": "Input is active",
+    "botLang": "Set bot language",
+    "genErr": "An error occurred during generating list"
   },
   "ukr": {
     "welcome": "Ласкаво просимо до бота",
@@ -51,6 +53,8 @@
     "RegErr": "Ви не можете регенерувати неіснуючий список слів",
     "inputErr": "Неправильне введення",
     "activeInput": "Натисніть , щоб активувати введення",
-    "inputAck": "Введення активне"
+    "inputAck": "Введення активне",
+    "botLang": "Встановіть мову бота",
+    "genErr": "Під час створення списку сталася помилка"
   }
 }
