@@ -26,8 +26,11 @@ const parameters = {
   topic: '',
 };
 
-const receiveParameter = (parameterName, parameterValue) => {
-    parameters[parameterName] = parameterValue;
+const resetParameters = () => {
+  parameters.isPromptRunning = false;
+  parameters.level = '';
+  parameters.language = '';
+  parameters.topic = '';
 }
 
 const sendPrompt = async (ctx , text) => {
@@ -38,8 +41,7 @@ const sendPrompt = async (ctx , text) => {
 }
 
 const handleLevelAction = async (ctx) => {
-  const level = ctx.match[0].toUpperCase();
-  receiveParameter('level', level);
+  parameters.level = ctx.match[0].toUpperCase();
   await chooseLanguage(ctx);
 };
 
@@ -105,10 +107,7 @@ const chooseTopic = async (ctx) => {
 }
 
 bot.start(async (ctx) => {
-  parameters.isPromptRunning = false;
-  parameters.level = '';
-  parameters.language = '';
-  parameters.topic = '';
+  resetParameters();
   if (ctx.from.language_code === 'ru'){
     parameters.botLanguage = botReplies.ukr;
   }
@@ -229,12 +228,12 @@ bot.action('en', async (ctx) => {
 bot.action(/^[abc][1-2]$/, handleLevelAction);
 
 bot.action('ukrainian', async (ctx)=>{
-  receiveParameter('language','Ukrainian');
+  parameters.language = 'Ukrainian';
   await chooseTopic(ctx);
 })
 
 bot.action('without translation',async (ctx)=>{
-  receiveParameter('language','without translation');
+  parameters.language = 'without translation';
   await queryDefinition(ctx);
 })
 
@@ -247,7 +246,7 @@ bot.on(message('text'), async (ctx) => {
   } else {
     ctx.session ??= INITIAL_SESSION;
     await ctx.reply(code(`${parameters.botLanguage.ack} ${ctx.update.message.text}. ${parameters.botLanguage.warning}`));
-    receiveParameter('topic', ctx.update.message.text);
+    parameters.topic = ctx.update.message.text;
     const prompt = prompts.createPrompt(parameters);
     console.log(prompt);
 

@@ -16,7 +16,7 @@
       "B2": ["Business", "Environment", "Relationships", "Politics", "Media and entertainment"],
       "C1": ["Global issues", "Economics", "Science and technology", "Critical thinking", "Psychology"]
     },
-    "help":"/runBot - to run the bot \n/changeTopic - to change topic \n/setBotLanguage - to translate bot \n/topics - suggests popular example topics for your level \n/regenerateList - to regenerate list if you know most of the words \n/info - information about bot",
+    "help":"/runBot - to run the bot \n/changeTopic - to change topic of word list \n/setBotLanguage - to translate bot \n/topics - suggests popular example topics for your level \n/regenerateList - to regenerate list if you know most of the words \n/info - information about bot",
     "info": "This bot is used to generate word lists on a specific topic for a specific level of English. Also, you can choose the language in which to translate these words.\n/help - command for navigation",
     "warning": "it can take some time",
     "ack": "Prepare word list with topic",
@@ -46,7 +46,7 @@
       "B2": ["Бізнес", "Середовище", "Відносини", "Політика", "Медіа та розваги"],
       "C1": ["Глобальні питання", "Економіка", "Наука і технології", "Критичне мислення", "Психологія"]
     },
-    "help": "/runBot - для запуску бота \n/changeTopic - для зміни теми \n/setBotLanguage - для перекладу бота \n/topics - пропонує популярні приклади тем для вашого рівня \n/regenerateList - для перероблення списку, якщо ви знаєте більшість слів \n/info - інформація про бота",
+    "help": "/runBot - для запуску бота \n/changeTopic - для зміни теми списку слів \n/setBotLanguage - для перекладу бота \n/topics - пропонує популярні приклади тем для вашого рівня \n/regenerateList - для перероблення списку, якщо ви знаєте більшість слів \n/info - інформація про бота",
     "info": "Цей бот використовується для створення списків слів на певну тему для певного рівня англійської. Крім того, ви можете обрати мову, якою перекладати ці слова.\n/help - команда для навігації",
     "warning": "Це може зайняти деякий час",
     "ack": "Готується список слів на тему",
