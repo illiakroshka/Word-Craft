@@ -20,6 +20,7 @@ const parameters = {
   isTopicSelected: false,
   isPromptRunning: false,
   botLanguage: botReplies.en,
+  definition: false,
 };
 
 const receiveParameter = (parameterName, parameterValue) => {
@@ -62,6 +63,19 @@ const chooseLanguage = async (ctx) =>{
         [
           { text: 'Ukrainian', callback_data: 'ukrainian' },
           { text: 'Without translation', callback_data: 'without translation' }
+        ]
+      ]
+    }
+  })
+}
+
+const queryDefinition = async (ctx) => {
+  await ctx.reply('Do you want to get definitions?', {
+    reply_markup:{
+      inline_keyboard: [
+        [
+          { text: 'Yes', callback_data: 'defTrue' },
+          { text: 'No', callback_data: 'defFalse' }
         ]
       ]
     }
@@ -186,6 +200,16 @@ bot.command('topics', async (ctx) => {
   }
 });
 
+bot.action('defTrue', async (ctx) => {
+  parameters.definition = true;
+  await chooseTopic(ctx);
+})
+
+bot.action('defFalse', async (ctx) => {
+  parameters.definition = false;
+  await chooseTopic(ctx);
+})
+
 bot.action('ukr', async (ctx) => {
   parameters.botLanguage = botReplies.ukr;
   await ctx.reply(code('Бот переведено на Українську мову'))
@@ -205,7 +229,7 @@ bot.action('ukrainian', async (ctx)=>{
 
 bot.action('without translation',async (ctx)=>{
   receiveParameter('language','without translation');
-  await chooseTopic(ctx);
+  await queryDefinition(ctx);
 })
 
 bot.on(message('text'), async (ctx) => {

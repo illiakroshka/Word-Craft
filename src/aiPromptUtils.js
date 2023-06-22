@@ -1,11 +1,20 @@
 'use strict';
 
-const createPrompt = ({ level, language, topic }) => {
+const createPrompt = ({ level, language, topic, definition }) => {
   if (!level || !language || !topic) {
     return 'Error';
   }
 
-  if (language === 'without translation') {
+  if (language === 'without translation' && definition) {
+    return `Your output should use the following template:
+    Word list
+    [English word] - [definition]
+    [English word] - [definition]
+    
+    Your task is to generate a list of 15 words that are related to ${topic} for ${level} level of English.
+    And to make a definition for each word`;
+  }else if(language === 'without translation'){
+
     return `Your output should use the following template:
     Word list
     [English word]
@@ -22,11 +31,18 @@ const createPrompt = ({ level, language, topic }) => {
   And to translate these words in ${language} language. `;
 };
 
-const improveListPrompt = ({ language }) => {
+const improveListPrompt = ({ language, definition }) => {
   if (!language) {
     return 'Error';
   }
-  if (language === 'without translation') {
+  if (language === 'without translation' && definition) {
+    return `Your output should use the following template:
+    Word list
+    [English word] - [definition]
+    [English word] - [definition]
+    
+    Your task is to regenerate the previous list of words by replacing the previous words with new ones.`;
+  }else if(language === 'without translation'){
     return `Your output should use the following template:
     Word list
     [English word]
