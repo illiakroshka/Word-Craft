@@ -70,7 +70,7 @@ const chooseLanguage = async (ctx) =>{
 }
 
 const queryDefinition = async (ctx) => {
-  await ctx.reply('Do you want to get definitions?', {
+  await ctx.reply(`${parameters.botLanguage.definitions}`, {
     reply_markup:{
       inline_keyboard: [
         [

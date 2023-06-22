@@ -26,7 +26,8 @@
     "activeInput": "Click to activate input",
     "inputAck": "Input is active",
     "botLang": "Set bot language",
-    "genErr": "An error occurred during generating list"
+    "genErr": "An error occurred during generating list",
+    "definitions": "Do you want to get definitions?"
   },
   "ukr": {
     "welcome": "Ласкаво просимо до бота",
@@ -55,6 +56,7 @@
     "activeInput": "Натисніть , щоб активувати введення",
     "inputAck": "Введення активне",
     "botLang": "Встановіть мову бота",
-    "genErr": "Під час створення списку сталася помилка"
+    "genErr": "Під час створення списку сталася помилка",
+    "definitions": "Генерувати дефеніції для слів?"
   }
 }
