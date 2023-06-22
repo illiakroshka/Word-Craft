@@ -19,8 +19,11 @@ bot.use(session());
 const parameters = {
   isTopicSelected: false,
   isPromptRunning: false,
-  botLanguage: botReplies.en,
   definition: false,
+  botLanguage: botReplies.en,
+  level: '',
+  language: '',
+  topic: '',
 };
 
 const receiveParameter = (parameterName, parameterValue) => {
@@ -102,6 +105,10 @@ const chooseTopic = async (ctx) => {
 }
 
 bot.start(async (ctx) => {
+  parameters.isPromptRunning = false;
+  parameters.level = '';
+  parameters.language = '';
+  parameters.topic = '';
   if (ctx.from.language_code === 'ru'){
     parameters.botLanguage = botReplies.ukr;
   }
