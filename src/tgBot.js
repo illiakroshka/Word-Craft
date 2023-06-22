@@ -2,7 +2,7 @@
 
 const { Telegraf, session, Markup } = require('telegraf');
 const { message } = require('telegraf/filters');
-const { code } = require('telegraf/format')
+const { code, bold } = require('telegraf/format')
 const { openAI } = require('./openAI');
 const config = require('../config/default.json');
 const botReplies = require('../config/botReplies.json');
@@ -176,11 +176,10 @@ bot.command('regenerateList', async (ctx) => {
     try {
       const reply = await sendPrompt(ctx, prompt);
       await ctx.reply(reply);
-      await ctx.reply(`/setInput - ${parameters.botLanguage.activeInput}`);
+      await ctx.reply(bold(`/setInput - ${parameters.botLanguage.activeInput}`));
     }catch (err){
       await ctx.reply(`${parameters.botLanguage.genErr}`);
-      await ctx.reply(`/setInput - ${parameters.botLanguage.activeInput}`);
-    }
+      await ctx.reply(bold(`/setInput - ${parameters.botLanguage.activeInput}`));    }
   }else{
     await ctx.reply(code(`${parameters.botLanguage.RegErr}`));
   }
@@ -249,10 +248,10 @@ bot.on(message('text'), async (ctx) => {
     try {
       const reply = await sendPrompt(ctx, prompt);
       await ctx.reply(reply);
-      await ctx.reply(`/setInput - ${parameters.botLanguage.activeInput}`);
+      await ctx.reply(bold(`/setInput - ${parameters.botLanguage.activeInput}`));
     }catch (err){
       await ctx.reply(`${parameters.botLanguage.genErr}`);
-      await ctx.reply(`/setInput - ${parameters.botLanguage.activeInput}`);
+      await ctx.reply(bold(`/setInput - ${parameters.botLanguage.activeInput}`));
     }
     parameters.isTopicSelected = false;
   }
