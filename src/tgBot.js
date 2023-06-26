@@ -7,6 +7,7 @@ const { openAI } = require('./openAI');
 const config = require('../config/default.json');
 const botReplies = require('../config/botReplies.json');
 const prompts = require('./aiPromptUtils');
+const db = require('../database/database');
 
 const INITIAL_SESSION = {
   messages: [],
@@ -111,6 +112,14 @@ bot.start(async (ctx) => {
   if (ctx.from.language_code === 'ru'){
     parameters.botLanguage = botReplies.ukr;
   }
+
+  db.checkUser(ctx.from.id)
+    .then(data => {
+    if (!data) {
+      return db.insertUser(parameters,ctx.from.id);
+    }
+  })
+
   const welcomeMessage = `${parameters.botLanguage.welcome}, ${ctx.from.first_name}!\n`+
   `${parameters.botLanguage.introduction}`;
   const menuOptions = Markup.keyboard([
