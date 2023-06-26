@@ -105,6 +105,7 @@ const chooseTopic = async (ctx) => {
   await ctx.reply(`${parameters.botLanguage.topic}\n`+
   `${parameters.botLanguage.topicInfo}`);
   parameters.isTopicSelected = true;
+  await db.updateUserFlag('isTopicSelected',true, ctx.from.id);
 }
 
 bot.start(async (ctx) => {
@@ -250,7 +251,9 @@ bot.on(message('text'), async (ctx) => {
   if (parameters.isPromptRunning) {
     return;
   }
-  if (!parameters.isTopicSelected) {
+  const topicStatus = await db.getUserFlag('isTopicSelected',ctx.from.id);
+  console.log(topicStatus);
+  if (!topicStatus) {
     await ctx.reply(code(parameters.botLanguage.inputErr));
   } else {
     ctx.session ??= INITIAL_SESSION;
@@ -269,6 +272,7 @@ bot.on(message('text'), async (ctx) => {
       await ctx.reply(bold(`/setInput - ${parameters.botLanguage.activeInput}`));
     }
     parameters.isTopicSelected = false;
+    await db.updateUserFlag('isTopicSelected',false, ctx.from.id);
   }
 });
 

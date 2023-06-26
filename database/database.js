@@ -31,4 +31,30 @@ const insertUser = async (userData, telegramId) => {
   }
 };
 
-module.exports = { insertUser , checkUser };
+const updateUserFlag = async (flag, booleanValue, telegramId) => {
+  try {
+    const query = {
+      text: `UPDATE "users" SET data = jsonb_set(data, $1::text[], $2) WHERE telegram_id = $3`,
+      values: [[flag], booleanValue, telegramId]
+    };
+    await pool.query(query);
+  } catch (err) {
+    console.error('Error updating user flag:', err);
+  }
+};
+
+const getUserFlag = async (flag, telegramId) => {
+  try {
+    const query = {
+      text: `SELECT data -> $1 AS flag_value FROM "users" WHERE telegram_id = $2`,
+      values: [flag, telegramId]
+    };
+
+    const result = await pool.query(query);
+    return result.rows[0].flag_value;
+  } catch (err) {
+    console.error('Error retrieving flag value:', err);
+  }
+};
+
+module.exports = { insertUser , checkUser, updateUserFlag, getUserFlag };
