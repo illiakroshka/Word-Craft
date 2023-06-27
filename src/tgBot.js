@@ -43,6 +43,7 @@ const sendPrompt = async (ctx , text) => {
 
 const handleLevelAction = async (ctx) => {
   parameters.level = ctx.match[0].toUpperCase();
+  await db.updateUserData('level',ctx.match[0].toUpperCase(),ctx.from.id);
   await chooseLanguage(ctx);
 };
 
@@ -118,6 +119,8 @@ bot.start(async (ctx) => {
     .then(data => {
     if (!data) {
       return db.insertUser(parameters,ctx.from.id);
+    }else{
+      db.resetUserData(ctx.from.id);
     }
   })
 
@@ -239,11 +242,13 @@ bot.action(/^[abc][1-2]$/, handleLevelAction);
 
 bot.action('ukrainian', async (ctx)=>{
   parameters.language = 'Ukrainian';
+  await db.updateUserData('language','Ukrainian',ctx.from.id);
   await chooseTopic(ctx);
 })
 
 bot.action('without translation',async (ctx)=>{
   parameters.language = 'without translation';
+  await db.updateUserData('language','without translation',ctx.from.id);
   await queryDefinition(ctx);
 })
 
@@ -259,6 +264,7 @@ bot.on(message('text'), async (ctx) => {
     ctx.session ??= INITIAL_SESSION;
     await ctx.reply(code(`${parameters.botLanguage.ack} ${ctx.update.message.text}. ${parameters.botLanguage.warning}`));
     parameters.topic = ctx.update.message.text;
+    await db.updateUserData('topic', ctx.update.message.text, ctx.from.id);
     const prompt = prompts.createPrompt(parameters);
     console.log(prompt);
 

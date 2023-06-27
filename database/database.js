@@ -57,4 +57,32 @@ const getUserFlag = async (flag, telegramId) => {
   }
 };
 
-module.exports = { insertUser , checkUser, updateUserFlag, getUserFlag };
+const updateUserData = async (keyName, value, telegramId) => {
+  try {
+    const query = {
+      text: `UPDATE "users" SET data = jsonb_set(data, $1::text[], $2::jsonb) WHERE telegram_id = $3`,
+      values: [[keyName], `"${value}"`, telegramId]
+    };
+
+    await pool.query(query);
+  } catch (err) {
+    console.error('Error updating user data:', err);
+  }
+};
+
+const resetUserData = async (telegramId) => {
+  try {
+    const query = {
+      text: `UPDATE "users"
+             SET data = jsonb_set(jsonb_set(jsonb_set(jsonb_set(data, '{level}', '""'), '{language}', '""'), '{topic}', '""'), '{isTopicSelected}', 'false'::jsonb)
+             WHERE telegram_id = $1`,
+      values: [telegramId]
+    };
+
+    await pool.query(query);
+  } catch (err) {
+    console.error('Error updating user data:', err);
+  }
+};
+
+module.exports = { insertUser , checkUser, updateUserFlag, getUserFlag, updateUserData, resetUserData };
