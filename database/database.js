@@ -85,4 +85,23 @@ const resetUserData = async (telegramId) => {
   }
 };
 
-module.exports = { insertUser , checkUser, updateUserFlag, getUserFlag, updateUserData, resetUserData };
+const getUserData = async (telegramId) => {
+  try {
+    const query = {
+      text: `SELECT data ->> 'language' AS language,
+                    data ->> 'level' AS level,
+                    data ->> 'topic' AS topic,
+                    (data ->> 'definition')::boolean AS definitions
+             FROM users
+             WHERE telegram_id = $1`,
+      values: [telegramId]
+    };
+
+    const result = await pool.query(query);
+    return  result.rows[0];
+  } catch (err) {
+    console.error('Error retrieving user data:', err);
+  }
+};
+
+module.exports = { insertUser , checkUser, updateUserFlag, getUserFlag, updateUserData, resetUserData, getUserData };

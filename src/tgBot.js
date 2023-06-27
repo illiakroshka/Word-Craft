@@ -189,7 +189,7 @@ bot.command('regenerateList', async (ctx) => {
   if (language && level && topic) {
     ctx.session ??= INITIAL_SESSION;
     await ctx.reply(code(`${parameters.botLanguage.ackReg}. ${parameters.botLanguage.warning}`));
-    const prompt = prompts.improveListPrompt(parameters);
+    const prompt = prompts.createPrompt( await db.getUserData(ctx.from.id))
     console.log(prompt);
     parameters.isPromptRunning = true;
     try {
@@ -220,11 +220,13 @@ bot.command('topics', async (ctx) => {
 
 bot.action('defTrue', async (ctx) => {
   parameters.definition = true;
+  await db.updateUserFlag('definition', true, ctx.from.id);
   await chooseTopic(ctx);
 })
 
 bot.action('defFalse', async (ctx) => {
   parameters.definition = false;
+  await db.updateUserFlag('definition', false, ctx.from.id);
   await chooseTopic(ctx);
 })
 
@@ -265,7 +267,7 @@ bot.on(message('text'), async (ctx) => {
     await ctx.reply(code(`${parameters.botLanguage.ack} ${ctx.update.message.text}. ${parameters.botLanguage.warning}`));
     parameters.topic = ctx.update.message.text;
     await db.updateUserData('topic', ctx.update.message.text, ctx.from.id);
-    const prompt = prompts.createPrompt(parameters);
+    const prompt = prompts.createPrompt( await db.getUserData(ctx.from.id));
     console.log(prompt);
 
     parameters.isPromptRunning = true;
