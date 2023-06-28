@@ -18,7 +18,6 @@ const bot = new Telegraf(config.TELEGRAM_TOKEN);
 bot.use(session());
 
 const parameters = {
-  isPromptRunning: false,
   botLanguage: botReplies.en,
 };
 
@@ -121,24 +120,15 @@ bot.start(async (ctx) => {
 })
 
 bot.command('runBot', async (ctx) => {
-  if (parameters.isPromptRunning) {
-    return;
-  }
   ctx.session = INITIAL_SESSION;
   await chooseLevel(ctx);
 });
 
 bot.command('setBotLanguage',async (ctx) => {
-  if (parameters.isPromptRunning) {
-    return;
-  }
   await setBotLanguage(ctx);
 })
 
 bot.command('changeTopic',async (ctx) => {
-  if (parameters.isPromptRunning) {
-    return;
-  }
   const values = await db.getUserData(ctx.from.id);
   if (values.level && values.language){
     await chooseTopic(ctx);
@@ -148,52 +138,32 @@ bot.command('changeTopic',async (ctx) => {
 });
 
 bot.command('info',async (ctx) => {
-  if (parameters.isPromptRunning) {
-    return;
-  }
  await ctx.reply(parameters.botLanguage.info)
 })
 
 bot.command('help', async (ctx) => {
-  if (parameters.isPromptRunning) {
-    return;
-  }
   await ctx.reply(parameters.botLanguage.help)
 })
 
-bot.command('setInput',async (ctx) => {
-  parameters.isPromptRunning = false;
-  await ctx.reply(code(parameters.botLanguage.inputAck));
-})
-
 bot.command('regenerateList', async (ctx) => {
-  if (parameters.isPromptRunning) {
-    return;
-  }
-
   const { language, level, topic } = await db.getUserData(ctx.from.id);
   if (language && level && topic) {
     ctx.session ??= INITIAL_SESSION;
     await ctx.reply(code(`${parameters.botLanguage.ackReg}. ${parameters.botLanguage.warning}`));
     const prompt = prompts.createPrompt( await db.getUserData(ctx.from.id))
     console.log(prompt);
-    parameters.isPromptRunning = true;
     try {
       const reply = await sendPrompt(ctx, prompt);
       await ctx.reply(reply);
-      await ctx.reply(bold(`/setInput - ${parameters.botLanguage.activeInput}`));
     }catch (err){
       await ctx.reply(`${parameters.botLanguage.genErr}`);
-      await ctx.reply(bold(`/setInput - ${parameters.botLanguage.activeInput}`));    }
+    }
   }else{
     await ctx.reply(code(`${parameters.botLanguage.RegErr}`));
   }
 })
 
 bot.command('topics', async (ctx) => {
-  if (parameters.isPromptRunning) {
-    return;
-  }
   const { level } = await db.getUserData(ctx.from.id);
   if (level){
     const topicList = parameters.botLanguage.topics[level].join('\n');
@@ -237,9 +207,6 @@ bot.action('without translation',async (ctx)=>{
 })
 
 bot.on(message('text'), async (ctx) => {
-  if (parameters.isPromptRunning) {
-    return;
-  }
   const topicStatus = await db.getUserFlag('isTopicSelected',ctx.from.id);
   console.log(topicStatus);
   if (!topicStatus) {
@@ -251,14 +218,11 @@ bot.on(message('text'), async (ctx) => {
     const prompt = prompts.createPrompt( await db.getUserData(ctx.from.id));
     console.log(prompt);
 
-    parameters.isPromptRunning = true;
     try {
       const reply = await sendPrompt(ctx, prompt);
       await ctx.reply(reply);
-      await ctx.reply(bold(`/setInput - ${parameters.botLanguage.activeInput}`));
     }catch (err){
       await ctx.reply(`${parameters.botLanguage.genErr}`);
-      await ctx.reply(bold(`/setInput - ${parameters.botLanguage.activeInput}`));
     }
     await db.updateUserFlag('isTopicSelected',false, ctx.from.id);
   }
