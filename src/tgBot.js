@@ -18,7 +18,12 @@ const bot = new Telegraf(config.TELEGRAM_TOKEN);
 bot.use(session());
 
 const parameters = {
+  isTopicSelected: false,
+  definition: false,
   botLanguage: botReplies.en,
+  level: '',
+  language: '',
+  topic: '',
 };
 
 const sendPrompt = async (ctx , text) => {
