@@ -9,6 +9,8 @@ const botReplies = require('../config/botReplies.json');
 const prompts = require('./aiPromptUtils');
 const db = require('../database/database');
 
+const REQUEST_INCREMENT = 1;
+
 const INITIAL_SESSION = {
   messages: [],
 }
@@ -160,6 +162,7 @@ bot.command('regenerateList', async (ctx) => {
     try {
       const reply = await sendPrompt(ctx, prompt);
       await ctx.reply(reply);
+      await db.incrementRequests(ctx.from.id, REQUEST_INCREMENT);
     }catch (err){
       await ctx.reply(`${parameters.botLanguage.genErr}`);
     }
@@ -226,6 +229,7 @@ bot.on(message('text'), async (ctx) => {
     try {
       const reply = await sendPrompt(ctx, prompt);
       await ctx.reply(reply);
+      await db.incrementRequests(ctx.from.id, REQUEST_INCREMENT);
     }catch (err){
       await ctx.reply(`${parameters.botLanguage.genErr}`);
     }

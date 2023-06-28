@@ -104,4 +104,20 @@ const getUserData = async (telegramId) => {
   }
 };
 
-module.exports = { insertUser , checkUser, updateUserFlag, getUserFlag, updateUserData, resetUserData, getUserData };
+const incrementRequests = async (telegramId, incrementValue) => {
+  try {
+    const query = {
+      text: `UPDATE users
+             SET requests = requests + $1
+             WHERE telegram_id = $2`,
+      values: [incrementValue, telegramId]
+    };
+
+    await pool.query(query);
+  } catch (err) {
+    console.error('Error incrementing requests count:', err);
+  }
+};
+
+
+module.exports = { insertUser , checkUser, updateUserFlag, getUserFlag, updateUserData, resetUserData, getUserData, incrementRequests };
