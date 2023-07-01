@@ -2,7 +2,7 @@
 
 const { Telegraf, session, Markup } = require('telegraf');
 const { message } = require('telegraf/filters');
-const { code, bold } = require('telegraf/format')
+const { code } = require('telegraf/format')
 const { openAI } = require('./openAI');
 const config = require('../config/default.json');
 const botReplies = require('../config/botReplies.json');
