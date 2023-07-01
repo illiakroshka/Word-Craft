@@ -28,12 +28,19 @@ const parameters = {
   topic: '',
 };
 
-const sendPrompt = async (ctx , text) => {
-  ctx.session.messages.push({ role: openAI.roles.USER, content: text });
-  const response = await openAI.chat(ctx.session.messages);
-  ctx.session.messages.push({ role: openAI.roles.ASSISTANT, content: response.content })
-  return response.content
-}
+const sendPrompt = (ctx, text) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      ctx.session.messages.push({ role: openAI.roles.USER, content: text });
+      const response = await openAI.chat(ctx.session.messages);
+      ctx.session.messages.push({ role: openAI.roles.ASSISTANT, content: response.content });
+      resolve(response.content);
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
 
 const handleLevelAction = async (ctx) => {
   await db.updateUserData('level',ctx.match[0].toUpperCase(),ctx.from.id);
@@ -160,9 +167,14 @@ bot.command('regenerateList', async (ctx) => {
     const prompt = prompts.createPrompt( await db.getUserData(ctx.from.id))
     console.log(prompt);
     try {
-      const reply = await sendPrompt(ctx, prompt);
-      await ctx.reply(reply);
-      await db.incrementRequests(ctx.from.id, REQUEST_INCREMENT);
+      sendPrompt(ctx, prompt)
+        .then(reply => {
+          ctx.reply(reply);
+          db.incrementRequests(ctx.from.id, REQUEST_INCREMENT);
+        })
+        .catch(err => {
+          ctx.reply(`${parameters.botLanguage.genErr}`);
+        });
     }catch (err){
       await ctx.reply(`${parameters.botLanguage.genErr}`);
     }
@@ -227,9 +239,14 @@ bot.on(message('text'), async (ctx) => {
     console.log(prompt);
 
     try {
-      const reply = await sendPrompt(ctx, prompt);
-      await ctx.reply(reply);
-      await db.incrementRequests(ctx.from.id, REQUEST_INCREMENT);
+      sendPrompt(ctx, prompt)
+        .then(reply => {
+          ctx.reply(reply);
+          db.incrementRequests(ctx.from.id, REQUEST_INCREMENT);
+        })
+        .catch(err => {
+          ctx.reply(`${parameters.botLanguage.genErr}`);
+        });
     }catch (err){
       await ctx.reply(`${parameters.botLanguage.genErr}`);
     }
