@@ -120,6 +120,21 @@ const getBotLanguage = async (telegramId) => {
   }
 };
 
+const updateUserBotLanguage = async (telegramId, value) => {
+  try {
+    const query = {
+      text: `UPDATE users
+             SET data = jsonb_set(data, '{botLanguage}', $1::jsonb)
+             WHERE telegram_id = $2`,
+      values: [`"${value}"`, telegramId]
+    };
+
+    await pool.query(query);
+  } catch (err) {
+    console.error('Error updating user bot language:', err);
+  }
+};
+
 const incrementRequests = async (telegramId, incrementValue) => {
   try {
     const query = {
@@ -136,4 +151,4 @@ const incrementRequests = async (telegramId, incrementValue) => {
 };
 
 
-module.exports = { insertUser , checkUser, updateUserFlag, getUserFlag, updateUserData, resetUserData, getUserData, incrementRequests, getBotLanguage };
+module.exports = { insertUser , checkUser, updateUserFlag, getUserFlag, updateUserData, resetUserData, getUserData, incrementRequests, getBotLanguage, updateUserBotLanguage };

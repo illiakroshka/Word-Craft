@@ -111,7 +111,7 @@ const chooseTopic = async (ctx) => {
 
 bot.start(async (ctx) => {
   if (ctx.from.language_code === 'ru'){
-    parameters.botLanguage = "ukr";
+    await db.updateUserBotLanguage(ctx.from.id,"ukr");
   }
 
   db.checkUser(ctx.from.id)
@@ -209,12 +209,12 @@ bot.action('defFalse', async (ctx) => {
 })
 
 bot.action('ukr', async (ctx) => {
-  parameters.botLanguage = "ukr";
+  await db.updateUserBotLanguage(ctx.from.id,"ukr");
   await ctx.reply(code('Бот переведено на Українську мову'))
 })
 
 bot.action('en', async (ctx) => {
-  parameters.botLanguage = "en";
+  await db.updateUserBotLanguage(ctx.from.id,"en");
   await ctx.reply(code('Bot has been translated to English'))
 })
 
