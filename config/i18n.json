@@ -1,0 +1,102 @@
+{
+  "greeting": {
+    "en": "Welcome to the bot",
+    "ukr": "Ласкаво просимо до бота"
+  },
+  "introduction": {
+    "en": "This bot is used to generate word lists on a specific topic for a specific level of English.\n/runBot - to run the bot\n/setBotLanguage - to translate bot\n/help - commands navigation",
+    "ukr": "Цей бот використовується для генерації списків слів на конкретну тему для певного рівня англійської мови.\n/runBot - для запуску бота\n/setBotLanguage - для перекладу бота\n/help - навігація команд"
+  },
+  "level": {
+    "en": "What is your level of English?",
+    "ukr": "Який ваш рівень англійської?"
+  },
+  "language": {
+    "en": "To which language to translate?",
+    "ukr": "На яку мову перекладати слова?"
+  },
+  "topic": {
+    "en": "Write the topic of words that you want to learn",
+    "ukr": "Напишіть тему слів, слова з якої хочете вивчити"
+  },
+  "topicsR": {
+    "en": "Topics you might be interested in:",
+    "ukr": "Теми, які можуть вас зацікавити:"
+  },
+  "topicInfo": {
+    "en": "/topics - suggests popular example topics for your level",
+    "ukr": "/topics - пропонує популярні приклади тем для вашого рівня"
+  },
+  "topicsErr": {
+    "en": "Set your English level first",
+    "ukr": "Спочатку вкажіть ваш рівень англійської"
+  },
+  "changeTopicErr": {
+    "en": "Set your English level and to which language to translate first.",
+    "ukr": "Встановіть свій рівень англійської та мову, на яку перекладати"
+  },
+  "topics": {
+    "en": {
+      "A1": ["Food", "Animals", "Family", "Daily routine", "Clothes"],
+      "A2": ["Hobbies", "Places", "Jobs", "Describing people", "House"],
+      "B1": ["Education", "Health", "Travel", "Music", "Transportation"],
+      "B2": ["Business", "Environment", "Relationships", "Politics", "Media and entertainment"],
+      "C1": ["Global issues", "Economics", "Science and technology", "Critical thinking", "Psychology"]
+    },
+    "ukr": {
+      "A1": ["Їжа", "Тварини", "Сім'я", "Щоденна рутина", "Одяг"],
+      "A2": ["Хобі", "Місця", "Роботи", "Описання людей", "Будинок"],
+      "B1": ["Освіта", "Здоров'я", "Подорожі", "Музика", "Транспорт"],
+      "B2": ["Бізнес", "Середовище", "Відносини", "Політика", "Медіа та розваги"],
+      "C1": ["Глобальні питання", "Економіка", "Наука і технології", "Критичне мислення", "Психологія"]
+    }
+  },
+  "help": {
+    "en": "/runBot - to run the bot \n/changeTopic - to change the topic of the word list \n/setBotLanguage - to translate the bot \n/topics - suggests popular example topics for your level \n/regenerateList - to regenerate the list if you know most of the words \n/info - information about the bot",
+    "ukr": "/runBot - для запуску бота \n/changeTopic - для зміни теми списку слів \n/setBotLanguage - для перекладу бота \n/topics - пропонує популярні приклади тем для вашого рівня \n/regenerateList - для перероблення списку, якщо ви знаєте більшість слів \n/info - інформація про бота"
+  },
+  "info": {
+    "en": "This bot is used to generate word lists on a specific topic for a specific level of English. Also, you can choose the language in which to translate these words.\n/help - command for navigation",
+    "ukr": "Цей бот використовується для створення списків слів на певну тему для певного рівня англійської. Крім того, ви можете обрати мову, якою перекладати ці слова.\n/help - команда для навігації"
+  },
+  "warning": {
+    "en": "it can take some time",
+    "ukr": "Це може зайняти деякий час"
+  },
+  "ack": {
+    "en": "Prepare word list with topic",
+    "ukr": "Готується список слів на тему"
+  },
+  "ackReg": {
+    "en": "Regenerating your word list",
+    "ukr": "Список слів регенерується"
+  },
+  "RegErr": {
+    "en": "You cannot regenerate defunct word list",
+    "ukr": "Ви не можете регенерувати неіснуючий список слів"
+  },
+  "inputErr": {
+    "en": "Wrong input",
+    "ukr": "Неправильне введення"
+  },
+  "activeInput": {
+    "en": "Click to activate input",
+    "ukr": "Натисніть, щоб активувати введення"
+  },
+  "inputAck": {
+    "en": "Input is active",
+    "ukr": "Введення активне"
+  },
+  "botLang": {
+    "en": "Set bot language",
+    "ukr": "Встановіть мову бота"
+  },
+  "genErr": {
+    "en": "An error occurred during generating the list",
+    "ukr": "Під час створення списку сталася помилка"
+  },
+  "definitions": {
+    "en": "Do you want to get definitions?",
+    "ukr": "Генерувати дефеніції для слів?"
+  }
+}
