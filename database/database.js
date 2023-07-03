@@ -91,7 +91,7 @@ const getUserData = async (telegramId) => {
       text: `SELECT data ->> 'language' AS language,
                     data ->> 'level' AS level,
                     data ->> 'topic' AS topic,
-                    (data ->> 'definition')::boolean AS definitions
+                    (data ->> 'definition')::boolean AS definition
              FROM users
              WHERE telegram_id = $1`,
       values: [telegramId]
