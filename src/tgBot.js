@@ -48,7 +48,7 @@ const handleLevelAction = async (ctx) => {
 };
 
 const chooseLevel = async (ctx) => {
-  await ctx.reply(i18n.level[parameters.botLanguage],{
+  await ctx.reply(i18n.level[await db.getBotLanguage(ctx.from.id)],{
     reply_markup:{
       inline_keyboard:[
         [
@@ -64,7 +64,7 @@ const chooseLevel = async (ctx) => {
 }
 
 const chooseLanguage = async (ctx) =>{
-  await ctx.reply(i18n.language[parameters.botLanguage],{
+  await ctx.reply(i18n.language[await db.getBotLanguage(ctx.from.id)],{
     reply_markup:{
       inline_keyboard: [
         [
@@ -77,7 +77,7 @@ const chooseLanguage = async (ctx) =>{
 }
 
 const queryDefinition = async (ctx) => {
-  await ctx.reply(`${i18n.definitions[parameters.botLanguage]}`, {
+  await ctx.reply(`${i18n.definitions[await db.getBotLanguage(ctx.from.id)]}`, {
     reply_markup:{
       inline_keyboard: [
         [
@@ -90,7 +90,7 @@ const queryDefinition = async (ctx) => {
 }
 
 const setBotLanguage = async (ctx) => {
-  await ctx.reply(`${i18n.botLang[parameters.botLanguage]}`,{
+  await ctx.reply(`${i18n.botLang[await db.getBotLanguage(ctx.from.id)]}`,{
     reply_markup:{
       inline_keyboard:[
         [
@@ -103,8 +103,9 @@ const setBotLanguage = async (ctx) => {
 }
 
 const chooseTopic = async (ctx) => {
-  await ctx.reply(`${i18n.topic[parameters.botLanguage]}\n`+
-  `${i18n.topicInfo[parameters.botLanguage]}`);
+  const botLanguage = await db.getBotLanguage(ctx.from.id);
+  await ctx.reply(`${i18n.topic[botLanguage]}\n`+
+  `${i18n.topicInfo[botLanguage]}`);
   await db.updateUserFlag('isTopicSelected',true, ctx.from.id);
 }
 
@@ -121,9 +122,10 @@ bot.start(async (ctx) => {
       db.resetUserData(ctx.from.id);
     }
   })
+  const botLanguage = await db.getBotLanguage(ctx.from.id);
 
-  const welcomeMessage = `${i18n.greeting[parameters.botLanguage]}, ${ctx.from.first_name}!\n`+
-  `${i18n.introduction[parameters.botLanguage]}`;
+  const welcomeMessage = `${i18n.greeting[botLanguage]}, ${ctx.from.first_name}!\n`+
+  `${i18n.introduction[botLanguage]}`;
   const menuOptions = Markup.keyboard([
     ['/runBot'],
     ['/changeTopic', '/regenerateList'],
@@ -147,23 +149,24 @@ bot.command('changeTopic',async (ctx) => {
   if (values.level && values.language){
     await chooseTopic(ctx);
   }else{
-    await ctx.reply(i18n.changeTopicErr[parameters.botLanguage])
+    await ctx.reply(i18n.changeTopicErr[await db.getBotLanguage(ctx.from.id)])
   }
 });
 
 bot.command('info',async (ctx) => {
- await ctx.reply(i18n.info[parameters.botLanguage])
+ await ctx.reply(i18n.info[await db.getBotLanguage(ctx.from.id)])
 })
 
 bot.command('help', async (ctx) => {
-  await ctx.reply(i18n.help[parameters.botLanguage])
+  await ctx.reply(i18n.help[await db.getBotLanguage(ctx.from.id)])
 })
 
 bot.command('regenerateList', async (ctx) => {
+  const botLanguage = await db.getBotLanguage(ctx.from.id);
   const { language, level, topic } = await db.getUserData(ctx.from.id);
   if (language && level && topic) {
     ctx.session ??= INITIAL_SESSION;
-    await ctx.reply(code(`${i18n.ackReg[parameters.botLanguage]}. ${i18n.warning[parameters.botLanguage]}`));
+    await ctx.reply(code(`${i18n.ackReg[botLanguage]}. ${i18n.warning[botLanguage]}`));
     const prompt = prompts.createPrompt( await db.getUserData(ctx.from.id))
     console.log(prompt);
     try {
@@ -173,24 +176,25 @@ bot.command('regenerateList', async (ctx) => {
           db.incrementRequests(ctx.from.id, REQUEST_INCREMENT);
         })
         .catch(err => {
-          ctx.reply(`${i18n.genErr[parameters.botLanguage]}`);
+          ctx.reply(`${i18n.genErr[botLanguage]}`);
         });
     }catch (err){
-      await ctx.reply(`${i18n.genErr[parameters.botLanguage]}`);
+      await ctx.reply(`${i18n.genErr[botLanguage]}`);
     }
   }else{
-    await ctx.reply(code(`${i18n.RegErr[parameters.botLanguage]}`));
+    await ctx.reply(code(`${i18n.RegErr[botLanguage]}`));
   }
 })
 
 bot.command('topics', async (ctx) => {
+  const botLanguage = await db.getBotLanguage(ctx.from.id);
   const { level } = await db.getUserData(ctx.from.id);
   if (level){
-    const topicList = i18n.topics[parameters.botLanguage][level].join('\n');
-    await ctx.reply(`${i18n.topicsR[parameters.botLanguage]}\n`+
+    const topicList = i18n.topics[botLanguage][level].join('\n');
+    await ctx.reply(`${i18n.topicsR[botLanguage]}\n`+
     `${topicList}`)
   }else {
-    await ctx.reply(i18n.topicsErr[parameters.botLanguage]);
+    await ctx.reply(i18n.topicsErr[botLanguage]);
   }
 });
 
@@ -228,12 +232,13 @@ bot.action('without translation',async (ctx)=>{
 
 bot.on(message('text'), async (ctx) => {
   const topicStatus = await db.getUserFlag('isTopicSelected',ctx.from.id);
+  const botLanguage = await db.getBotLanguage(ctx.from.id);
   console.log(topicStatus);
   if (!topicStatus) {
-    await ctx.reply(code(i18n.inputErr[parameters.botLanguage]));
+    await ctx.reply(code(i18n.inputErr[botLanguage]));
   } else {
     ctx.session ??= INITIAL_SESSION;
-    await ctx.reply(code(`${i18n.ack[parameters.botLanguage]} ${ctx.update.message.text}. ${i18n.warning[parameters.botLanguage]}`));
+    await ctx.reply(code(`${i18n.ack[botLanguage]} ${ctx.update.message.text}. ${i18n.warning[botLanguage]}`));
     await db.updateUserData('topic', ctx.update.message.text, ctx.from.id);
     const prompt = prompts.createPrompt( await db.getUserData(ctx.from.id));
     console.log(prompt);
@@ -245,10 +250,10 @@ bot.on(message('text'), async (ctx) => {
           db.incrementRequests(ctx.from.id, REQUEST_INCREMENT);
         })
         .catch(err => {
-          ctx.reply(`${i18n.genErr[parameters.botLanguage]}`);
+          ctx.reply(`${i18n.genErr[botLanguage]}`);
         });
     }catch (err){
-      await ctx.reply(`${i18n.genErr[parameters.botLanguage]}`);
+      await ctx.reply(`${i18n.genErr[botLanguage]}`);
     }
     await db.updateUserFlag('isTopicSelected',false, ctx.from.id);
   }

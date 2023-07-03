@@ -104,6 +104,22 @@ const getUserData = async (telegramId) => {
   }
 };
 
+const getBotLanguage = async (telegramId) => {
+  try {
+    const query = {
+      text: `SELECT data -> 'botLanguage' AS bot_language
+             FROM users
+             WHERE telegram_id = $1`,
+      values: [telegramId]
+    };
+
+    const result = await pool.query(query);
+    return result.rows[0].bot_language;
+  } catch (err) {
+    console.error('Error retrieving user data:', err);
+  }
+};
+
 const incrementRequests = async (telegramId, incrementValue) => {
   try {
     const query = {
@@ -120,4 +136,4 @@ const incrementRequests = async (telegramId, incrementValue) => {
 };
 
 
-module.exports = { insertUser , checkUser, updateUserFlag, getUserFlag, updateUserData, resetUserData, getUserData, incrementRequests };
+module.exports = { insertUser , checkUser, updateUserFlag, getUserFlag, updateUserData, resetUserData, getUserData, incrementRequests, getBotLanguage };
