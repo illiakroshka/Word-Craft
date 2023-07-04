@@ -111,7 +111,7 @@ bot.start(async (ctx) => {
     await db.resetUserData(ctx.from.id);
   }
 
-  if (ctx.from.language_code === 'ru'){
+  if (ctx.from.language_code === 'ru' || ctx.from.language_code === 'uk'){
     await db.updateUserBotLanguage(ctx.from.id,"ukr");
   }
   const botLanguage = await db.getBotLanguage(ctx.from.id);
