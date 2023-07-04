@@ -28,7 +28,7 @@ const createPrompt = ({ level, language, topic, definition }) => {
   }
 };
 
-const improveListPrompt = ({ language, definition }) => {
+const improveListPrompt = ({ level, language, topic, definition  }) => {
   if (language === 'without translation') {
     if (definition) {
       return `Your output should use the following template:
@@ -36,21 +36,23 @@ const improveListPrompt = ({ language, definition }) => {
         [English word] - [definition]
         [English word] - [definition]
         
-        Your task is to regenerate the previous list of words by replacing the previous words with new ones.`;
+        Please generate a compilation of 15 words associated with ${topic} suitable for individuals proficient in English at an ${level} level.
+        Furthermore, kindly provide their corresponding definitions`;
     } else {
       return `Your output should use the following template:
         Word list
         [English word]
         [English word]
         
-        Your task is to regenerate the previous list of words by replacing the previous words with new ones.`;
+        Please generate a compilation of 15 words associated with ${topic} suitable for individuals proficient in English at an ${level} level.`;
     }
   } else {
     return `Your output should use the following template:
       Word list
       [English word] - [translation in ${language}]
       
-      Your task is to regenerate the previous list of words by replacing the previous words with new ones.`;
+      Please generate a compilation of 15 words associated with ${topic} suitable for individuals proficient in English at an ${level} level. 
+      Furthermore, kindly provide their corresponding translations in the ${language} language.`;
   }
 };
 
