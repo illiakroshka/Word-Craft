@@ -11,13 +11,7 @@ const db = require('../database/database');
 
 const REQUEST_INCREMENT = 1;
 
-const INITIAL_SESSION = {
-  messages: [],
-}
-
 const bot = new Telegraf(config.TELEGRAM_TOKEN);
-
-bot.use(session());
 
 const parameters = {
   isTopicSelected: false,
@@ -31,9 +25,8 @@ const parameters = {
 const sendPrompt = (ctx, text) => {
   return new Promise(async (resolve, reject) => {
     try {
-      ctx.session.messages.push({ role: openAI.roles.USER, content: text });
-      const response = await openAI.chat(ctx.session.messages);
-      ctx.session.messages.push({ role: openAI.roles.ASSISTANT, content: response.content });
+      const messages = [{ role: openAI.roles.USER, content: text }];
+      const response = await openAI.chat(messages);
       resolve(response.content);
     } catch (error) {
       reject(error);
@@ -136,7 +129,6 @@ bot.start(async (ctx) => {
 })
 
 bot.command('runBot', async (ctx) => {
-  ctx.session = INITIAL_SESSION;
   await chooseLevel(ctx);
 });
 
@@ -165,9 +157,8 @@ bot.command('regenerateList', async (ctx) => {
   const botLanguage = await db.getBotLanguage(ctx.from.id);
   const { language, level, topic } = await db.getUserData(ctx.from.id);
   if (language && level && topic) {
-    ctx.session ??= INITIAL_SESSION;
     await ctx.reply(code(`${i18n.ackReg[botLanguage]}. ${i18n.warning[botLanguage]}`));
-    const prompt = prompts.createPrompt( await db.getUserData(ctx.from.id))
+    const prompt = prompts.improveListPrompt( await db.getUserData(ctx.from.id))
     console.log(prompt);
     try {
       sendPrompt(ctx, prompt)
@@ -237,7 +228,6 @@ bot.on(message('text'), async (ctx) => {
   if (!topicStatus) {
     await ctx.reply(code(i18n.inputErr[botLanguage]));
   } else {
-    ctx.session ??= INITIAL_SESSION;
     await ctx.reply(code(`${i18n.ack[botLanguage]} ${ctx.update.message.text}. ${i18n.warning[botLanguage]}`));
     await db.updateUserData('topic', ctx.update.message.text, ctx.from.id);
     const prompt = prompts.createPrompt( await db.getUserData(ctx.from.id));
