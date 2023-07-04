@@ -1,6 +1,6 @@
 'use strict';
 
-const { Telegraf, session, Markup } = require('telegraf');
+const { Telegraf, Markup } = require('telegraf');
 const { message } = require('telegraf/filters');
 const { code } = require('telegraf/format')
 const { openAI } = require('./openAI');
@@ -137,8 +137,8 @@ bot.command('setBotLanguage',async (ctx) => {
 })
 
 bot.command('changeTopic',async (ctx) => {
-  const values = await db.getUserData(ctx.from.id);
-  if (values.level && values.language){
+  const {level, language} = await db.getUserData(ctx.from.id);
+  if (level && language){
     await chooseTopic(ctx);
   }else{
     await ctx.reply(i18n.changeTopicErr[await db.getBotLanguage(ctx.from.id)])
@@ -155,10 +155,12 @@ bot.command('help', async (ctx) => {
 
 bot.command('regenerateList', async (ctx) => {
   const botLanguage = await db.getBotLanguage(ctx.from.id);
-  const { language, level, topic } = await db.getUserData(ctx.from.id);
+  const userData = await db.getUserData(ctx.from.id);
+  const { language, level, topic } = userData;
+
   if (language && level && topic) {
     await ctx.reply(code(`${i18n.ackReg[botLanguage]}. ${i18n.warning[botLanguage]}`));
-    const prompt = prompts.improveListPrompt( await db.getUserData(ctx.from.id))
+    const prompt = prompts.improveListPrompt(userData);
     console.log(prompt);
     try {
       sendPrompt(ctx, prompt)
