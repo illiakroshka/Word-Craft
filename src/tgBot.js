@@ -103,18 +103,17 @@ const chooseTopic = async (ctx) => {
 }
 
 bot.start(async (ctx) => {
+  const userExists = await db.checkUser(ctx.from.id);
+
+  if (!userExists) {
+    await db.insertUser(parameters, ctx.from.id);
+  } else {
+    await db.resetUserData(ctx.from.id);
+  }
+
   if (ctx.from.language_code === 'ru'){
     await db.updateUserBotLanguage(ctx.from.id,"ukr");
   }
-
-  db.checkUser(ctx.from.id)
-    .then(data => {
-    if (!data) {
-      return db.insertUser(parameters,ctx.from.id);
-    }else{
-      db.resetUserData(ctx.from.id);
-    }
-  })
   const botLanguage = await db.getBotLanguage(ctx.from.id);
 
   const welcomeMessage = `${i18n.greeting[botLanguage]}, ${ctx.from.first_name}!\n`+
