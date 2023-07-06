@@ -52,8 +52,8 @@
     }
   },
   "help": {
-    "en": "/runBot - to run the bot \n/changeTopic - to change the topic of the word list \n/setBotLanguage - to translate the bot \n/topics - suggests popular example topics for your level \n/regenerateList - to regenerate the list if you know most of the words \n/info - information about the bot",
-    "ukr": "/runBot - для запуску бота \n/changeTopic - для зміни теми списку слів \n/setBotLanguage - для перекладу бота \n/topics - пропонує популярні приклади тем для вашого рівня \n/regenerateList - для перероблення списку, якщо ви знаєте більшість слів \n/info - інформація про бота"
+    "en": "/runBot - to run the bot \n/changeTopic - to change the topic of the word list \n/regenerateList - to regenerate the list if you know most of the words \n/setBotLanguage - to translate the bot \n/profile - to check statistics of your requests \n/topics - suggests popular example topics for your level \n/info - information about the bot",
+    "ukr": "/runBot - для запуску бота \n/changeTopic - для зміни теми списку слів \n/regenerateList - для перероблення списку, якщо ви знаєте більшість слів \n/setBotLanguage - для перекладу бота \n/profile - для перевірки статистики ваших запитів \n/topics - пропонує популярні приклади тем для вашого рівня \n/info - інформація про бота"
   },
   "info": {
     "en": "This bot is used to generate word lists on a specific topic for a specific level of English. Also, you can choose the language in which to translate these words.\n/help - command for navigation",

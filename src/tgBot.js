@@ -121,7 +121,8 @@ bot.start(async (ctx) => {
   const menuOptions = Markup.keyboard([
     ['/runBot'],
     ['/changeTopic', '/regenerateList'],
-    ['/help', '/info','/setBotLanguage'],
+    ['/setBotLanguage', '/profile'],
+    ['/help', '/info'],
   ]).resize();
 
   await ctx.reply(welcomeMessage, menuOptions);
