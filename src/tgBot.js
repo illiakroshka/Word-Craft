@@ -128,6 +128,7 @@ bot.start(async (ctx) => {
 })
 
 bot.command('runBot', async (ctx) => {
+  await db.resetUserData(ctx.from.id);
   await chooseLevel(ctx);
 });
 
