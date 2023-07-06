@@ -181,11 +181,11 @@ bot.command('regenerateList', async (ctx) => {
 bot.command('topics', async (ctx) => {
   const botLanguage = await db.getBotLanguage(ctx.from.id);
   const { level } = await db.getUserData(ctx.from.id);
-  if (level){
-    const topicList = i18n.topics[botLanguage][level].join('\n');
-    await ctx.reply(`${i18n.topicsR[botLanguage]}\n`+
-    `${topicList}`)
-  }else {
+
+  if (level) {
+    const topicList = i18n.topics[botLanguage][level].map(topic => `\`${topic}\``).join('\n');
+    await ctx.replyWithMarkdownV2(`${i18n.topicsR[botLanguage]}\n${topicList}`);
+  } else {
     await ctx.reply(i18n.topicsErr[botLanguage]);
   }
 });
