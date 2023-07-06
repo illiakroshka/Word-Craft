@@ -236,7 +236,6 @@ bot.action('without translation',async (ctx)=>{
 bot.on(message('text'), async (ctx) => {
   const topicStatus = await db.getUserFlag('isTopicSelected',ctx.from.id);
   const botLanguage = await db.getBotLanguage(ctx.from.id);
-  console.log(topicStatus);
   if (!topicStatus) {
     await ctx.reply(code(i18n.inputErr[botLanguage]));
   } else {

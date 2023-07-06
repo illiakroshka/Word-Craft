@@ -12,7 +12,6 @@ const checkUser = async (telegramId) => {
       values: [telegramId],
     };
     const result = await pool.query(query);
-    console.log(result.rowCount);
     return result.rowCount
   } catch (err) {
     console.error('Error executing query', err);
