@@ -98,5 +98,13 @@
   "definitions": {
     "en": "Do you want to get definitions?",
     "ukr": "Генерувати дефеніції для слів?"
+  },
+  "idMessage": {
+    "en": "Your id: ",
+    "ukr": "Ваш ID: "
+  },
+  "requests": {
+    "en": "Requests made: ",
+    "ukr": "Зроблено запитів: "
   }
 }

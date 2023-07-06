@@ -190,6 +190,16 @@ bot.command('topics', async (ctx) => {
   }
 });
 
+bot.command('profile', async (ctx) => {
+  const botLanguage = await db.getBotLanguage(ctx.from.id);
+  const requests = await db.getUserRequests(ctx.from.id);
+  const replyMessage = `${i18n.idMessage[botLanguage]} \`${
+    ctx.from.id
+  }\`\n\n${i18n.requests[botLanguage]} ${requests}`;
+
+  ctx.replyWithMarkdown(replyMessage);
+});
+
 bot.action('defTrue', async (ctx) => {
   await db.updateUserFlag('definition', true, ctx.from.id);
   await chooseTopic(ctx);
