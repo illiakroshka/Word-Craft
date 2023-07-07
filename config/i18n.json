@@ -92,8 +92,8 @@
     "ukr": "Встановіть мову бота"
   },
   "genErr": {
-    "en": "An error occurred during generating the list",
-    "ukr": "Під час створення списку сталася помилка"
+    "en": "An error occurred during generating the list \n/regenerateList - to regenerate the list \n /changeTopic - to change the topic of the word list",
+    "ukr": "Під час створення списку сталася помилка \n/regenerateList - для перероблення списку \n/changeTopic - для зміни теми списку слів"
   },
   "definitions": {
     "en": "Do you want to get definitions?",
