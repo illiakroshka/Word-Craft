@@ -3,7 +3,7 @@
 const { Configuration, OpenAIApi } = require("openai");
 const config = require('../config/default.json');
 
-const CHAT_GPT_MODEL = 'gpt-3.5-turbo'
+const CHAT_GPT_MODEL = 'gpt-3.5-turbo-0301';
 
 class OpenAI {
   roles = {
@@ -27,7 +27,7 @@ class OpenAI {
       });
       return response.data.choices[0].message
     }catch (err){
-      console.log(err.message);
+      console.log('Error in OpenAI', err.message);
     }
   }
 }
