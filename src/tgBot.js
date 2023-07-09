@@ -119,9 +119,10 @@ bot.start(async (ctx) => {
 
   const welcomeMessage = `${i18n.greeting[botLanguage]}, ${ctx.from.first_name}!\n`+
   `${i18n.introduction[botLanguage]}`;
+  const boldText = welcomeMessage.replace(/(•\s*)(.*?) -/g, '$1*$2* -');
   const menuOptions = Markup.keyboard(i18n.menuOptions[botLanguage]).resize();
 
-  await ctx.reply(welcomeMessage, menuOptions);
+  await ctx.replyWithMarkdown(boldText, menuOptions);
 })
 
 bot.hears(commands.runBot, async (ctx) => {
@@ -142,13 +143,19 @@ bot.hears(commands.changeTopic,async (ctx) => {
   }
 });
 
-bot.hears(commands.info,async (ctx) => {
- await ctx.reply(i18n.info[await db.getBotLanguage(ctx.from.id)])
+bot.hears(commands.info, async (ctx) => {
+  const botLanguage = await db.getBotLanguage(ctx.from.id);
+  const infoText = i18n.info[botLanguage];
+  const boldText = infoText.replace(/(•\s*)(.*?) -/g, '$1*$2* -');
+  await ctx.replyWithMarkdown(boldText);
 })
 
 bot.hears(commands.help, async (ctx) => {
-  await ctx.reply(i18n.help[await db.getBotLanguage(ctx.from.id)])
-})
+  const botLanguage = await db.getBotLanguage(ctx.from.id);
+  const helpText = i18n.help[botLanguage];
+  const boldText = helpText.replace(/(•\s*)(.*?) -/g, '$1*$2* -');
+  await ctx.replyWithMarkdown(boldText);
+});
 
 bot.hears(commands.regenerate, async (ctx) => {
   const botLanguage = await db.getBotLanguage(ctx.from.id);
