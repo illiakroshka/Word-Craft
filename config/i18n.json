@@ -106,5 +106,9 @@
   "requests": {
     "en": "Requests made: ",
     "ukr": "Зроблено запитів: "
+  },
+  "menuOptions": {
+    "en": [["Run bot"], ["Change topic", "Regenerate list"], ["Translate bot", "Profile"], ["Help", "Info"]],
+    "ukr": [["Запустити бота"], ["Змінити тему списку", "Регенерувати список"], ["Змінити мову бота", "Профіль"], ["Допомога", "Інформація"]]
   }
 }

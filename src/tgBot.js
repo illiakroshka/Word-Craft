@@ -119,12 +119,7 @@ bot.start(async (ctx) => {
 
   const welcomeMessage = `${i18n.greeting[botLanguage]}, ${ctx.from.first_name}!\n`+
   `${i18n.introduction[botLanguage]}`;
-  const menuOptions = Markup.keyboard([
-    ['/runBot'],
-    ['/changeTopic', '/regenerateList'],
-    ['/setBotLanguage', '/profile'],
-    ['/help', '/info'],
-  ]).resize();
+  const menuOptions = Markup.keyboard(i18n.menuOptions[botLanguage]).resize();
 
   await ctx.reply(welcomeMessage, menuOptions);
 })
@@ -215,12 +210,16 @@ bot.action('defFalse', async (ctx) => {
 
 bot.action('ukr', async (ctx) => {
   await db.updateUserBotLanguage(ctx.from.id,"ukr");
-  await ctx.reply(code('Бот переведено на Українську мову'))
+  const botLanguage = await db.getBotLanguage(ctx.from.id);
+  const menuOptions = Markup.keyboard(i18n.menuOptions[botLanguage]).resize();
+  await ctx.reply(code('Бот переведено на Українську мову'), menuOptions);
 })
 
 bot.action('en', async (ctx) => {
   await db.updateUserBotLanguage(ctx.from.id,"en");
-  await ctx.reply(code('Bot has been translated to English'))
+  const botLanguage = await db.getBotLanguage(ctx.from.id);
+  const menuOptions = Markup.keyboard(i18n.menuOptions[botLanguage]).resize();
+  await ctx.reply(code('Bot has been translated to English'),menuOptions);
 })
 
 bot.action(/^[abc][1-2]$/, handleLevelAction);
