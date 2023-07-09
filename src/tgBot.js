@@ -58,12 +58,13 @@ const chooseLevel = async (ctx) => {
 }
 
 const chooseLanguage = async (ctx) =>{
-  await ctx.reply(i18n.language[await db.getBotLanguage(ctx.from.id)],{
+  const botLanguage = await db.getBotLanguage(ctx.from.id);
+  await ctx.reply(i18n.language[botLanguage],{
     reply_markup:{
       inline_keyboard: [
         [
-          { text: 'Ukrainian', callback_data: 'ukrainian' },
-          { text: 'Without translation', callback_data: 'without translation' }
+          { text: i18n.ukrButton[botLanguage], callback_data: 'ukrainian' },
+          { text: i18n.wtButton[botLanguage], callback_data: 'without translation' }
         ]
       ]
     }
@@ -71,12 +72,13 @@ const chooseLanguage = async (ctx) =>{
 }
 
 const queryDefinition = async (ctx) => {
-  await ctx.reply(`${i18n.definitions[await db.getBotLanguage(ctx.from.id)]}`, {
+  const botLanguage = await db.getBotLanguage(ctx.from.id);
+  await ctx.reply(`${i18n.definitions[botLanguage]}`, {
     reply_markup:{
       inline_keyboard: [
         [
-          { text: 'Yes', callback_data: 'defTrue' },
-          { text: 'No', callback_data: 'defFalse' }
+          { text: i18n.yesButton[botLanguage], callback_data: 'defTrue' },
+          { text: i18n.noButton[botLanguage], callback_data: 'defFalse' }
         ]
       ]
     }
@@ -84,12 +86,13 @@ const queryDefinition = async (ctx) => {
 }
 
 const setBotLanguage = async (ctx) => {
-  await ctx.reply(`${i18n.botLang[await db.getBotLanguage(ctx.from.id)]}`,{
+  const botLanguage = await db.getBotLanguage(ctx.from.id);
+  await ctx.reply(`${i18n.botLang[botLanguage]}`,{
     reply_markup:{
       inline_keyboard:[
         [
-          { text: 'English', callback_data: 'en' },
-          { text: 'Ukrainian (demo)', callback_data: 'ukr' }
+          { text: i18n.engButton[botLanguage], callback_data: 'en' },
+          { text: i18n.ukrButton[botLanguage], callback_data: 'ukr' }
         ]
       ]
     }

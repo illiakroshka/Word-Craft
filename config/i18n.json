@@ -110,5 +110,25 @@
   "menuOptions": {
     "en": [["Run bot"], ["Change topic", "Regenerate list"], ["Translate bot", "Profile"], ["Help", "Info"]],
     "ukr": [["Запустити бота"], ["Змінити тему списку", "Регенерувати список"], ["Змінити мову бота", "Профіль"], ["Допомога", "Інформація"]]
+  },
+  "engButton": {
+    "en": "English",
+    "ukr": "Англійська"
+  },
+  "ukrButton": {
+    "en": "Ukrainian",
+    "ukr": "Українська"
+  },
+  "yesButton": {
+    "en": "Yes",
+    "ukr": "Так"
+  },
+  "noButton": {
+    "en": "No",
+    "ukr": "Ні"
+  },
+  "wtButton": {
+    "en": "Without translation",
+    "ukr": "Без перекладу"
   }
 }
