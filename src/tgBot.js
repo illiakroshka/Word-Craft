@@ -6,6 +6,7 @@ const { code } = require('telegraf/format')
 const { openAI } = require('./openAI');
 const config = require('../config/default.json');
 const i18n = require('../config/i18n.json');
+const commands = require('../config/commands.json');
 const prompts = require('./aiPromptUtils');
 const db = require('../database/database');
 
@@ -128,16 +129,16 @@ bot.start(async (ctx) => {
   await ctx.reply(welcomeMessage, menuOptions);
 })
 
-bot.command('runBot', async (ctx) => {
+bot.hears(commands.runBot, async (ctx) => {
   await db.resetUserData(ctx.from.id);
   await chooseLevel(ctx);
 });
 
-bot.command('setBotLanguage',async (ctx) => {
+bot.hears(commands.botLanguage, async (ctx) => {
   await setBotLanguage(ctx);
 })
 
-bot.command('changeTopic',async (ctx) => {
+bot.hears(commands.changeTopic,async (ctx) => {
   const {level, language} = await db.getUserData(ctx.from.id);
   if (level && language){
     await chooseTopic(ctx);
@@ -146,15 +147,15 @@ bot.command('changeTopic',async (ctx) => {
   }
 });
 
-bot.command('info',async (ctx) => {
+bot.hears(commands.info,async (ctx) => {
  await ctx.reply(i18n.info[await db.getBotLanguage(ctx.from.id)])
 })
 
-bot.command('help', async (ctx) => {
+bot.hears(commands.help, async (ctx) => {
   await ctx.reply(i18n.help[await db.getBotLanguage(ctx.from.id)])
 })
 
-bot.command('regenerateList', async (ctx) => {
+bot.hears(commands.regenerate, async (ctx) => {
   const botLanguage = await db.getBotLanguage(ctx.from.id);
   const userData = await db.getUserData(ctx.from.id);
   const { language, level, topic } = userData;
@@ -192,7 +193,7 @@ bot.command('topics', async (ctx) => {
   }
 });
 
-bot.command('profile', async (ctx) => {
+bot.hears(commands.profile, async (ctx) => {
   const botLanguage = await db.getBotLanguage(ctx.from.id);
   const requests = await db.getUserRequests(ctx.from.id);
   const replyMessage = `${i18n.idMessage[botLanguage]} \`${
