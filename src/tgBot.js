@@ -6,6 +6,7 @@ const { code } = require('telegraf/format')
 const { openAI } = require('./openAI');
 const config = require('../config/default.json');
 const i18n = require('../config/i18n.json');
+const commands = require('../config/commands.json');
 const prompts = require('./aiPromptUtils');
 const db = require('../database/database');
 
@@ -57,12 +58,13 @@ const chooseLevel = async (ctx) => {
 }
 
 const chooseLanguage = async (ctx) =>{
-  await ctx.reply(i18n.language[await db.getBotLanguage(ctx.from.id)],{
+  const botLanguage = await db.getBotLanguage(ctx.from.id);
+  await ctx.reply(i18n.language[botLanguage],{
     reply_markup:{
       inline_keyboard: [
         [
-          { text: 'Ukrainian', callback_data: 'ukrainian' },
-          { text: 'Without translation', callback_data: 'without translation' }
+          { text: i18n.ukrButton[botLanguage], callback_data: 'ukrainian' },
+          { text: i18n.wtButton[botLanguage], callback_data: 'without translation' }
         ]
       ]
     }
@@ -70,12 +72,13 @@ const chooseLanguage = async (ctx) =>{
 }
 
 const queryDefinition = async (ctx) => {
-  await ctx.reply(`${i18n.definitions[await db.getBotLanguage(ctx.from.id)]}`, {
+  const botLanguage = await db.getBotLanguage(ctx.from.id);
+  await ctx.reply(`${i18n.definitions[botLanguage]}`, {
     reply_markup:{
       inline_keyboard: [
         [
-          { text: 'Yes', callback_data: 'defTrue' },
-          { text: 'No', callback_data: 'defFalse' }
+          { text: i18n.yesButton[botLanguage], callback_data: 'defTrue' },
+          { text: i18n.noButton[botLanguage], callback_data: 'defFalse' }
         ]
       ]
     }
@@ -83,12 +86,13 @@ const queryDefinition = async (ctx) => {
 }
 
 const setBotLanguage = async (ctx) => {
-  await ctx.reply(`${i18n.botLang[await db.getBotLanguage(ctx.from.id)]}`,{
+  const botLanguage = await db.getBotLanguage(ctx.from.id);
+  await ctx.reply(`${i18n.botLang[botLanguage]}`,{
     reply_markup:{
       inline_keyboard:[
         [
-          { text: 'English', callback_data: 'en' },
-          { text: 'Ukrainian (demo)', callback_data: 'ukr' }
+          { text: i18n.engButton[botLanguage], callback_data: 'en' },
+          { text: i18n.ukrButton[botLanguage], callback_data: 'ukr' }
         ]
       ]
     }
@@ -118,26 +122,22 @@ bot.start(async (ctx) => {
 
   const welcomeMessage = `${i18n.greeting[botLanguage]}, ${ctx.from.first_name}!\n`+
   `${i18n.introduction[botLanguage]}`;
-  const menuOptions = Markup.keyboard([
-    ['/runBot'],
-    ['/changeTopic', '/regenerateList'],
-    ['/setBotLanguage', '/profile'],
-    ['/help', '/info'],
-  ]).resize();
+  const boldText = welcomeMessage.replace(/(•\s*)(.*?) -/g, '$1*$2* -');
+  const menuOptions = Markup.keyboard(i18n.menuOptions[botLanguage]).resize();
 
-  await ctx.reply(welcomeMessage, menuOptions);
+  await ctx.replyWithMarkdown(boldText, menuOptions);
 })
 
-bot.command('runBot', async (ctx) => {
+bot.hears(commands.runBot, async (ctx) => {
   await db.resetUserData(ctx.from.id);
   await chooseLevel(ctx);
 });
 
-bot.command('setBotLanguage',async (ctx) => {
+bot.hears(commands.botLanguage, async (ctx) => {
   await setBotLanguage(ctx);
 })
 
-bot.command('changeTopic',async (ctx) => {
+bot.hears(commands.changeTopic,async (ctx) => {
   const {level, language} = await db.getUserData(ctx.from.id);
   if (level && language){
     await chooseTopic(ctx);
@@ -146,15 +146,21 @@ bot.command('changeTopic',async (ctx) => {
   }
 });
 
-bot.command('info',async (ctx) => {
- await ctx.reply(i18n.info[await db.getBotLanguage(ctx.from.id)])
+bot.hears(commands.info, async (ctx) => {
+  const botLanguage = await db.getBotLanguage(ctx.from.id);
+  const infoText = i18n.info[botLanguage];
+  const boldText = infoText.replace(/(•\s*)(.*?) -/g, '$1*$2* -');
+  await ctx.replyWithMarkdown(boldText);
 })
 
-bot.command('help', async (ctx) => {
-  await ctx.reply(i18n.help[await db.getBotLanguage(ctx.from.id)])
-})
+bot.hears(commands.help, async (ctx) => {
+  const botLanguage = await db.getBotLanguage(ctx.from.id);
+  const helpText = i18n.help[botLanguage];
+  const boldText = helpText.replace(/(•\s*)(.*?) -/g, '$1*$2* -');
+  await ctx.replyWithMarkdown(boldText);
+});
 
-bot.command('regenerateList', async (ctx) => {
+bot.hears(commands.regenerate, async (ctx) => {
   const botLanguage = await db.getBotLanguage(ctx.from.id);
   const userData = await db.getUserData(ctx.from.id);
   const { language, level, topic } = userData;
@@ -192,7 +198,7 @@ bot.command('topics', async (ctx) => {
   }
 });
 
-bot.command('profile', async (ctx) => {
+bot.hears(commands.profile, async (ctx) => {
   const botLanguage = await db.getBotLanguage(ctx.from.id);
   const requests = await db.getUserRequests(ctx.from.id);
   const replyMessage = `${i18n.idMessage[botLanguage]} \`${
@@ -214,12 +220,16 @@ bot.action('defFalse', async (ctx) => {
 
 bot.action('ukr', async (ctx) => {
   await db.updateUserBotLanguage(ctx.from.id,"ukr");
-  await ctx.reply(code('Бот переведено на Українську мову'))
+  const botLanguage = await db.getBotLanguage(ctx.from.id);
+  const menuOptions = Markup.keyboard(i18n.menuOptions[botLanguage]).resize();
+  await ctx.reply(code('Бот переведено на Українську мову'), menuOptions);
 })
 
 bot.action('en', async (ctx) => {
   await db.updateUserBotLanguage(ctx.from.id,"en");
-  await ctx.reply(code('Bot has been translated to English'))
+  const botLanguage = await db.getBotLanguage(ctx.from.id);
+  const menuOptions = Markup.keyboard(i18n.menuOptions[botLanguage]).resize();
+  await ctx.reply(code('Bot has been translated to English'),menuOptions);
 })
 
 bot.action(/^[abc][1-2]$/, handleLevelAction);

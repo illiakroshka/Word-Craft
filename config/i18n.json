@@ -4,8 +4,8 @@
     "ukr": "Ласкаво просимо до бота"
   },
   "introduction": {
-    "en": "This bot is used to generate word lists on a specific topic for a specific level of English.\n/runBot - to run the bot\n/setBotLanguage - to translate bot\n/help - commands navigation",
-    "ukr": "Цей бот використовується для генерації списків слів на конкретну тему для певного рівня англійської мови.\n/runBot - для запуску бота\n/setBotLanguage - для перекладу бота\n/help - навігація команд"
+    "en": "This bot is used to generate word lists on a specific topic for a specific level of English.\n• Run bot - to run the bot\n• Translate bot - to translate bot\n• Help - commands navigation",
+    "ukr": "Цей бот використовується для генерації списків слів на конкретну тему для певного рівня англійської мови.\n• Запустити бота - для запуску бота\n• Змінити мову бота - для перекладу бота\n• Допомога - навігація команд"
   },
   "level": {
     "en": "What is your level of English?",
@@ -52,12 +52,12 @@
     }
   },
   "help": {
-    "en": "/runBot - to run the bot \n/changeTopic - to change the topic of the word list \n/regenerateList - to regenerate the list if you know most of the words \n/setBotLanguage - to translate the bot \n/profile - to check statistics of your requests \n/topics - suggests popular example topics for your level \n/info - information about the bot",
-    "ukr": "/runBot - для запуску бота \n/changeTopic - для зміни теми списку слів \n/regenerateList - для перероблення списку, якщо ви знаєте більшість слів \n/setBotLanguage - для перекладу бота \n/profile - для перевірки статистики ваших запитів \n/topics - пропонує популярні приклади тем для вашого рівня \n/info - інформація про бота"
+    "en": "• Run bot - to run the bot \n• Change topic - to change the topic of the word list \n• Regenerate list - to regenerate the list if you know most of the words \n• Translate bot - to translate the bot \n• Profile - to check statistics of your requests \n• Info - information about the bot\n• /topics - suggests popular example topics for your level",
+    "ukr": "• Запустити бота - для запуску бота \n• Змінити тему списку - для зміни теми списку слів \n• Регенерувати список - для перероблення списку, якщо ви знаєте більшість слів \n• Змінити мову бота - для перекладу бота \n• Профіль - для перевірки статистики ваших запитів\n• Інформація - інформація про бота \n• /topics - пропонує популярні приклади тем для вашого рівня"
   },
   "info": {
-    "en": "This bot is used to generate word lists on a specific topic for a specific level of English. Also, you can choose the language in which to translate these words.\n/help - command for navigation",
-    "ukr": "Цей бот використовується для створення списків слів на певну тему для певного рівня англійської. Крім того, ви можете обрати мову, якою перекладати ці слова.\n/help - команда для навігації"
+    "en": "This bot is used to generate word lists on a specific topic for a specific level of English. Also, you can choose the language in which to translate these words.\n• Help - command for navigation",
+    "ukr": "Цей бот використовується для створення списків слів на певну тему для певного рівня англійської. Крім того, ви можете обрати мову, якою перекладати ці слова.\n• Допомога - команда для навігації"
   },
   "warning": {
     "en": "it can take some time",
@@ -92,8 +92,8 @@
     "ukr": "Встановіть мову бота"
   },
   "genErr": {
-    "en": "An error occurred during generating the list \n/regenerateList - to regenerate the list \n /changeTopic - to change the topic of the word list",
-    "ukr": "Під час створення списку сталася помилка \n/regenerateList - для перероблення списку \n/changeTopic - для зміни теми списку слів"
+    "en": "An error occurred during generating the list \n• Regenerate list - to regenerate the list \n• Change topic - to change the topic of the word list",
+    "ukr": "Під час створення списку сталася помилка \n• Регенерувати список - для перероблення списку \n• Змінити тему списку - для зміни теми списку слів"
   },
   "definitions": {
     "en": "Do you want to get definitions?",
@@ -106,5 +106,29 @@
   "requests": {
     "en": "Requests made: ",
     "ukr": "Зроблено запитів: "
+  },
+  "menuOptions": {
+    "en": [["Run bot"], ["Change topic", "Regenerate list"], ["Translate bot", "Profile"], ["Help", "Info"]],
+    "ukr": [["Запустити бота"], ["Змінити тему списку", "Регенерувати список"], ["Змінити мову бота", "Профіль"], ["Допомога", "Інформація"]]
+  },
+  "engButton": {
+    "en": "English",
+    "ukr": "Англійська"
+  },
+  "ukrButton": {
+    "en": "Ukrainian",
+    "ukr": "Українська"
+  },
+  "yesButton": {
+    "en": "Yes",
+    "ukr": "Так"
+  },
+  "noButton": {
+    "en": "No",
+    "ukr": "Ні"
+  },
+  "wtButton": {
+    "en": "Without translation",
+    "ukr": "Без перекладу"
   }
 }

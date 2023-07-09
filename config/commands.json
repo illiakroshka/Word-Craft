@@ -1,0 +1,9 @@
+{
+  "profile": ["Profile", "Профіль"],
+  "regenerate": ["Regenerate list", "Регенерувати список"],
+  "help": ["Help", "Допомога"],
+  "info": ["Info", "Інформація"],
+  "changeTopic": ["Change topic", "Змінити тему списку"],
+  "botLanguage": ["Translate bot", "Змінити мову бота"],
+  "runBot": ["Run bot", "Запустити бота"]
+}
