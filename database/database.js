@@ -19,12 +19,12 @@ const checkUser = async (telegramId) => {
   }
 }
 
-const insertUser = async (userData, telegramId) => {
+const insertUser = async (userData, telegramId, freeRequests) => {
   const pool = new Pool(config);
   try {
     const query = {
-      text: 'INSERT INTO users (data, telegram_id) VALUES ($1, $2)',
-      values: [JSON.stringify(userData), telegramId]
+      text: 'INSERT INTO users (data, telegram_id, free_requests) VALUES ($1, $2, $3)',
+      values: [JSON.stringify(userData), telegramId, freeRequests]
     };
     await pool.query(query);
   } catch (err) {
@@ -202,6 +202,41 @@ const incrementRequests = async (telegramId, incrementValue) => {
   }
 };
 
+const decrementFreeRequests = async (telegramId, decrementValue) => {
+  const pool = new Pool(config);
+  try {
+    const query = {
+      text: `UPDATE users
+             SET free_requests = free_requests - $1
+             WHERE telegram_id = $2`,
+      values: [decrementValue, telegramId]
+    };
+
+    await pool.query(query);
+  } catch (err) {
+    console.error('Error incrementing requests count:', err);
+  } finally {
+    pool.end();
+  }
+}
+
+const getUserFreeRequests = async (telegramId) => {
+  const pool = new Pool(config);
+  try {
+    const query = {
+      text: 'SELECT free_requests FROM Users WHERE telegram_id = $1',
+      values: [telegramId],
+    };
+
+    const result = await pool.query(query);
+    return result.rows[0].free_requests;
+  } catch (error) {
+    console.error('Error occurred while fetching requests:', error);
+  } finally {
+    pool.end();
+  }
+}
+
 module.exports = {
   checkUser,
   insertUser,
@@ -214,4 +249,6 @@ module.exports = {
   getBotLanguage,
   updateUserBotLanguage,
   getUserRequests,
+  decrementFreeRequests,
+  getUserFreeRequests,
 };

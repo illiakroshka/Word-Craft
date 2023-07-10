@@ -11,6 +11,8 @@ const prompts = require('./aiPromptUtils');
 const db = require('../database/database');
 
 const REQUEST_INCREMENT = 1;
+const REQUEST_DECREMENT = 1;
+const DEFAULT_FREE_REQUESTS = 14;
 
 const bot = new Telegraf(config.TELEGRAM_TOKEN);
 
@@ -110,7 +112,7 @@ bot.start(async (ctx) => {
   const userExists = await db.checkUser(ctx.from.id);
 
   if (!userExists) {
-    await db.insertUser(parameters, ctx.from.id);
+    await db.insertUser(parameters, ctx.from.id, DEFAULT_FREE_REQUESTS);
   } else {
     await db.resetUserData(ctx.from.id);
   }
@@ -163,9 +165,14 @@ bot.hears(commands.help, async (ctx) => {
 bot.hears(commands.regenerate, async (ctx) => {
   const botLanguage = await db.getBotLanguage(ctx.from.id);
   const userData = await db.getUserData(ctx.from.id);
+  const freeRequests = await db.getUserFreeRequests(ctx.from.id);
   const { language, level, topic } = userData;
 
-  if (language && level && topic) {
+  if (!language || !level || !topic){
+    await ctx.reply(code(`${i18n.RegErr[botLanguage]}`));
+  }else if(!freeRequests){
+    await ctx.reply(i18n.freeRequestsErr[botLanguage])
+  }else {
     await ctx.reply(code(`${i18n.ackReg[botLanguage]}. ${i18n.warning[botLanguage]}`));
     const prompt = prompts.improveListPrompt(userData);
     console.log(prompt);
@@ -174,6 +181,7 @@ bot.hears(commands.regenerate, async (ctx) => {
         .then(reply => {
           ctx.reply(reply);
           db.incrementRequests(ctx.from.id, REQUEST_INCREMENT);
+          db.decrementFreeRequests(ctx.from.id, REQUEST_DECREMENT);
         })
         .catch(err => {
           ctx.reply(`${i18n.genErr[botLanguage]}`);
@@ -181,8 +189,6 @@ bot.hears(commands.regenerate, async (ctx) => {
     }catch (err){
       await ctx.reply(`${i18n.genErr[botLanguage]}`);
     }
-  }else{
-    await ctx.reply(code(`${i18n.RegErr[botLanguage]}`));
   }
 })
 
@@ -201,9 +207,11 @@ bot.command('topics', async (ctx) => {
 bot.hears(commands.profile, async (ctx) => {
   const botLanguage = await db.getBotLanguage(ctx.from.id);
   const requests = await db.getUserRequests(ctx.from.id);
+  const freeRequests = await db.getUserFreeRequests(ctx.from.id);
   const replyMessage = `${i18n.idMessage[botLanguage]} \`${
     ctx.from.id
-  }\`\n\n${i18n.requests[botLanguage]} ${requests}`;
+  }\`\n\n${i18n.requests[botLanguage]} ${requests}\n\n` +
+  `${i18n.freeRequestsStatus[botLanguage]} ${freeRequests}`;
 
   ctx.replyWithMarkdown(replyMessage);
 });
@@ -247,9 +255,12 @@ bot.action('without translation',async (ctx)=>{
 bot.on(message('text'), async (ctx) => {
   const topicStatus = await db.getUserFlag('isTopicSelected',ctx.from.id);
   const botLanguage = await db.getBotLanguage(ctx.from.id);
+  const freeRequests = await db.getUserFreeRequests(ctx.from.id);
   if (!topicStatus) {
     await ctx.reply(code(i18n.inputErr[botLanguage]));
-  } else {
+  }else if(!freeRequests){
+    await ctx.reply(i18n.freeRequestsErr[botLanguage])
+  }else {
     await ctx.reply(code(`${i18n.ack[botLanguage]} ${ctx.update.message.text}. ${i18n.warning[botLanguage]}`));
     await db.updateUserData('topic', ctx.update.message.text, ctx.from.id);
     const prompt = prompts.createPrompt( await db.getUserData(ctx.from.id));
@@ -260,6 +271,7 @@ bot.on(message('text'), async (ctx) => {
         .then(reply => {
           ctx.reply(reply);
           db.incrementRequests(ctx.from.id, REQUEST_INCREMENT);
+          db.decrementFreeRequests(ctx.from.id, REQUEST_DECREMENT);
         })
         .catch(err => {
           ctx.reply(`${i18n.genErr[botLanguage]}`);

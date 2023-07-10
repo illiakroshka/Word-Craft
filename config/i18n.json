@@ -130,5 +130,13 @@
   "wtButton": {
     "en": "Without translation",
     "ukr": "Без перекладу"
+  },
+  "freeRequestsErr": {
+    "en": "You have no free requests left",
+    "ukr": "У вас закінчілись безкоштовні запити"
+  },
+  "freeRequestsStatus": {
+    "en": "Free requests left: ",
+    "ukr": "Залишилось безкоштовних запитів: "
   }
 }
