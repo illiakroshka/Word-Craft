@@ -237,6 +237,52 @@ const getUserFreeRequests = async (telegramId) => {
   }
 }
 
+const checkUserPremium = async (telegramId) => {
+  const pool = new Pool(config);
+  try{
+    const query = {
+      text: `SELECT * FROM premium_users WHERE telegram_id = $1`,
+      values: [telegramId],
+    };
+    const result = await pool.query(query);
+    return result.rowCount
+  } catch (err) {
+    console.error('Error executing query', err);
+  } finally {
+    pool.end();
+  }
+}
+
+const insertUserPremium = async (telegramId, startDate, duration, endDate, subscriptionStatus) => {
+  const pool = new Pool(config);
+  try {
+    const query = {
+      text: 'INSERT INTO premium_users ( telegram_id, start_date, duration, end_date, premium_subscription) VALUES ($1, $2, $3, $4, $5)',
+      values: [telegramId, startDate, duration, endDate, subscriptionStatus]
+    };
+    await pool.query(query);
+  } catch (err) {
+    console.error('Error executing query', err);
+  } finally {
+    pool.end();
+  }
+}
+
+const updateUserPremium = async (telegramId, startDate, duration, endDate, subscriptionStatus) => {
+  const pool = new Pool(config);
+  try {
+    const query = {
+      text: 'UPDATE premium_users SET start_date = $2, duration = $3, end_date = $4, premium_subscription = $5 WHERE telegram_id = $1',
+      values: [telegramId, startDate, duration, endDate, subscriptionStatus]
+    };
+    await pool.query(query);
+  } catch (err) {
+    console.error('Error executing query', err);
+  } finally {
+    pool.end();
+  }
+};
+
 module.exports = {
   checkUser,
   insertUser,
@@ -251,4 +297,7 @@ module.exports = {
   getUserRequests,
   decrementFreeRequests,
   getUserFreeRequests,
+  checkUserPremium,
+  insertUserPremium,
+  updateUserPremium,
 };

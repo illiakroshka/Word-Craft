@@ -25,6 +25,14 @@ const parameters = {
   topic: '',
 };
 
+const durationOptions  = {
+  day: 1,
+  week: 7,
+  month: 30,
+  year: 365,
+  refuse: 0,
+}
+
 const sendPrompt = (ctx, text) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -95,6 +103,23 @@ const setBotLanguage = async (ctx) => {
         [
           { text: i18n.engButton[botLanguage], callback_data: 'en' },
           { text: i18n.ukrButton[botLanguage], callback_data: 'ukr' }
+        ]
+      ]
+    }
+  })
+}
+
+const setSubscription = async (ctx, userId) => {
+  const adminId = 382588668;
+  await bot.telegram.sendMessage(adminId, `Set subscription for user ${userId}`,{
+    reply_markup:{
+      inline_keyboard:[
+        [
+          {text: 'Day', callback_data: `day:${userId}`},
+          {text: 'Week', callback_data: `week:${userId}`},
+          {text: 'Month', callback_data: `month:${userId}`},
+          {text: 'Year', callback_data: `year:${userId}`},
+          {text: 'Refuse', callback_data: `refuse:${userId}`}
         ]
       ]
     }
@@ -216,6 +241,11 @@ bot.hears(commands.profile, async (ctx) => {
   ctx.replyWithMarkdown(replyMessage);
 });
 
+bot.hears('premium', async (ctx) => {
+  const botLanguage = await db.getBotLanguage(ctx.from.id);
+  await ctx.reply(i18n.premiumSubscription[botLanguage]);
+})
+
 bot.action('defTrue', async (ctx) => {
   await db.updateUserFlag('definition', true, ctx.from.id);
   await chooseTopic(ctx);
@@ -252,6 +282,35 @@ bot.action('without translation',async (ctx)=>{
   await queryDefinition(ctx);
 })
 
+bot.action(/(day|week|month|year|refuse):(.+)/, async (ctx) => {
+  const action = ctx.match[1];
+  const userId = ctx.match[2];
+  const subscription = durationOptions[action];
+  if (subscription){
+    const userExists = await db.checkUserPremium(userId);
+    if (!userExists) {
+      const startDay = new Date();
+      const startDayString = startDay.toISOString().slice(0, 10);
+      const endDate = new Date();
+      endDate.setDate(startDay.getDate() + subscription);
+      const endDateString = endDate.toISOString().slice(0, 10);
+      await db.insertUserPremium(userId, startDayString, subscription, endDateString, true);
+      await bot.telegram.sendMessage(userId, `You subscription for ${action} is active`);
+    } else {
+      const startDay = new Date();
+      const startDayString = startDay.toISOString().slice(0, 10);
+      const endDate = new Date();
+      endDate.setDate(startDay.getDate() + subscription);
+      const endDateString = endDate.toISOString().slice(0, 10);
+      await db.updateUserPremium(userId, startDayString, subscription, endDateString, true);
+      await bot.telegram.sendMessage(userId, `You subscription for ${action} is active`);
+    }
+  }else{
+    await bot.telegram.sendMessage(userId, `You request for subscription has been refused`);
+  }
+  console.log(`${subscription} User: ${userId}`);
+});
+
 bot.on(message('text'), async (ctx) => {
   const topicStatus = await db.getUserFlag('isTopicSelected',ctx.from.id);
   const botLanguage = await db.getBotLanguage(ctx.from.id);
@@ -282,6 +341,13 @@ bot.on(message('text'), async (ctx) => {
     await db.updateUserFlag('isTopicSelected',false, ctx.from.id);
   }
 });
+
+bot.on(message('photo'), async (ctx) => {
+  const adminId = 382588668;
+  await ctx.telegram.forwardMessage(adminId, ctx.message.chat.id, ctx.message.message_id);
+  await setSubscription(ctx, ctx.from.id);
+  await ctx.reply('I got the photo')
+})
 
 bot.launch();
 
