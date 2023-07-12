@@ -19,6 +19,7 @@ const bot = new Telegraf(config.TELEGRAM_TOKEN);
 const parameters = {
   isTopicSelected: false,
   definition: false,
+  photoUploadEnabled: false,
   botLanguage: "en",
   level: '',
   language: '',
@@ -256,6 +257,7 @@ bot.hears(commands.profile, async (ctx) => {
 
 bot.hears('premium', async (ctx) => {
   const botLanguage = await db.getBotLanguage(ctx.from.id);
+  await db.updateUserFlag('photoUploadEnabled', true, ctx.from.id);
   await ctx.reply(i18n.premiumSubscription[botLanguage]);
 })
 
@@ -359,10 +361,16 @@ bot.on(message('text'), async (ctx) => {
 });
 
 bot.on(message('photo'), async (ctx) => {
-  const adminId = config.ADMIN_ID;
-  await ctx.telegram.forwardMessage(adminId, ctx.message.chat.id, ctx.message.message_id);
-  await setSubscription(ctx, ctx.from.id);
-  await ctx.reply('I got the photo')
+  const photoUploadEnabled = await db.getUserFlag('photoUploadEnabled',ctx.from.id);
+  if (photoUploadEnabled) {
+    const adminId = config.ADMIN_ID;
+    await ctx.telegram.forwardMessage(adminId, ctx.message.chat.id, ctx.message.message_id);
+    await setSubscription(ctx, ctx.from.id);
+    await ctx.reply('I got the photo')
+  }else {
+    await ctx.reply('Press the command premium to enable photo upload')
+  }
+  await db.updateUserFlag('photoUploadEnabled',false, ctx.from.id);
 })
 
 bot.launch();
