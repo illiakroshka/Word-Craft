@@ -300,6 +300,26 @@ async function getSubscriptionDetails(telegramID) {
   }
 }
 
+async function getSubscriptionStatus(telegramID) {
+  const pool = new Pool(config);
+  try {
+    const query = {
+      text: 'SELECT premium_subscription FROM premium_users WHERE telegram_id = $1',
+      values: [telegramID],
+    };
+
+    const result = await pool.query(query);
+    if (result.rows.length > 0) {
+      return result.rows[0].premium_subscription;
+    }
+    return null;
+  } catch (error) {
+    console.error('Error executing query', error);
+  } finally {
+    pool.end();
+  }
+}
+
 module.exports = {
   checkUser,
   insertUser,
@@ -318,4 +338,5 @@ module.exports = {
   insertUserPremium,
   updateUserPremium,
   getSubscriptionDetails,
+  getSubscriptionStatus,
 };
