@@ -233,11 +233,21 @@ bot.hears(commands.profile, async (ctx) => {
   const botLanguage = await db.getBotLanguage(ctx.from.id);
   const requests = await db.getUserRequests(ctx.from.id);
   const freeRequests = await db.getUserFreeRequests(ctx.from.id);
-  const replyMessage = `${i18n.idMessage[botLanguage]} \`${
-    ctx.from.id
-  }\`\n\n${i18n.requests[botLanguage]} ${requests}\n\n` +
-  `${i18n.freeRequestsStatus[botLanguage]} ${freeRequests}`;
-
+  const subscriptionDetails = await db.getSubscriptionDetails(ctx.from.id);
+  let replyMessage = `${i18n.idMessage[botLanguage]} \`${ ctx.from.id }\`\n\n` +
+  `${i18n.requests[botLanguage]} ${requests}\n\n` +
+    `${i18n.freeRequestsStatus[botLanguage]} ${freeRequests}\n\n`;
+  if (!subscriptionDetails){
+    replyMessage += `${i18n.subscriptionMessage[botLanguage]} ${i18n.subscriptionInactive[botLanguage]}`;
+  }else {
+    const { end_date, premium_subscription } = subscriptionDetails;
+    if (premium_subscription) {
+      replyMessage += `${i18n.subscriptionMessage[botLanguage]} ${i18n.subscriptionActive[botLanguage]}\n\n`;
+      replyMessage += `${i18n.endDateMessage[botLanguage]} ${end_date}`;
+    }else {
+      replyMessage += `${i18n.subscriptionMessage[botLanguage]} ${i18n.subscriptionInactive[botLanguage]}\n\n`;
+    }
+  }
   ctx.replyWithMarkdown(replyMessage);
 });
 

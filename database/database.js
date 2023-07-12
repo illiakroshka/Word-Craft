@@ -283,6 +283,23 @@ const updateUserPremium = async (telegramId, startDate, duration, endDate, subsc
   }
 };
 
+async function getSubscriptionDetails(telegramID) {
+  const pool = new Pool(config);
+  try {
+    const query = {
+      text: 'SELECT end_date, premium_subscription FROM premium_users WHERE telegram_id = $1',
+      values: [telegramID],
+    };
+
+    const result = await pool.query(query);
+    return result.rows[0];
+  } catch (error) {
+    console.error('Error executing query', error);
+  } finally {
+    pool.end();
+  }
+}
+
 module.exports = {
   checkUser,
   insertUser,
@@ -300,4 +317,5 @@ module.exports = {
   checkUserPremium,
   insertUserPremium,
   updateUserPremium,
+  getSubscriptionDetails,
 };
