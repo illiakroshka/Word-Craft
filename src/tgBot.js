@@ -110,7 +110,7 @@ const setBotLanguage = async (ctx) => {
 }
 
 const setSubscription = async (ctx, userId) => {
-  const adminId = 382588668;
+  const adminId = config.ADMIN_ID;
   await bot.telegram.sendMessage(adminId, `Set subscription for user ${userId}`,{
     reply_markup:{
       inline_keyboard:[
@@ -353,7 +353,7 @@ bot.on(message('text'), async (ctx) => {
 });
 
 bot.on(message('photo'), async (ctx) => {
-  const adminId = 382588668;
+  const adminId = config.ADMIN_ID;
   await ctx.telegram.forwardMessage(adminId, ctx.message.chat.id, ctx.message.message_id);
   await setSubscription(ctx, ctx.from.id);
   await ctx.reply('I got the photo')
