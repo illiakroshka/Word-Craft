@@ -255,7 +255,7 @@ bot.hears(commands.profile, async (ctx) => {
   ctx.replyWithMarkdown(replyMessage);
 });
 
-bot.hears('premium', async (ctx) => {
+bot.hears(commands.premium, async (ctx) => {
   const botLanguage = await db.getBotLanguage(ctx.from.id);
   await db.updateUserFlag('photoUploadEnabled', true, ctx.from.id);
   await ctx.reply(i18n.premiumSubscription[botLanguage]);
