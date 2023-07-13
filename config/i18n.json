@@ -132,8 +132,8 @@
     "ukr": "Без перекладу"
   },
   "freeRequestsErr": {
-    "en": "You have no free requests left",
-    "ukr": "У вас закінчілись безкоштовні запити"
+    "en": "You don't have free requests anymore, buy premium subscription",
+    "ukr": "У вас не залишилось безкоштовних запитів, придбайте преміум підписку"
   },
   "freeRequestsStatus": {
     "en": "Free requests left: ",
@@ -158,5 +158,31 @@
   "endDateMessage": {
     "en": "End date: ",
     "ukr": "Дійсна до: "
+  },
+  "subscriptionDecline": {
+    "en": "You request for subscription has been refused",
+    "ukr": "Ваш запит на підписку відхилено"
+  },
+  "subscriptionActiveMes": {
+    "en": {
+      "day": "Your subscription for day is active",
+      "week": "Your subscription for week is active",
+      "month": "Your subscription for month is active",
+      "year": "Your subscription for year is active"
+    },
+    "ukr": {
+      "day": "Ваша підписка на день активна",
+      "week": "Ваша підписка на тиждень активна",
+      "month": "Ваша підписка на місяць активна",
+      "year": "Ваша підписка на рік активна"
+    }
+  },
+  "paymentConfirmation": {
+    "en": "Thank you for your payment, your subscription will be activated during the day",
+    "ukr": "Дякуємо за оплату, ваша підписка буде активована протягом дня"
+  },
+  "enablePhotoUpload": {
+    "en": "Press the command 'Premium' to enable screenshot of payment upload",
+    "ukr": "Натисніть команду 'Преміум' щоб активувати відправку скріншоту оплати"
   }
 }
