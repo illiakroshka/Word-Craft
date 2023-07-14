@@ -247,7 +247,7 @@ bot.hears(commands.profile, async (ctx) => {
     const { end_date, premium_subscription } = subscriptionDetails;
     if (premium_subscription) {
       replyMessage += `${i18n.subscriptionMessage[botLanguage]} ${i18n.subscriptionActive[botLanguage]}\n\n`;
-      replyMessage += `${i18n.endDateMessage[botLanguage]} ${end_date}`;
+      replyMessage += `${i18n.endDateMessage[botLanguage]} ${end_date.toISOString().slice(0, 10)}`;
     }else {
       replyMessage += `${i18n.subscriptionMessage[botLanguage]} ${i18n.subscriptionInactive[botLanguage]}\n\n`;
     }
@@ -258,7 +258,11 @@ bot.hears(commands.profile, async (ctx) => {
 bot.hears(commands.premium, async (ctx) => {
   const botLanguage = await db.getBotLanguage(ctx.from.id);
   await db.updateUserFlag('photoUploadEnabled', true, ctx.from.id);
-  await ctx.reply(i18n.premiumSubscription[botLanguage]);
+  const premiumMessage = `${i18n.premiumSubscriptionOptions[botLanguage].replace(/(•\s*)(.*)/g, '$1*$2*')}\n`+
+  `${i18n.premiumSubscriptionCost[botLanguage].replace(/(•\s*)(.*)/g, '$1*$2*')}\n`+
+  `${i18n.premiumSubscriptionPayment[botLanguage].replace(/(\d+)/g, '`$1`')}\n`+
+  `${i18n.premiumSubscriptionMessage[botLanguage]}\n`
+  await ctx.replyWithMarkdown(premiumMessage);
 })
 
 bot.action('defTrue', async (ctx) => {

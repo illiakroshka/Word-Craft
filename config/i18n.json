@@ -139,9 +139,21 @@
     "en": "Free requests left: ",
     "ukr": "Залишилось безкоштовних запитів: "
   },
-  "premiumSubscription" : {
-    "en": "Premium Subscription:\n• Unlimited word lists generation\n• Generation of voice messages to check pronunciation\n• Faster speed\nCost:\n• Day: 1.5$\n• Week: 5$\n• Month: 10$\n• Year: 70$\nPay the required amount on one of these cards\nMono: 112233\nPrivat: 334455\nSend a screenshot with the payment in the chat. The subscription will be activated during the day. You will receive a notification about this",
-    "ukr": "Преміум підписка:\n• Необмежене створення списків слів\n• Генерація голосових повідомлень для перевірки вимови\n• Більша швидкість\nВартість:\n• День: 50₴\n• Тиждень: 150₴\n• Місяць: 350₴\n• Рік: 1500₴\nСплатіть необхідну суму на одну з цих карт\nMono: 112233\nПриват: 334455\nТа надішліть скріншот з оплатою в чат. Підписка буде активована протягом доби. Ви отримаєте сповіщення про це"
+  "premiumSubscriptionOptions" : {
+    "en": "Premium Subscription:\n• Unlimited word lists generation\n• Generation of voice messages to check pronunciation\n• Faster speed\n",
+    "ukr": "Преміум підписка:\n• Необмежене створення списків слів\n• Генерація голосових повідомлень для перевірки вимови\n• Більша швидкість\n"
+  },
+  "premiumSubscriptionCost": {
+    "en": "Cost:\n• Day: 1.5$\n• Week: 5$\n• Month: 10$\n• Year: 70$\n",
+    "ukr": "Вартість:\n• День: 50₴\n• Тиждень: 150₴\n• Місяць: 350₴\n• Рік: 1500₴\n"
+  },
+  "premiumSubscriptionPayment": {
+    "en": "Pay the required amount on one of these cards:\nMono: 112233\nPrivat: 334455\n",
+    "ukr": "Сплатіть необхідну суму на одну з цих карт:\nMono: 112233\nПриват: 334455\n"
+  },
+  "premiumSubscriptionMessage": {
+    "en": "Send a screenshot with the payment in the chat. The subscription will be activated during the day. You will receive a notification about this",
+    "ukr": "Та надішліть скріншот з оплатою в чат. Підписка буде активована протягом доби. Ви отримаєте сповіщення про це"
   },
   "subscriptionActive": {
     "en": "Active",
@@ -156,8 +168,8 @@
     "ukr": "Преміум підписка: "
   },
   "endDateMessage": {
-    "en": "End date: ",
-    "ukr": "Дійсна до: "
+    "en": "End date (including): ",
+    "ukr": "Дійсна до (включно): "
   },
   "subscriptionDecline": {
     "en": "You request for subscription has been refused",
@@ -178,8 +190,8 @@
     }
   },
   "paymentConfirmation": {
-    "en": "Thank you for your payment, your subscription will be activated during the day",
-    "ukr": "Дякуємо за оплату, ваша підписка буде активована протягом дня"
+    "en": "Thank you for your payment, your subscription will be activated during the day\n You will receive a notification about this",
+    "ukr": "Дякуємо за оплату, ваша підписка буде активована протягом дня.\nВи отримаєте сповіщення про це"
   },
   "enablePhotoUpload": {
     "en": "Press the command 'Premium' to enable screenshot of payment upload",
