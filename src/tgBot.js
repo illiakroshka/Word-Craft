@@ -238,6 +238,7 @@ bot.hears(commands.profile, async (ctx) => {
   const requests = await db.getUserRequests(ctx.from.id);
   const freeRequests = await db.getUserFreeRequests(ctx.from.id);
   const subscriptionDetails = await db.getSubscriptionDetails(ctx.from.id);
+  const options = { day: 'numeric', month: 'numeric', year: 'numeric' };
   let replyMessage = `${i18n.idMessage[botLanguage]} \`${ ctx.from.id }\`\n\n` +
   `${i18n.requests[botLanguage]} ${requests}\n\n` +
     `${i18n.freeRequestsStatus[botLanguage]} ${freeRequests}\n\n`;
@@ -247,7 +248,7 @@ bot.hears(commands.profile, async (ctx) => {
     const { end_date, premium_subscription } = subscriptionDetails;
     if (premium_subscription) {
       replyMessage += `${i18n.subscriptionMessage[botLanguage]} ${i18n.subscriptionActive[botLanguage]}\n\n`;
-      replyMessage += `${i18n.endDateMessage[botLanguage]} ${end_date.toISOString().slice(0, 10)}`;
+      replyMessage += `${i18n.endDateMessage[botLanguage]} ${end_date.toLocaleDateString('uk-UA', options)}`;
     }else {
       replyMessage += `${i18n.subscriptionMessage[botLanguage]} ${i18n.subscriptionInactive[botLanguage]}\n\n`;
     }
