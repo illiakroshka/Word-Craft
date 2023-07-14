@@ -108,8 +108,8 @@
     "ukr": "Зроблено запитів: "
   },
   "menuOptions": {
-    "en": [["Run bot"], ["Change topic", "Regenerate list"], ["Translate bot", "Profile"], ["Help", "Info"]],
-    "ukr": [["Запустити бота"], ["Змінити тему списку", "Регенерувати список"], ["Змінити мову бота", "Профіль"], ["Допомога", "Інформація"]]
+    "en": [["Run bot"], ["Premium"], ["Change topic", "Regenerate list"], ["Translate bot", "Profile"], ["Help", "Info"]],
+    "ukr": [["Запустити бота"], ["Преміум"], ["Змінити тему списку", "Регенерувати список"], ["Змінити мову бота", "Профіль"], ["Допомога", "Інформація"]]
   },
   "engButton": {
     "en": "English",
@@ -130,5 +130,71 @@
   "wtButton": {
     "en": "Without translation",
     "ukr": "Без перекладу"
+  },
+  "freeRequestsErr": {
+    "en": "You don't have free requests anymore, buy premium subscription",
+    "ukr": "У вас не залишилось безкоштовних запитів, придбайте преміум підписку"
+  },
+  "freeRequestsStatus": {
+    "en": "Free requests left: ",
+    "ukr": "Залишилось безкоштовних запитів: "
+  },
+  "premiumSubscriptionOptions" : {
+    "en": "Premium Subscription:\n• Unlimited word lists generation\n• Generation of voice messages to check pronunciation\n• Faster speed\n",
+    "ukr": "Преміум підписка:\n• Необмежене створення списків слів\n• Генерація голосових повідомлень для перевірки вимови\n• Більша швидкість\n"
+  },
+  "premiumSubscriptionCost": {
+    "en": "Cost:\n• Day: 1.5$\n• Week: 5$\n• Month: 10$\n• Year: 70$\n",
+    "ukr": "Вартість:\n• День: 50₴\n• Тиждень: 150₴\n• Місяць: 350₴\n• Рік: 1500₴\n"
+  },
+  "premiumSubscriptionPayment": {
+    "en": "Pay the required amount on one of these cards:\nMono: 112233\nPrivat: 334455\n",
+    "ukr": "Сплатіть необхідну суму на одну з цих карт:\nMono: 112233\nПриват: 334455\n"
+  },
+  "premiumSubscriptionMessage": {
+    "en": "Send a screenshot with the payment in the chat. The subscription will be activated during the day. You will receive a notification about this",
+    "ukr": "Та надішліть скріншот з оплатою в чат. Підписка буде активована протягом доби. Ви отримаєте сповіщення про це"
+  },
+  "subscriptionActive": {
+    "en": "Active",
+    "ukr": "Активна"
+  },
+  "subscriptionInactive": {
+    "en": "Inactive",
+    "ukr": "Неактивна"
+  },
+  "subscriptionMessage": {
+    "en": "Premium subscription: ",
+    "ukr": "Преміум підписка: "
+  },
+  "endDateMessage": {
+    "en": "End date (including): ",
+    "ukr": "Дійсна до (включно): "
+  },
+  "subscriptionDecline": {
+    "en": "You request for subscription has been refused",
+    "ukr": "Ваш запит на підписку відхилено"
+  },
+  "subscriptionActiveMes": {
+    "en": {
+      "day": "Your subscription for day is active",
+      "week": "Your subscription for week is active",
+      "month": "Your subscription for month is active",
+      "year": "Your subscription for year is active"
+    },
+    "ukr": {
+      "day": "Ваша підписка на день активна",
+      "week": "Ваша підписка на тиждень активна",
+      "month": "Ваша підписка на місяць активна",
+      "year": "Ваша підписка на рік активна"
+    }
+  },
+  "paymentConfirmation": {
+    "en": "Thank you for your payment, your subscription will be activated during the day\n You will receive a notification about this",
+    "ukr": "Дякуємо за оплату, ваша підписка буде активована протягом дня.\nВи отримаєте сповіщення про це"
+  },
+  "enablePhotoUpload": {
+    "en": "Press the command 'Premium' to enable screenshot of payment upload",
+    "ukr": "Натисніть команду 'Преміум' щоб активувати відправку скріншоту оплати"
   }
 }

@@ -19,12 +19,12 @@ const checkUser = async (telegramId) => {
   }
 }
 
-const insertUser = async (userData, telegramId) => {
+const insertUser = async (userData, telegramId, freeRequests) => {
   const pool = new Pool(config);
   try {
     const query = {
-      text: 'INSERT INTO users (data, telegram_id) VALUES ($1, $2)',
-      values: [JSON.stringify(userData), telegramId]
+      text: 'INSERT INTO users (data, telegram_id, free_requests) VALUES ($1, $2, $3)',
+      values: [JSON.stringify(userData), telegramId, freeRequests]
     };
     await pool.query(query);
   } catch (err) {
@@ -202,6 +202,124 @@ const incrementRequests = async (telegramId, incrementValue) => {
   }
 };
 
+const decrementFreeRequests = async (telegramId, decrementValue) => {
+  const pool = new Pool(config);
+  try {
+    const query = {
+      text: `UPDATE users
+             SET free_requests = free_requests - $1
+             WHERE telegram_id = $2`,
+      values: [decrementValue, telegramId]
+    };
+
+    await pool.query(query);
+  } catch (err) {
+    console.error('Error incrementing requests count:', err);
+  } finally {
+    pool.end();
+  }
+}
+
+const getUserFreeRequests = async (telegramId) => {
+  const pool = new Pool(config);
+  try {
+    const query = {
+      text: 'SELECT free_requests FROM Users WHERE telegram_id = $1',
+      values: [telegramId],
+    };
+
+    const result = await pool.query(query);
+    return result.rows[0].free_requests;
+  } catch (error) {
+    console.error('Error occurred while fetching requests:', error);
+  } finally {
+    pool.end();
+  }
+}
+
+const checkUserPremium = async (telegramId) => {
+  const pool = new Pool(config);
+  try{
+    const query = {
+      text: `SELECT * FROM premium_users WHERE telegram_id = $1`,
+      values: [telegramId],
+    };
+    const result = await pool.query(query);
+    return result.rowCount
+  } catch (err) {
+    console.error('Error executing query', err);
+  } finally {
+    pool.end();
+  }
+}
+
+const insertUserPremium = async (telegramId, startDate, duration, endDate, subscriptionStatus) => {
+  const pool = new Pool(config);
+  try {
+    const query = {
+      text: 'INSERT INTO premium_users ( telegram_id, start_date, duration, end_date, premium_subscription) VALUES ($1, $2, $3, $4, $5)',
+      values: [telegramId, startDate, duration, endDate, subscriptionStatus]
+    };
+    await pool.query(query);
+  } catch (err) {
+    console.error('Error executing query', err);
+  } finally {
+    pool.end();
+  }
+}
+
+const updateUserPremium = async (telegramId, startDate, duration, endDate, subscriptionStatus) => {
+  const pool = new Pool(config);
+  try {
+    const query = {
+      text: 'UPDATE premium_users SET start_date = $2, duration = $3, end_date = $4, premium_subscription = $5 WHERE telegram_id = $1',
+      values: [telegramId, startDate, duration, endDate, subscriptionStatus]
+    };
+    await pool.query(query);
+  } catch (err) {
+    console.error('Error executing query', err);
+  } finally {
+    pool.end();
+  }
+};
+
+const getSubscriptionDetails = async (telegramID) => {
+  const pool = new Pool(config);
+  try {
+    const query = {
+      text: 'SELECT end_date, premium_subscription FROM premium_users WHERE telegram_id = $1',
+      values: [telegramID],
+    };
+
+    const result = await pool.query(query);
+    return result.rows[0];
+  } catch (error) {
+    console.error('Error executing query', error);
+  } finally {
+    pool.end();
+  }
+}
+
+const getSubscriptionStatus = async (telegramID) => {
+  const pool = new Pool(config);
+  try {
+    const query = {
+      text: 'SELECT premium_subscription FROM premium_users WHERE telegram_id = $1',
+      values: [telegramID],
+    };
+
+    const result = await pool.query(query);
+    if (result.rows.length > 0) {
+      return result.rows[0].premium_subscription;
+    }
+    return null;
+  } catch (error) {
+    console.error('Error executing query', error);
+  } finally {
+    pool.end();
+  }
+}
+
 module.exports = {
   checkUser,
   insertUser,
@@ -214,4 +332,11 @@ module.exports = {
   getBotLanguage,
   updateUserBotLanguage,
   getUserRequests,
+  decrementFreeRequests,
+  getUserFreeRequests,
+  checkUserPremium,
+  insertUserPremium,
+  updateUserPremium,
+  getSubscriptionDetails,
+  getSubscriptionStatus,
 };
