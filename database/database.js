@@ -283,7 +283,7 @@ const updateUserPremium = async (telegramId, startDate, duration, endDate, subsc
   }
 };
 
-async function getSubscriptionDetails(telegramID) {
+const getSubscriptionDetails = async (telegramID) => {
   const pool = new Pool(config);
   try {
     const query = {
@@ -300,7 +300,7 @@ async function getSubscriptionDetails(telegramID) {
   }
 }
 
-async function getSubscriptionStatus(telegramID) {
+const getSubscriptionStatus = async (telegramID) => {
   const pool = new Pool(config);
   try {
     const query = {
