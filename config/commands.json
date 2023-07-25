@@ -6,5 +6,6 @@
   "changeTopic": ["Change topic", "Змінити тему списку"],
   "botLanguage": ["Translate bot", "Змінити мову бота"],
   "runBot": ["Run bot", "Запустити бота"],
-  "premium": ["Premium", "Преміум"]
+  "premium": ["Premium", "Преміум"],
+  "audio": ["Generate audio", "Згенерувати аудіо"]
 }

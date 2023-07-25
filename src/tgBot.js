@@ -4,6 +4,7 @@ const { Telegraf, Markup } = require('telegraf');
 const { message } = require('telegraf/filters');
 const { code } = require('telegraf/format')
 const { openAI } = require('./openAI');
+const { voiceMessageProcessor } = require('./textToSpeech');
 const config = require('../config/default.json');
 const i18n = require('../config/i18n.json');
 const commands = require('../config/commands.json');
@@ -208,6 +209,8 @@ bot.hears(commands.regenerate, async (ctx) => {
           db.incrementRequests(ctx.from.id, REQUEST_INCREMENT);
           if (!premiumSubscription) {
             db.decrementFreeRequests(ctx.from.id, REQUEST_DECREMENT);
+          }else{
+            db.alterWordList(ctx.from.id, reply);
           }
         })
         .catch(err => {
@@ -264,6 +267,39 @@ bot.hears(commands.premium, async (ctx) => {
   `${i18n.premiumSubscriptionPayment[botLanguage].replace(/(\d+)/g, '`$1`')}\n`+
   `${i18n.premiumSubscriptionMessage[botLanguage]}\n`
   await ctx.replyWithMarkdown(premiumMessage);
+})
+
+bot.hears(commands.audio, async (ctx) => {
+  const botLanguage = await db.getBotLanguage(ctx.from.id);
+  const premiumSubscription = await db.getSubscriptionStatus(ctx.from.id);
+  if (!premiumSubscription) {
+    await ctx.reply(`${i18n.buySubscriptionMes[botLanguage]}`)
+  } else {
+    const wordList = await db.getWordList(ctx.from.id);
+    if (!wordList){
+      await ctx.reply(`${i18n.wordListErr[botLanguage]}`)
+    }else {
+      try {
+        await ctx.reply(code(`${i18n.audioWarning[botLanguage]}`));
+        voiceMessageProcessor.processVoiceMessage(wordList)
+          .then((audio) => {
+            return fetch(audio);
+          })
+          .then((response) => {
+            return response.arrayBuffer();
+          })
+          .then((audioData) => {
+            ctx.replyWithAudio({ source: Buffer.from(audioData) });
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      } catch (error) {
+        console.error('Error:', error);
+        ctx.reply(`${i18n.audioErr[botLanguage]}`);
+      }
+    }
+  }
 })
 
 bot.action('defTrue', async (ctx) => {
@@ -348,6 +384,8 @@ bot.on(message('text'), async (ctx) => {
           db.incrementRequests(ctx.from.id, REQUEST_INCREMENT);
           if (!premiumSubscription) {
             db.decrementFreeRequests(ctx.from.id, REQUEST_DECREMENT);
+          }else {
+            db.alterWordList(ctx.from.id, reply);
           }
         })
         .catch(err => {

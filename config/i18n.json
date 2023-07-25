@@ -52,8 +52,8 @@
     }
   },
   "help": {
-    "en": "• Run bot - to run the bot \n• Change topic - to change the topic of the word list \n• Regenerate list - to regenerate the list if you know most of the words \n• Translate bot - to translate the bot \n• Profile - to check statistics of your requests \n• Info - information about the bot\n• /topics - suggests popular example topics for your level",
-    "ukr": "• Запустити бота - для запуску бота \n• Змінити тему списку - для зміни теми списку слів \n• Регенерувати список - для перероблення списку, якщо ви знаєте більшість слів \n• Змінити мову бота - для перекладу бота \n• Профіль - для перевірки статистики ваших запитів\n• Інформація - інформація про бота \n• /topics - пропонує популярні приклади тем для вашого рівня"
+    "en": "• Run bot - to run the bot \n• Generate audio - to generate audio of word list\n• Change topic - to change the topic of the word list \n• Regenerate list - to regenerate the list if you know most of the words \n• Translate bot - to translate the bot \n• Profile - to check statistics of your requests \n• Info - information about the bot\n• /topics - suggests popular example topics for your level",
+    "ukr": "• Запустити бота - для запуску бота \n•Згенерувати аудіо - для генерації аудіо списку слів\n• Змінити тему списку - для зміни теми списку слів \n• Регенерувати список - для перероблення списку, якщо ви знаєте більшість слів \n• Змінити мову бота - для перекладу бота \n• Профіль - для перевірки статистики ваших запитів\n• Інформація - інформація про бота \n• /topics - пропонує популярні приклади тем для вашого рівня"
   },
   "info": {
     "en": "This bot is used to generate word lists on a specific topic for a specific level of English. Also, you can choose the language in which to translate these words.\n• Help - command for navigation",
@@ -108,8 +108,8 @@
     "ukr": "Зроблено запитів: "
   },
   "menuOptions": {
-    "en": [["Run bot"], ["Premium"], ["Change topic", "Regenerate list"], ["Translate bot", "Profile"], ["Help", "Info"]],
-    "ukr": [["Запустити бота"], ["Преміум"], ["Змінити тему списку", "Регенерувати список"], ["Змінити мову бота", "Профіль"], ["Допомога", "Інформація"]]
+    "en": [["Run bot"], ["Premium"], ["Generate audio"], ["Change topic", "Regenerate list"], ["Translate bot", "Profile"], ["Help", "Info"]],
+    "ukr": [["Запустити бота"], ["Преміум"], ["Згенерувати аудіо"], ["Змінити тему списку", "Регенерувати список"], ["Змінити мову бота", "Профіль"], ["Допомога", "Інформація"]]
   },
   "engButton": {
     "en": "English",
@@ -196,5 +196,21 @@
   "enablePhotoUpload": {
     "en": "Press the command 'Premium' to enable screenshot of payment upload",
     "ukr": "Натисніть команду 'Преміум' щоб активувати відправку скріншоту оплати"
+  },
+  "wordListErr": {
+    "en": "Generate word list first",
+    "ukr": "Спершу згенеруйте список слів"
+  },
+  "buySubscriptionMes": {
+    "en": "To unblock this feature, purchase a premium subscription in the 'Premium' section",
+    "ukr": "Для розблокування цієї функції придбайте преміум підписку у розділі 'Преміум'"
+  },
+  "audioWarning": {
+    "en": "The audio is generating it can take some time",
+    "ukr": "Аудіо генерується це може зайняти деякий час"
+  },
+  "audioErr": {
+    "en": "Error while sending audio",
+    "ukr": "Під час створення аудіо сталася помилка"
   }
 }

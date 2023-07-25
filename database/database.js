@@ -320,6 +320,41 @@ const getSubscriptionStatus = async (telegramID) => {
   }
 }
 
+const alterWordList = async (telegramID, wordList) => {
+  const pool = new Pool(config);
+  try {
+    const query = {
+      text: 'UPDATE premium_users SET word_list = $2 WHERE telegram_id = $1',
+      values: [telegramID, wordList]
+    };
+    await pool.query(query);
+  } catch (err) {
+    console.error('Error executing query', err);
+  } finally {
+    pool.end();
+  }
+}
+
+const getWordList = async (telegramID) => {
+  const pool = new Pool(config);
+  try {
+    const query = {
+      text: 'SELECT word_list FROM premium_users WHERE telegram_id = $1',
+      values: [telegramID],
+    };
+
+    const result = await pool.query(query);
+    if (result.rows.length > 0) {
+      return result.rows[0].word_list;
+    }
+    return null;
+  } catch (error) {
+    console.error('Error executing query', error);
+  } finally {
+    pool.end();
+  }
+}
+
 module.exports = {
   checkUser,
   insertUser,
@@ -339,4 +374,6 @@ module.exports = {
   updateUserPremium,
   getSubscriptionDetails,
   getSubscriptionStatus,
+  alterWordList,
+  getWordList,
 };
