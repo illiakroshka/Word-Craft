@@ -355,6 +355,41 @@ const getWordList = async (telegramID) => {
   }
 }
 
+const getAudioFlag = async (telegramID) => {
+  const pool = new Pool(config);
+  try {
+    const query = {
+      text: 'SELECT can_generate_audio FROM premium_users WHERE telegram_id = $1',
+      values: [telegramID],
+    };
+
+    const result = await pool.query(query);
+    if (result.rows.length > 0) {
+      return result.rows[0].can_generate_audio;
+    }
+    return null;
+  } catch (error) {
+    console.error('Error executing query', error);
+  } finally {
+    pool.end();
+  }
+}
+
+const updateAudioFlag = async (telegramID, boolean) => {
+  const pool = new Pool(config);
+  try {
+    const query = {
+      text: 'UPDATE premium_users SET can_generate_audio = $2 WHERE telegram_id = $1',
+      values: [telegramID, boolean]
+    };
+    await pool.query(query);
+  } catch (err) {
+    console.error('Error executing query', err);
+  } finally {
+    pool.end();
+  }
+}
+
 module.exports = {
   checkUser,
   insertUser,
@@ -376,4 +411,6 @@ module.exports = {
   getSubscriptionStatus,
   alterWordList,
   getWordList,
+  getAudioFlag,
+  updateAudioFlag,
 };

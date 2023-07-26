@@ -212,5 +212,9 @@
   "audioErr": {
     "en": "Error while sending audio",
     "ukr": "Під час створення аудіо сталася помилка"
+  },
+  "duplicateAudioErr": {
+    "en": "You can't generate audio for the same word list twice",
+    "ukr": "Ви не можете створити аудіо для того самого списку слів двічі"
   }
 }

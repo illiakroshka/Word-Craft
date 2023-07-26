@@ -211,6 +211,7 @@ bot.hears(commands.regenerate, async (ctx) => {
             db.decrementFreeRequests(ctx.from.id, REQUEST_DECREMENT);
           }else{
             db.alterWordList(ctx.from.id, reply);
+            db.updateAudioFlag(ctx.from.id, true);
           }
         })
         .catch(err => {
@@ -272,12 +273,15 @@ bot.hears(commands.premium, async (ctx) => {
 bot.hears(commands.audio, async (ctx) => {
   const botLanguage = await db.getBotLanguage(ctx.from.id);
   const premiumSubscription = await db.getSubscriptionStatus(ctx.from.id);
+  const audioFlag = await db.getAudioFlag(ctx.from.id);
   if (!premiumSubscription) {
     await ctx.reply(`${i18n.buySubscriptionMes[botLanguage]}`)
   } else {
     const wordList = await db.getWordList(ctx.from.id);
     if (!wordList){
       await ctx.reply(`${i18n.wordListErr[botLanguage]}`)
+    }else if(!audioFlag){
+      await ctx.reply(`${i18n.duplicateAudioErr[botLanguage]}`);
     }else {
       try {
         await ctx.reply(code(`${i18n.audioWarning[botLanguage]}`));
@@ -290,6 +294,7 @@ bot.hears(commands.audio, async (ctx) => {
           })
           .then((audioData) => {
             ctx.replyWithAudio({ source: Buffer.from(audioData) });
+            db.updateAudioFlag(ctx.from.id, false);
           })
           .catch((error) => {
             console.error(error);
@@ -386,6 +391,7 @@ bot.on(message('text'), async (ctx) => {
             db.decrementFreeRequests(ctx.from.id, REQUEST_DECREMENT);
           }else {
             db.alterWordList(ctx.from.id, reply);
+            db.updateAudioFlag(ctx.from.id, true);
           }
         })
         .catch(err => {
