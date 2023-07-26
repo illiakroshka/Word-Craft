@@ -4,15 +4,15 @@
     "ukr": "Ласкаво просимо до бота"
   },
   "introduction": {
-    "en": "This bot is used to generate word lists on a specific topic for a specific level of English.\n• Run bot - to run the bot\n• Translate bot - to translate bot\n• Help - commands navigation",
-    "ukr": "Цей бот використовується для генерації списків слів на конкретну тему для певного рівня англійської мови.\n• Запустити бота - для запуску бота\n• Змінити мову бота - для перекладу бота\n• Допомога - навігація команд"
+    "en": "This bot is used to generate word lists on a specific topic for a specific level of English.\n\nBefore start, we are happy to inform you that you have 14 requests to create word lists for free\n\n• Run bot - start working with bot\n\n• Profile - check the status of your premium subscription and the statistics of your requests and activity.\n\n• Translate bot - translate bot\n\n• Help - commands navigation",
+    "ukr": "Цей бот використовується для генерації списків слів на конкретну тему для певного рівня англійської мови.\n\nПеред тим як почати, раді повідомити що ви маєте 14 запитів на створення списків слів абсолютно безкоштовно\n\n• Запустити бота - почати роботу з ботом\n\n• Профіль - перевірити статус преміум підписки та статистики ваших запитів та активності.\n\n• Змінити мову бота - перекласти бот на іншу мову\n\n• Допомога - навігація команд"
   },
   "level": {
     "en": "What is your level of English?",
     "ukr": "Який ваш рівень англійської?"
   },
   "language": {
-    "en": "To which language to translate?",
+    "en": "Which language to translate the words into?",
     "ukr": "На яку мову перекладати слова?"
   },
   "topic": {
@@ -52,8 +52,8 @@
     }
   },
   "help": {
-    "en": "• Run bot - to run the bot \n• Generate audio - to generate audio of word list\n• Change topic - to change the topic of the word list \n• Regenerate list - to regenerate the list if you know most of the words \n• Translate bot - to translate the bot \n• Profile - to check statistics of your requests \n• Info - information about the bot\n• /topics - suggests popular example topics for your level",
-    "ukr": "• Запустити бота - для запуску бота \n•Згенерувати аудіо - для генерації аудіо списку слів\n• Змінити тему списку - для зміни теми списку слів \n• Регенерувати список - для перероблення списку, якщо ви знаєте більшість слів \n• Змінити мову бота - для перекладу бота \n• Профіль - для перевірки статистики ваших запитів\n• Інформація - інформація про бота \n• /topics - пропонує популярні приклади тем для вашого рівня"
+    "en": "• Run bot - start working with bot \n• Premium - purchase premium subscription\n• Generate audio - generate an audio version of the word list\n• Change topic - change the topic of the word list \n• Regenerate list - regenerate the list if you know most of the words \n• Translate bot - translate the bot \n• Profile - check the status of your premium subscription and the statistics of your requests and activity. \n• Info - information about the bot\n• /topics - suggests popular example topics for your level",
+    "ukr": "• Запустити бота - почати роботу з ботом. \n• Преміум - придбати преміум підписку\n• Згенерувати аудіо - створення аудіо зі списку слів.\n• Змінити тему списку - обрати нову тему списку слів.\n• Регенерувати список - оновити список, якщо ви знаєте більшість слів.\n• Змінити мову бота - перекласти бот на іншу мову.\n• Профіль - перевірити статус преміум підписки та статистики ваших запитів та активності.\n• Інформація - надає інформацію про бота та його можливості.\n• /topics - пропонує популярні приклади тем для вашого рівня вивчення."
   },
   "info": {
     "en": "This bot is used to generate word lists on a specific topic for a specific level of English. Also, you can choose the language in which to translate these words.\n• Help - command for navigation",
@@ -132,8 +132,8 @@
     "ukr": "Без перекладу"
   },
   "freeRequestsErr": {
-    "en": "You don't have free requests anymore, buy premium subscription",
-    "ukr": "У вас не залишилось безкоштовних запитів, придбайте преміум підписку"
+    "en": "You don't have free requests anymore, purchase a premium subscription in the Premium section",
+    "ukr": "У вас не залишилось безкоштовних запитів, придбайте преміум підписку у розділі Преміум"
   },
   "freeRequestsStatus": {
     "en": "Free requests left: ",
@@ -149,7 +149,7 @@
   },
   "premiumSubscriptionPayment": {
     "en": "Pay the required amount on one of these cards:\nMono: 112233\nPrivat: 334455\n",
-    "ukr": "Сплатіть необхідну суму на одну з цих карт:\nMono: 112233\nПриват: 334455\n"
+    "ukr": "Сплатіть необхідну суму на одну з цих карт:\nМоноБанк: 112233\nПриватБанк: 334455\n"
   },
   "premiumSubscriptionMessage": {
     "en": "Send a screenshot with the payment in the chat. The subscription will be activated during the day. You will receive a notification about this",
@@ -177,33 +177,33 @@
   },
   "subscriptionActiveMes": {
     "en": {
-      "day": "Your subscription for day is active",
-      "week": "Your subscription for week is active",
-      "month": "Your subscription for month is active",
-      "year": "Your subscription for year is active"
+      "day": "Your subscription for day is active\n• Profile - to check subscription status",
+      "week": "Your subscription for week is active\n• Profile - to check subscription status",
+      "month": "Your subscription for month is active\n• Profile - to check subscription status",
+      "year": "Your subscription for year is active\n• Profile - to check subscription status"
     },
     "ukr": {
-      "day": "Ваша підписка на день активна",
-      "week": "Ваша підписка на тиждень активна",
-      "month": "Ваша підписка на місяць активна",
-      "year": "Ваша підписка на рік активна"
+      "day": "Ваша підписка на день активна\n• Профіль - перевірити статус підписки",
+      "week": "Ваша підписка на тиждень активна\n• Профіль - перевірити статус підписки",
+      "month": "Ваша підписка на місяць активна\n• Профіль - перевірити статус підписки",
+      "year": "Ваша підписка на рік активна\n• Профіль - перевірити статус підписки"
     }
   },
   "paymentConfirmation": {
-    "en": "Thank you for your payment, your subscription will be activated during the day\n You will receive a notification about this",
+    "en": "Thank you for your payment, your subscription will be activated during the day\nYou will receive a notification about this",
     "ukr": "Дякуємо за оплату, ваша підписка буде активована протягом дня.\nВи отримаєте сповіщення про це"
   },
   "enablePhotoUpload": {
-    "en": "Press the command 'Premium' to enable screenshot of payment upload",
-    "ukr": "Натисніть команду 'Преміум' щоб активувати відправку скріншоту оплати"
+    "en": "Press the command Premium to enable screenshot of payment upload",
+    "ukr": "Натисніть команду Преміум щоб активувати відправку скріншоту оплати"
   },
   "wordListErr": {
     "en": "Generate word list first",
     "ukr": "Спершу згенеруйте список слів"
   },
   "buySubscriptionMes": {
-    "en": "To unblock this feature, purchase a premium subscription in the 'Premium' section",
-    "ukr": "Для розблокування цієї функції придбайте преміум підписку у розділі 'Преміум'"
+    "en": "To unblock this feature, purchase a premium subscription in the Premium section",
+    "ukr": "Для розблокування цієї функції придбайте преміум підписку у розділі Преміум"
   },
   "audioWarning": {
     "en": "The audio is generating it can take some time",

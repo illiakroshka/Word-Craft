@@ -149,7 +149,7 @@ bot.start(async (ctx) => {
   }
   const botLanguage = await db.getBotLanguage(ctx.from.id);
 
-  const welcomeMessage = `${i18n.greeting[botLanguage]}, ${ctx.from.first_name}!\n`+
+  const welcomeMessage = `${i18n.greeting[botLanguage]}, ${ctx.from.first_name}!\n\n`+
   `${i18n.introduction[botLanguage]}`;
   const boldText = welcomeMessage.replace(/(•\s*)(.*?) -/g, '$1*$2* -');
   const menuOptions = Markup.keyboard(i18n.menuOptions[botLanguage]).resize();
@@ -221,7 +221,7 @@ bot.hears(commands.regenerate, async (ctx) => {
       await ctx.reply(`${i18n.genErr[botLanguage]}`);
     }
   }else {
-    await ctx.reply(i18n.freeRequestsErr[botLanguage])
+    await ctx.reply(code(i18n.freeRequestsErr[botLanguage]))
   }
 })
 
@@ -279,9 +279,9 @@ bot.hears(commands.audio, async (ctx) => {
   } else {
     const wordList = await db.getWordList(ctx.from.id);
     if (!wordList){
-      await ctx.reply(`${i18n.wordListErr[botLanguage]}`)
+      await ctx.reply(code(`${i18n.wordListErr[botLanguage]}`))
     }else if(!audioFlag){
-      await ctx.reply(`${i18n.duplicateAudioErr[botLanguage]}`);
+      await ctx.reply(code(`${i18n.duplicateAudioErr[botLanguage]}`));
     }else {
       try {
         await ctx.reply(code(`${i18n.audioWarning[botLanguage]}`));
@@ -301,7 +301,7 @@ bot.hears(commands.audio, async (ctx) => {
           });
       } catch (error) {
         console.error('Error:', error);
-        ctx.reply(`${i18n.audioErr[botLanguage]}`);
+        ctx.reply(code(`${i18n.audioErr[botLanguage]}`));
       }
     }
   }
@@ -402,7 +402,7 @@ bot.on(message('text'), async (ctx) => {
     }
     await db.updateUserFlag('isTopicSelected',false, ctx.from.id);
   } else {
-    await ctx.reply(i18n.freeRequestsErr[botLanguage])
+    await ctx.reply(code(i18n.freeRequestsErr[botLanguage]))
   }
 });
 
