@@ -406,21 +406,7 @@ bot.on(message('text'), async (ctx) => {
   }
 });
 
-bot.on(message('photo'), async (ctx) => {
-  const photoUploadEnabled = await db.getUserFlag('photoUploadEnabled',ctx.from.id);
-  const botLanguage = await db.getBotLanguage(ctx.from.id);
-  if (photoUploadEnabled) {
-    const adminId = config.ADMIN_ID;
-    await ctx.telegram.forwardMessage(adminId, ctx.message.chat.id, ctx.message.message_id);
-    await setSubscription(ctx, ctx.from.id);
-    await ctx.reply(i18n.paymentConfirmation[botLanguage])
-  }else {
-    await ctx.reply(i18n.enablePhotoUpload[botLanguage])
-  }
-  await db.updateUserFlag('photoUploadEnabled',false, ctx.from.id);
-})
-
-bot.on(message('document'), async (ctx) => {
+bot.on([message('photo'), message('document')], async (ctx) => {
   const photoUploadEnabled = await db.getUserFlag('photoUploadEnabled',ctx.from.id);
   const botLanguage = await db.getBotLanguage(ctx.from.id);
   if (photoUploadEnabled) {
