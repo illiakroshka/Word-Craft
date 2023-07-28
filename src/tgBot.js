@@ -33,6 +33,11 @@ const durationOptions  = {
   month: 30,
   year: 365,
   refuse: 0,
+};
+
+const languageCodes = {
+  ru: 'ukr',
+  uk: 'ukr',
 }
 
 const sendPrompt = (ctx, text) => {
@@ -69,7 +74,7 @@ const chooseLevel = async (ctx) => {
   })
 }
 
-const chooseLanguage = async (ctx) =>{
+const chooseLanguage = async (ctx) => {
   const botLanguage = await db.getBotLanguage(ctx.from.id);
   await ctx.reply(i18n.language[botLanguage],{
     reply_markup:{
@@ -135,6 +140,34 @@ const chooseTopic = async (ctx) => {
   await db.updateUserFlag('isTopicSelected',true, ctx.from.id);
 }
 
+const processPrompt = async (ctx, userData, botLanguage, premiumSubscription, freeRequests) => {
+  if (!premiumSubscription && !freeRequests){
+    await ctx.reply(code(i18n.freeRequestsErr[botLanguage]));
+    return;
+  }
+  await ctx.reply(code(`${i18n.ackReg[botLanguage]}. ${i18n.warning[botLanguage]}`));
+  const prompt = prompts.createPrompt(userData);
+  console.log(prompt);
+  try {
+    sendPrompt(ctx, prompt)
+      .then(reply => {
+        ctx.reply(reply);
+        db.incrementRequests(ctx.from.id, REQUEST_INCREMENT);
+        if (!premiumSubscription) {
+          db.decrementFreeRequests(ctx.from.id, REQUEST_DECREMENT);
+        }else{
+          db.alterWordList(ctx.from.id, reply);
+          db.updateAudioFlag(ctx.from.id, true);
+        }
+      })
+      .catch(err => {
+        ctx.reply(`${i18n.genErr[botLanguage]}`);
+      });
+  }catch (err){
+    await ctx.reply(`${i18n.genErr[botLanguage]}`);
+  }
+}
+
 bot.start(async (ctx) => {
   const userExists = await db.checkUser(ctx.from.id);
 
@@ -144,9 +177,12 @@ bot.start(async (ctx) => {
     await db.resetUserData(ctx.from.id);
   }
 
-  if (ctx.from.language_code === 'ru' || ctx.from.language_code === 'uk'){
-    await db.updateUserBotLanguage(ctx.from.id,"ukr");
+  const preferredLanguage = languageCodes[ctx.from.language_code];
+
+  if (preferredLanguage){
+    await db.updateUserBotLanguage(ctx.from.id, preferredLanguage);
   }
+
   const botLanguage = await db.getBotLanguage(ctx.from.id);
 
   const welcomeMessage = `${i18n.greeting[botLanguage]}, ${ctx.from.first_name}!\n\n`+
@@ -198,30 +234,8 @@ bot.hears(commands.regenerate, async (ctx) => {
 
   if (!language || !level || !topic){
     await ctx.reply(code(`${i18n.RegErr[botLanguage]}`));
-  }else if(premiumSubscription || freeRequests){
-    await ctx.reply(code(`${i18n.ackReg[botLanguage]}. ${i18n.warning[botLanguage]}`));
-    const prompt = prompts.improveListPrompt(userData);
-    console.log(prompt);
-    try {
-      sendPrompt(ctx, prompt)
-        .then(reply => {
-          ctx.reply(reply);
-          db.incrementRequests(ctx.from.id, REQUEST_INCREMENT);
-          if (!premiumSubscription) {
-            db.decrementFreeRequests(ctx.from.id, REQUEST_DECREMENT);
-          }else{
-            db.alterWordList(ctx.from.id, reply);
-            db.updateAudioFlag(ctx.from.id, true);
-          }
-        })
-        .catch(err => {
-          ctx.reply(`${i18n.genErr[botLanguage]}`);
-        });
-    }catch (err){
-      await ctx.reply(`${i18n.genErr[botLanguage]}`);
-    }
   }else {
-    await ctx.reply(code(i18n.freeRequestsErr[botLanguage]))
+    await processPrompt(ctx, userData, botLanguage, premiumSubscription, freeRequests);
   }
 })
 
@@ -248,16 +262,17 @@ bot.hears(commands.profile, async (ctx) => {
     `${i18n.freeRequestsStatus[botLanguage]} ${freeRequests}\n\n`;
   if (!subscriptionDetails){
     replyMessage += `${i18n.subscriptionMessage[botLanguage]} ${i18n.subscriptionInactive[botLanguage]}`;
-  }else {
-    const { end_date, premium_subscription } = subscriptionDetails;
-    if (premium_subscription) {
-      replyMessage += `${i18n.subscriptionMessage[botLanguage]} ${i18n.subscriptionActive[botLanguage]}\n\n`;
-      replyMessage += `${i18n.endDateMessage[botLanguage]} ${end_date.toLocaleDateString('uk-UA', options)}`;
-    }else {
-      replyMessage += `${i18n.subscriptionMessage[botLanguage]} ${i18n.subscriptionInactive[botLanguage]}\n\n`;
-    }
+    await ctx.replyWithMarkdown(replyMessage);
+    return;
   }
-  ctx.replyWithMarkdown(replyMessage);
+  const { end_date, premium_subscription } = subscriptionDetails;
+  if (premium_subscription) {
+    replyMessage += `${i18n.subscriptionMessage[botLanguage]} ${i18n.subscriptionActive[botLanguage]}\n\n`;
+    replyMessage += `${i18n.endDateMessage[botLanguage]} ${end_date.toLocaleDateString('uk-UA', options)}`;
+  }else {
+    replyMessage += `${i18n.subscriptionMessage[botLanguage]} ${i18n.subscriptionInactive[botLanguage]}\n\n`;
+  }
+  await ctx.replyWithMarkdown(replyMessage);
 });
 
 bot.hears(commands.premium, async (ctx) => {
@@ -273,37 +288,39 @@ bot.hears(commands.premium, async (ctx) => {
 bot.hears(commands.audio, async (ctx) => {
   const botLanguage = await db.getBotLanguage(ctx.from.id);
   const premiumSubscription = await db.getSubscriptionStatus(ctx.from.id);
-  const audioFlag = await db.getAudioFlag(ctx.from.id);
   if (!premiumSubscription) {
     await ctx.reply(`${i18n.buySubscriptionMes[botLanguage]}`)
-  } else {
-    const wordList = await db.getWordList(ctx.from.id);
-    if (!wordList){
-      await ctx.reply(code(`${i18n.wordListErr[botLanguage]}`))
-    }else if(!audioFlag){
+    return;
+  }
+  const wordList = await db.getWordList(ctx.from.id);
+  if (!wordList){
+    await ctx.reply(code(`${i18n.wordListErr[botLanguage]}`));
+    return;
+  }
+  const audioFlag = await db.getAudioFlag(ctx.from.id);
+  if(!audioFlag){
       await ctx.reply(code(`${i18n.duplicateAudioErr[botLanguage]}`));
-    }else {
-      try {
-        await ctx.reply(code(`${i18n.audioWarning[botLanguage]}`));
-        voiceMessageProcessor.processVoiceMessage(wordList)
-          .then((audio) => {
-            return fetch(audio);
-          })
-          .then((response) => {
-            return response.arrayBuffer();
-          })
-          .then((audioData) => {
-            ctx.replyWithAudio({ source: Buffer.from(audioData) });
-            db.updateAudioFlag(ctx.from.id, false);
-          })
-          .catch((error) => {
-            console.error(error);
-          });
-      } catch (error) {
-        console.error('Error:', error);
-        ctx.reply(code(`${i18n.audioErr[botLanguage]}`));
-      }
-    }
+      return;
+  }
+  try {
+    await ctx.reply(code(`${i18n.audioWarning[botLanguage]}`));
+    voiceMessageProcessor.processVoiceMessage(wordList)
+      .then((audio) => {
+        return fetch(audio);
+      })
+      .then((response) => {
+        return response.arrayBuffer();
+      })
+      .then((audioData) => {
+        ctx.replyWithAudio({ source: Buffer.from(audioData) });
+        db.updateAudioFlag(ctx.from.id, false);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  } catch (error) {
+    console.error('Error:', error);
+    ctx.reply(code(`${i18n.audioErr[botLanguage]}`));
   }
 })
 
@@ -376,51 +393,15 @@ bot.on(message('text'), async (ctx) => {
   const premiumSubscription = await db.getSubscriptionStatus(ctx.from.id);
   if (!topicStatus) {
     await ctx.reply(code(i18n.inputErr[botLanguage]));
-  }else if(premiumSubscription || freeRequests){
-    await ctx.reply(code(`${i18n.ack[botLanguage]} ${ctx.update.message.text}. ${i18n.warning[botLanguage]}`));
+  }else {
     await db.updateUserData('topic', ctx.update.message.text, ctx.from.id);
-    const prompt = prompts.createPrompt( await db.getUserData(ctx.from.id));
-    console.log(prompt);
-
-    try {
-      sendPrompt(ctx, prompt)
-        .then(reply => {
-          ctx.reply(reply);
-          db.incrementRequests(ctx.from.id, REQUEST_INCREMENT);
-          if (!premiumSubscription) {
-            db.decrementFreeRequests(ctx.from.id, REQUEST_DECREMENT);
-          }else {
-            db.alterWordList(ctx.from.id, reply);
-            db.updateAudioFlag(ctx.from.id, true);
-          }
-        })
-        .catch(err => {
-          ctx.reply(`${i18n.genErr[botLanguage]}`);
-        });
-    }catch (err){
-      await ctx.reply(`${i18n.genErr[botLanguage]}`);
-    }
-    await db.updateUserFlag('isTopicSelected',false, ctx.from.id);
-  } else {
-    await ctx.reply(code(i18n.freeRequestsErr[botLanguage]))
+    const userData = await db.getUserData(ctx.from.id);
+    await processPrompt(ctx, userData, botLanguage, premiumSubscription, freeRequests);
+    await db.updateUserFlag('isTopicSelected', false, ctx.from.id);
   }
 });
 
-bot.on(message('photo'), async (ctx) => {
-  const photoUploadEnabled = await db.getUserFlag('photoUploadEnabled',ctx.from.id);
-  const botLanguage = await db.getBotLanguage(ctx.from.id);
-  if (photoUploadEnabled) {
-    const adminId = config.ADMIN_ID;
-    await ctx.telegram.forwardMessage(adminId, ctx.message.chat.id, ctx.message.message_id);
-    await setSubscription(ctx, ctx.from.id);
-    await ctx.reply(i18n.paymentConfirmation[botLanguage])
-  }else {
-    await ctx.reply(i18n.enablePhotoUpload[botLanguage])
-  }
-  await db.updateUserFlag('photoUploadEnabled',false, ctx.from.id);
-})
-
-bot.on(message('document'), async (ctx) => {
+bot.on([message('photo'), message('document')], async (ctx) => {
   const photoUploadEnabled = await db.getUserFlag('photoUploadEnabled',ctx.from.id);
   const botLanguage = await db.getBotLanguage(ctx.from.id);
   if (photoUploadEnabled) {
