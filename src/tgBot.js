@@ -33,6 +33,11 @@ const durationOptions  = {
   month: 30,
   year: 365,
   refuse: 0,
+};
+
+const languageCodes = {
+  ru: 'ukr',
+  uk: 'ukr',
 }
 
 const sendPrompt = (ctx, text) => {
@@ -69,7 +74,7 @@ const chooseLevel = async (ctx) => {
   })
 }
 
-const chooseLanguage = async (ctx) =>{
+const chooseLanguage = async (ctx) => {
   const botLanguage = await db.getBotLanguage(ctx.from.id);
   await ctx.reply(i18n.language[botLanguage],{
     reply_markup:{
@@ -172,9 +177,12 @@ bot.start(async (ctx) => {
     await db.resetUserData(ctx.from.id);
   }
 
-  if (ctx.from.language_code === 'ru' || ctx.from.language_code === 'uk'){
-    await db.updateUserBotLanguage(ctx.from.id,"ukr");
+  const preferredLanguage = languageCodes[ctx.from.language_code];
+
+  if (preferredLanguage){
+    await db.updateUserBotLanguage(ctx.from.id, preferredLanguage);
   }
+
   const botLanguage = await db.getBotLanguage(ctx.from.id);
 
   const welcomeMessage = `${i18n.greeting[botLanguage]}, ${ctx.from.first_name}!\n\n`+
