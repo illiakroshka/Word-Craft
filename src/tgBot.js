@@ -14,6 +14,7 @@ require('dotenv').config({ path: './config/.env' });
 const REQUEST_INCREMENT = 1;
 const REQUEST_DECREMENT = 1;
 const DEFAULT_FREE_REQUESTS = 14;
+const EMPTY_WORD_LIST = '';
 
 const bot = new Telegraf(process.env.TELEGRAM_TOKEN);
 
@@ -174,6 +175,7 @@ bot.start(async (ctx) => {
     await db.insertUser(parameters, ctx.from.id, DEFAULT_FREE_REQUESTS);
   } else {
     await db.resetUserData(ctx.from.id);
+    await db.alterWordList(ctx.from.id, EMPTY_WORD_LIST);
   }
 
   const preferredLanguage = languageCodes[ctx.from.language_code];
