@@ -5,17 +5,17 @@ const { message } = require('telegraf/filters');
 const { code } = require('telegraf/format')
 const { openAI } = require('./openAI');
 const { voiceMessageProcessor } = require('./textToSpeech');
-const config = require('../config/default.json');
 const i18n = require('../config/i18n.json');
 const commands = require('../config/commands.json');
 const prompts = require('./aiPromptUtils');
 const db = require('../database/database');
+require('dotenv').config({ path: './config/.env' });
 
 const REQUEST_INCREMENT = 1;
 const REQUEST_DECREMENT = 1;
 const DEFAULT_FREE_REQUESTS = 14;
 
-const bot = new Telegraf(config.TELEGRAM_TOKEN);
+const bot = new Telegraf(process.env.TELEGRAM_TOKEN);
 
 const parameters = {
   isTopicSelected: false,
@@ -51,7 +51,6 @@ const sendPrompt = (ctx, text) => {
     }
   });
 };
-
 
 const handleLevelAction = async (ctx) => {
   await db.updateUserData('level',ctx.match[0].toUpperCase(),ctx.from.id);
@@ -117,7 +116,7 @@ const setBotLanguage = async (ctx) => {
 }
 
 const setSubscription = async (ctx, userId) => {
-  const adminId = config.ADMIN_ID;
+  const adminId = process.env.ADMIN_ID;
   await bot.telegram.sendMessage(adminId, `Set subscription for user ${userId}`,{
     reply_markup:{
       inline_keyboard:[
@@ -382,7 +381,7 @@ bot.action(/(day|week|month|year|refuse):(.+)/, async (ctx) => {
     await bot.telegram.sendMessage(userId, i18n.subscriptionActiveMes[botLanguage][action]);
   }catch (err){
     console.error(`Error processing subscription. User: ${userId}`, err);
-    await bot.telegram.sendMessage(config.ADMIN_ID, `An error occurred while processing subscription. User Id ${userId}`);
+    await bot.telegram.sendMessage(process.env.ADMIN_ID, `An error occurred while processing subscription. User Id ${userId}`);
   }
 });
 
@@ -405,7 +404,7 @@ bot.on([message('photo'), message('document')], async (ctx) => {
   const photoUploadEnabled = await db.getUserFlag('photoUploadEnabled',ctx.from.id);
   const botLanguage = await db.getBotLanguage(ctx.from.id);
   if (photoUploadEnabled) {
-    const adminId = config.ADMIN_ID;
+    const adminId = process.env.ADMIN_ID;
     await ctx.telegram.forwardMessage(adminId, ctx.message.chat.id, ctx.message.message_id);
     await setSubscription(ctx, ctx.from.id);
     await ctx.reply(i18n.paymentConfirmation[botLanguage])

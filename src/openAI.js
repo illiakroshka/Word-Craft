@@ -1,7 +1,7 @@
 'use strict';
 
 const { Configuration, OpenAIApi } = require("openai");
-const config = require('../config/default.json');
+require('dotenv').config({ path: './config/.env' });
 
 const CHAT_GPT_MODEL = 'gpt-3.5-turbo-0301';
 
@@ -32,6 +32,6 @@ class OpenAI {
   }
 }
 
-const openAI = new OpenAI(config.OPENAI_KEY);
+const openAI = new OpenAI(process.env.OPENAI_KEY);
 
 module.exports = {openAI};

@@ -1,7 +1,10 @@
 'use strict';
 
 const { Pool } = require('pg');
-const config = require('../config/dbConfig');
+require('dotenv').config({ path: './config/.env' });
+
+const configJSON = process.env.DATABASE_CONFIG_JSON;
+const config = JSON.parse(configJSON);
 
 const checkUser = async (telegramId) => {
   const pool = new Pool(config);

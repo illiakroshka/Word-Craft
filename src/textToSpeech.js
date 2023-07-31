@@ -1,6 +1,6 @@
 'use strict';
 
-const config = require('../config/default.json');
+require('dotenv').config({ path: './config/.env' });
 
 class VoiceMessageProcessor {
   async textToSpeech(text) {
@@ -11,8 +11,8 @@ class VoiceMessageProcessor {
         headers: {
           accept: 'application/json',
           'content-type': 'application/json',
-          AUTHORIZATION: config.PLAYHT_KEY,
-          'X-USER-ID': config.USER_ID,
+          AUTHORIZATION: process.env.PLAYHT_KEY,
+          'X-USER-ID': process.env.PLAYHT_USER_ID,
         },
         body: JSON.stringify({
           content: [text],
@@ -35,8 +35,8 @@ class VoiceMessageProcessor {
         method: 'GET',
         headers: {
           accept: 'application/json',
-          AUTHORIZATION: config.PLAYHT_KEY,
-          'X-USER-ID': config.USER_ID,
+          AUTHORIZATION: process.env.PLAYHT_KEY,
+          'X-USER-ID': process.env.PLAYHT_USER_ID,
         },
       };
 
