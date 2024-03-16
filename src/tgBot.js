@@ -5,7 +5,8 @@ const { message } = require('telegraf/filters');
 const { code } = require('telegraf/format')
 const { openAI } = require('./openAI');
 const { voiceMessageProcessor } = require('./textToSpeech');
-const i18n = require('../config/i18n.json');
+const i18n = require('./internationalization/i18n.json');
+const messageService = require('./services/messageService.js');
 const commands = require('../config/commands.json');
 const prompts = require('./aiPromptUtils');
 const usersService = require('./services/userService.js');
@@ -174,11 +175,7 @@ bot.start(async (ctx) => {
   }
 
   const botLanguage = await usersService.getBotLanguage(ctx.from.id);
-
-  const welcomeMessage = `${i18n.greeting[botLanguage]}, ${ctx.from.first_name}!\n\n`+
-  `${i18n.introduction[botLanguage]}`;
-  const boldText = welcomeMessage.replace(/(•\s*)(.*?) -/g, '$1*$2* -');
-  const menuOptions = Markup.keyboard(i18n.menuOptions[botLanguage]).resize();
+  const { boldText, menuOptions} = messageService.getWelcomeMessage(botLanguage,ctx.from.first_name);
 
   await ctx.replyWithMarkdown(boldText, menuOptions);
 })
@@ -203,16 +200,14 @@ bot.hears(commands.changeTopic,async (ctx) => {
 
 bot.hears(commands.info, async (ctx) => {
   const botLanguage = await usersService.getBotLanguage(ctx.from.id);
-  const infoText = i18n.info[botLanguage];
-  const boldText = infoText.replace(/(•\s*)(.*?) -/g, '$1*$2* -');
-  await ctx.replyWithMarkdown(boldText);
+  const info = messageService.getInfoMessage(botLanguage);
+  await ctx.replyWithMarkdown(info);
 })
 
 bot.hears(commands.help, async (ctx) => {
   const botLanguage = await usersService.getBotLanguage(ctx.from.id);
-  const helpText = i18n.help[botLanguage];
-  const boldText = helpText.replace(/(•\s*)(.*?) -/g, '$1*$2* -');
-  await ctx.replyWithMarkdown(boldText);
+  const help = messageService.getHelpMessage(botLanguage);
+  await ctx.replyWithMarkdown(help);
 });
 
 bot.hears(commands.regenerate, async (ctx) => {
@@ -234,8 +229,8 @@ bot.command('topics', async (ctx) => {
   const { level } = await usersService.getUserData(ctx.from.id);
 
   if (level) {
-    const topicList = i18n.topics[botLanguage][level].map(topic => `\`${topic}\``).join('\n');
-    await ctx.replyWithMarkdownV2(`${i18n.topicsR[botLanguage]}\n${topicList}`);
+    const topicList = messageService.getTopics(botLanguage,level);
+    await ctx.replyWithMarkdownV2(topicList);
   } else {
     await ctx.reply(i18n.topicsErr[botLanguage]);
   }
@@ -247,31 +242,14 @@ bot.hears(commands.profile, async (ctx) => {
   const freeRequests = await usersService.getFreeRequests(ctx.from.id);
   const subscriptionDetails = await premiumUsersService.getSubscriptionDetails(ctx.from.id);
   const options = { day: 'numeric', month: 'numeric', year: 'numeric' };
-  let replyMessage = `${i18n.idMessage[botLanguage]} \`${ ctx.from.id }\`\n\n` +
-  `${i18n.requests[botLanguage]} ${requests}\n\n` +
-    `${i18n.freeRequestsStatus[botLanguage]} ${freeRequests}\n\n`;
-  if (!subscriptionDetails){
-    replyMessage += `${i18n.subscriptionMessage[botLanguage]} ${i18n.subscriptionInactive[botLanguage]}`;
-    await ctx.replyWithMarkdown(replyMessage);
-    return;
-  }
-  const { end_date, is_active } = subscriptionDetails;
-  if (is_active) {
-    replyMessage += `${i18n.subscriptionMessage[botLanguage]} ${i18n.subscriptionActive[botLanguage]}\n\n`;
-    replyMessage += `${i18n.endDateMessage[botLanguage]} ${end_date.toLocaleDateString('uk-UA', options)}`;
-  }else {
-    replyMessage += `${i18n.subscriptionMessage[botLanguage]} ${i18n.subscriptionInactive[botLanguage]}\n\n`;
-  }
+  const replyMessage = messageService.getProfileMessage(botLanguage,ctx.from.id,requests, freeRequests, subscriptionDetails,options);
   await ctx.replyWithMarkdown(replyMessage);
 });
 
 bot.hears(commands.premium, async (ctx) => {
   const botLanguage = await usersService.getBotLanguage(ctx.from.id);
   await usersService.updateData('photo_upload_enabled', true, ctx.from.id);
-  const premiumMessage = `${i18n.premiumSubscriptionOptions[botLanguage].replace(/(•\s*)(.*)/g, '$1*$2*')}\n`+
-  `${i18n.premiumSubscriptionCost[botLanguage].replace(/(•\s*)(.*)/g, '$1*$2*')}\n`+
-  `${i18n.premiumSubscriptionPayment[botLanguage].replace(/(\d+)/g, '`$1`')}\n`+
-  `${i18n.premiumSubscriptionMessage[botLanguage]}\n`
+  const premiumMessage = messageService.getPremiumMessage(botLanguage);
   await ctx.replyWithMarkdown(premiumMessage);
 })
 
