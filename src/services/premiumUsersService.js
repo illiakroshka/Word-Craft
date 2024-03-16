@@ -1,4 +1,4 @@
-const {premiumUsersRepository} = require('../database/repositories/TemplateRepository.js')
+const { premiumUsersRepository} = require('../database/repositories/TemplateRepository.js')
 
 const checkUserPremium = async (telegramId) => {
   return premiumUsersRepository.select({telegram_id: telegramId});
@@ -9,7 +9,10 @@ const insertUser = async (telegramId, startDate, endDate) => {
 }
 
 const updateSubscription = async (telegramId, startDate, endDate, isActive) => {
-  return premiumUsersRepository.update({start_date: startDate, end_date: endDate, is_active: isActive}, {telegram_id: telegramId});
+  return premiumUsersRepository.query(
+    'UPDATE "premium_users" SET "start_date" = $1, "end_date" = $2, "is_active" = $3 WHERE "telegram_id" = $4',
+    [startDate,endDate,isActive,telegramId]
+  )
 }
 
 const getSubscriptionDetails = async (telegramId) => {
@@ -29,18 +32,18 @@ const alterWordList = async (telegramId, wordList) => {
 }
 
 const getWordList = async (telegramId) => {
-  return premiumUsersRepository.select({telegram_id: telegramId},['word_list']);
+  const wordList = await premiumUsersRepository.select({telegram_id: telegramId},['word_list']);
+  return wordList[0];
 }
 
 const getAudioFlag = async (telegramId) => {
-  return premiumUsersRepository.select({telegram_id: telegramId}, ['can_generate_audio']);
+  const audio = await premiumUsersRepository.select({telegram_id: telegramId}, ['can_generate_audio']);
+  return audio[0].can_generate_audio;
 }
 
 const updateAudioFlag = async (telegramId, flag) => {
   return premiumUsersRepository.update({telegram_id: telegramId},{can_generate_audio: flag});
 }
-
-getSubscriptionDetails(5487).then(console.log)
 
 module.exports = {
   checkUserPremium,

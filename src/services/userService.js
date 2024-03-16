@@ -1,7 +1,6 @@
 'use strict';
 
-const {usersRepository} = require('../database/repositories/TemplateRepository')
-const {parseInputDatesAsUTC} = require("pg/lib/defaults");
+const { usersRepository} = require('../database/repositories/TemplateRepository')
 
 const getOrCreateUser = async (telegramId) => {
   const user = await usersRepository.select({telegram_id: telegramId});
@@ -42,7 +41,8 @@ const updateBotLanguage = async (telegramId, language) => {
 }
 
 const getUsersRequests = async (telegramId) => {
-  return usersRepository.select({telegram_id: telegramId}, ['requests'])
+  const requests = await usersRepository.select({telegram_id: telegramId}, ['requests'])
+  return requests[0].requests;
 }
 
 const incrementRequests = async (telegramId, incrementValue) => {
@@ -56,10 +56,13 @@ const decrementFreeRequests = async (telegramId, decrementValue) => {
 }
 
 const getFreeRequests = async (telegramId) => {
-  return usersRepository.select({telegram_id: telegramId}, ['free_requests']);
+  const requests = await usersRepository.select({telegram_id: telegramId}, ['free_requests']);
+  return requests[0].free_requests;
 }
 
-getUserData(845958648).then(console.log)
+const getFlag = async (telegramId,flag) => {
+  return usersRepository.select({telegram_id: telegramId},[flag]);
+}
 
 module.exports = {
   getOrCreateUser,
@@ -74,4 +77,5 @@ module.exports = {
   decrementFreeRequests,
   getFreeRequests,
   getSpecificUserData,
+  getFlag,
 }
