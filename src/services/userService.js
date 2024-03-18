@@ -28,7 +28,8 @@ const getUserData = async (telegramId) => {
 }
 
 const getSpecificUserData = async (telegramId, data) => {
-  return usersRepository.select({telegram_id: telegramId},[data]);
+  const userData = await usersRepository.select({telegram_id: telegramId},data);
+  return userData[0];
 }
 
 const getBotLanguage = async (telegramId) => {
@@ -47,12 +48,14 @@ const getUsersRequests = async (telegramId) => {
 
 const incrementRequests = async (telegramId, incrementValue) => {
   const requests = await usersRepository.select({telegram_id: telegramId},['requests']);
-  return usersRepository.update({request: requests + incrementValue }, {telegram_id: telegramId});
+  const value = requests[0].requests + incrementValue;
+  return usersRepository.update({requests: value }, {telegram_id: telegramId});
 }
 
 const decrementFreeRequests = async (telegramId, decrementValue) => {
   const freeRequests = await usersRepository.select({telegram_id: telegramId}, ['free_requests']);
-  return usersRepository.update({free_requests: freeRequests - decrementValue},{telegram_id: telegramId});
+  const value = freeRequests[0].free_requests -decrementValue;
+  return usersRepository.update({free_requests: value},{telegram_id: telegramId});
 }
 
 const getFreeRequests = async (telegramId) => {
@@ -61,7 +64,8 @@ const getFreeRequests = async (telegramId) => {
 }
 
 const getFlag = async (telegramId,flag) => {
-  return usersRepository.select({telegram_id: telegramId},[flag]);
+  const value = await usersRepository.select({telegram_id: telegramId},[flag]);
+  return value[0];
 }
 
 module.exports = {
