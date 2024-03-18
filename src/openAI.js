@@ -3,8 +3,6 @@
 const { Configuration, OpenAIApi } = require("openai");
 require('dotenv').config({ path: './config/.env' });
 
-const CHAT_GPT_MODEL = 'gpt-3.5-turbo-0301';
-
 class OpenAI {
   roles = {
     ASSISTANT: 'assistant',
@@ -22,7 +20,7 @@ class OpenAI {
   async chat(messages){
     try {
       const response = await this.openai.createChatCompletion({
-        model: CHAT_GPT_MODEL,
+        model: process.env.CHAT_GPT_MODEL,
         messages,
       });
       return response.data.choices[0].message

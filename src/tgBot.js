@@ -2,12 +2,11 @@
 
 const { Telegraf, Markup } = require('telegraf');
 const { message } = require('telegraf/filters');
-const { code } = require('telegraf/format')
+const { code, pre} = require('telegraf/format')
 const { openAI } = require('./openAI');
-const { voiceMessageProcessor } = require('./textToSpeech');
 const i18n = require('./internationalization/i18n.json');
 const messageService = require('./services/messageService.js');
-const commands = require('../config/commands.json');
+const commands = require('./internationalization/commands.json');
 const prompts = require('./aiPromptUtils');
 const usersService = require('./services/userService.js');
 const premiumUsersService = require('./services/premiumUsersService.js');
@@ -18,16 +17,6 @@ const REQUEST_INCREMENT = 1;
 const REQUEST_DECREMENT = 1;
 
 const bot = new Telegraf(process.env.TELEGRAM_TOKEN);
-
-const parameters = {
-  isTopicSelected: false,
-  definition: false,
-  photoUploadEnabled: false,
-  botLanguage: "en",
-  level: '',
-  language: '',
-  topic: '',
-};
 
 const durationOptions  = {
   day: 1,
@@ -45,7 +34,7 @@ const languageCodes = {
 const sendPrompt = (ctx, text) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const messages = [{ role: openAI.roles.USER, content: text }];
+      const messages = [{ role: openAI.roles.USER, content: text },{ role: openAI.roles.SYSTEM, content: 'You are a helpful assistant designed to generate word lists' }];
       const response = await openAI.chat(messages);
       resolve(response.content);
     } catch (error) {
@@ -142,23 +131,13 @@ const chooseTopic = async (ctx) => {
 }
 
 const processPrompt = async (ctx, userData, botLanguage, premiumSubscription, freeRequests) => {
-  if (!premiumSubscription && !freeRequests){
-    await ctx.reply(code(i18n.freeRequestsErr[botLanguage]));
-    return;
-  }
-  await ctx.reply(code(`${i18n.ackReg[botLanguage]}. ${i18n.warning[botLanguage]}`));
+  await ctx.reply(code(`${i18n.ack[botLanguage]}. ${i18n.warning[botLanguage]}`));
   const prompt = prompts.createPrompt(userData);
   console.log(prompt);
   sendPrompt(ctx, prompt)
     .then(reply => {
       ctx.reply(reply);
       usersService.incrementRequests(ctx.from.id, REQUEST_INCREMENT);
-      if (!premiumSubscription) {
-        usersService.decrementFreeRequests(ctx.from.id, REQUEST_DECREMENT);
-      }else{
-        premiumUsersService.alterWordList(ctx.from.id, reply);
-        premiumUsersService.updateAudioFlag(ctx.from.id, true);
-      }
     })
     .catch(err => {
       ctx.reply(`${i18n.genErr[botLanguage]} promise`);
@@ -169,14 +148,12 @@ bot.start(async (ctx) => {
   await usersService.getOrCreateUser(ctx.from.id);
 
   const preferredLanguage = languageCodes[ctx.from.language_code];
-
   if (preferredLanguage){
     await usersService.updateBotLanguage(ctx.from.id, preferredLanguage);
   }
 
   const botLanguage = await usersService.getBotLanguage(ctx.from.id);
   const { boldText, menuOptions} = messageService.getWelcomeMessage(botLanguage,ctx.from.first_name);
-
   await ctx.replyWithMarkdown(boldText, menuOptions);
 })
 
@@ -217,23 +194,20 @@ bot.hears(commands.regenerate, async (ctx) => {
   const premiumSubscription = await premiumUsersService.getSubscriptionStatus(ctx.from.id);
   const { language, level, topic } = userData;
 
-  if (!language || !level || !topic){
-    await ctx.reply(code(`${i18n.RegErr[botLanguage]}`));
-  }else {
-    await processPrompt(ctx, userData, botLanguage, premiumSubscription, freeRequests);
+  if (!language || !level || !topic) {
+    return  ctx.reply(code(`${i18n.RegErr[botLanguage]}`));
   }
+  await processPrompt(ctx, userData, botLanguage, premiumSubscription, freeRequests);
 })
 
 bot.command('topics', async (ctx) => {
   const botLanguage = await usersService.getBotLanguage(ctx.from.id);
   const { level } = await usersService.getUserData(ctx.from.id);
-
-  if (level) {
-    const topicList = messageService.getTopics(botLanguage,level);
-    await ctx.replyWithMarkdownV2(topicList);
-  } else {
-    await ctx.reply(i18n.topicsErr[botLanguage]);
+  if(!level) {
+    return ctx.reply(i18n.topicsErr[botLanguage]);
   }
+  const topicList = messageService.getTopics(botLanguage,level);
+  await ctx.replyWithMarkdownV2(topicList);
 });
 
 bot.hears(commands.profile, async (ctx) => {
@@ -257,39 +231,17 @@ bot.hears(commands.audio, async (ctx) => {
   const botLanguage = await usersService.getBotLanguage(ctx.from.id);
   const premiumSubscription = await premiumUsersService.getSubscriptionStatus(ctx.from.id);
   if (!premiumSubscription) {
-    await ctx.reply(`${i18n.buySubscriptionMes[botLanguage]}`)
-    return;
+    return ctx.reply(`${i18n.buySubscriptionMes[botLanguage]}`)
   }
   const { word_list } = await premiumUsersService.getWordList(ctx.from.id);
   if (!word_list){
-    await ctx.reply(code(`${i18n.wordListErr[botLanguage]}`));
-    return;
+    return ctx.reply(code(`${i18n.wordListErr[botLanguage]}`));
   }
   const audioFlag = await premiumUsersService.getAudioFlag(ctx.from.id);
   if(!audioFlag){
-      await ctx.reply(code(`${i18n.duplicateAudioErr[botLanguage]}`));
-      return;
+    return ctx.reply(code(`${i18n.duplicateAudioErr[botLanguage]}`));
   }
-  try {
-    await ctx.reply(code(`${i18n.audioWarning[botLanguage]}`));
-    voiceMessageProcessor.processVoiceMessage(word_list)
-      .then((audio) => {
-        return fetch(audio);
-      })
-      .then((response) => {
-        return response.arrayBuffer();
-      })
-      .then((audioData) => {
-        ctx.replyWithAudio({ source: Buffer.from(audioData) });
-        premiumUsersService.updateAudioFlag(ctx.from.id, false);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  } catch (error) {
-    console.error('Error:', error);
-    ctx.reply(code(`${i18n.audioErr[botLanguage]}`));
-  }
+  return ctx.reply(code('This feature is not available now'));
 })
 
 bot.action('defTrue', async (ctx) => {
@@ -334,13 +286,11 @@ bot.action(/(day|week|month|year|refuse):(.+)/, async (ctx) => {
   const botLanguage = await usersService.getBotLanguage(userId);
   const duration = durationOptions[action];
   if (!duration) {
-    await bot.telegram.sendMessage(userId, i18n.subscriptionDecline[botLanguage]);
-    return;
+    return bot.telegram.sendMessage(userId, i18n.subscriptionDecline[botLanguage]);
   }
   const {startDate, endDate} = dateService.getDates(duration);
   try{
     const userExists = await premiumUsersService.checkUserPremium(userId);
-    console.log(userExists);
     if (!userExists.length) {
       await premiumUsersService.insertUser(userId, startDate, endDate);
     } else {
@@ -354,31 +304,22 @@ bot.action(/(day|week|month|year|refuse):(.+)/, async (ctx) => {
 });
 
 bot.on(message('text'), async (ctx) => {
-  const topicStatus = await usersService.getSpecificUserData(ctx.from.id,'is_topic_selected');
-  const botLanguage = await usersService.getBotLanguage(ctx.from.id);
-  const freeRequests = await usersService.getFreeRequests(ctx.from.id);
-  const premiumSubscription = await premiumUsersService.getSubscriptionStatus(ctx.from.id);
-  if (!topicStatus) {
-    await ctx.reply(code(i18n.inputErr[botLanguage]));
-  }else {
-    await usersService.updateData('topic', ctx.update.message.text, ctx.from.id);
-    const userData = await usersService.getUserData(ctx.from.id);
-    await processPrompt(ctx, userData, botLanguage, premiumSubscription, freeRequests);
-    await usersService.updateData('is_topic_selected', false, ctx.from.id);
-  }
+  const { is_topic_selected, bot_language } = await usersService.getSpecificUserData(ctx.from.id, ['is_topic_selected','bot_language']);
+  if (!is_topic_selected) return  ctx.reply(code(i18n.inputErr[bot_language]));
+  await usersService.updateData('topic', ctx.update.message.text, ctx.from.id);
+  const userData = await usersService.getUserData(ctx.from.id);
+  await processPrompt(ctx, userData, bot_language);
+  await usersService.updateData('is_topic_selected', false, ctx.from.id);
 });
 
 bot.on([message('photo'), message('document')], async (ctx) => {
-  const photoUploadEnabled = await usersService.getFlag(ctx.from.id, 'photo_upload_enabled');
+  const {photo_upload_enabled} = await usersService.getFlag(ctx.from.id, 'photo_upload_enabled');
   const botLanguage = await usersService.getBotLanguage(ctx.from.id);
-  if (photoUploadEnabled) {
-    const adminId = process.env.ADMIN_ID;
-    await ctx.telegram.forwardMessage(adminId, ctx.message.chat.id, ctx.message.message_id);
-    await setSubscription(ctx, ctx.from.id);
-    await ctx.reply(i18n.paymentConfirmation[botLanguage])
-  }else {
-    await ctx.reply(i18n.enablePhotoUpload[botLanguage])
-  }
+  if (!photo_upload_enabled) return ctx.reply(i18n.enablePhotoUpload[botLanguage])
+  const adminId = process.env.ADMIN_ID;
+  await ctx.telegram.forwardMessage(adminId, ctx.message.chat.id, ctx.message.message_id);
+  await setSubscription(ctx, ctx.from.id);
+  await ctx.reply(i18n.paymentConfirmation[botLanguage])
   await usersService.updateData('photo_upload_enabled',false, ctx.from.id);
 })
 

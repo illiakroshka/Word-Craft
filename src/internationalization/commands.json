@@ -1,0 +1,11 @@
+{
+  "profile": ["Profile \uD83D\uDC64", "Профіль \uD83D\uDC64"],
+  "regenerate": ["Regenerate list \uD83D\uDD03", "Регенерувати список \uD83D\uDD03"],
+  "help": ["Help \uD83D\uDEDF", "Допомога \uD83D\uDEDF"],
+  "info": ["Info ℹ\uFE0F", "Інформація ℹ\uFE0F"],
+  "changeTopic": ["Change topic ✒\uFE0F", "Змінити тему списку ✒\uFE0F"],
+  "botLanguage": ["Translate bot \uD83C\uDDEC\uD83C\uDDE7", "Змінити мову бота \uD83C\uDDEC\uD83C\uDDE7"],
+  "runBot": ["Run bot \uD83D\uDE80", "Запустити бота \uD83D\uDE80"],
+  "premium": ["Premium", "Преміум"],
+  "audio": ["Generate audio \uD83D\uDD0A", "Згенерувати аудіо \uD83D\uDD0A"]
+}
