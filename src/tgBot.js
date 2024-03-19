@@ -14,7 +14,6 @@ const dateService = require('./services/dateService.js');
 require('dotenv').config({ path: './config/.env' });
 
 const REQUEST_INCREMENT = 1;
-const REQUEST_DECREMENT = 1;
 
 const bot = new Telegraf(process.env.TELEGRAM_TOKEN);
 
@@ -131,7 +130,6 @@ const chooseTopic = async (ctx) => {
 }
 
 const processPrompt = async (ctx, prompt, botLanguage) => {
-  await ctx.reply(code(`${i18n.ack[botLanguage]}. ${i18n.warning[botLanguage]}`));
   sendPrompt(ctx, prompt)
     .then(reply => {
       ctx.reply(reply);
@@ -196,7 +194,9 @@ bot.hears(commands.regenerate, async (ctx) => {
     return  ctx.reply(code(`${i18n.RegErr[botLanguage]}`));
   }
   const prompt = prompts.improveListPrompt(level,language,topic, definition, wordList);
+  await ctx.reply(code(`${i18n.ackReg[botLanguage]}. ${i18n.warning[botLanguage]}`));
   await processPrompt(ctx, prompt, botLanguage);
+  await usersService.updateData('can_generate_audio',true, ctx.from.id);
 })
 
 bot.command('topics', async (ctx) => {
@@ -228,19 +228,21 @@ bot.hears(commands.premium, async (ctx) => {
 
 bot.hears(commands.audio, async (ctx) => {
   const botLanguage = await usersService.getBotLanguage(ctx.from.id);
-  const premiumSubscription = await premiumUsersService.getSubscriptionStatus(ctx.from.id);
-  if (!premiumSubscription) {
-    return ctx.reply(`${i18n.buySubscriptionMes[botLanguage]}`)
-  }
-  const { word_list } = await premiumUsersService.getWordList(ctx.from.id);
-  if (!word_list){
-    return ctx.reply(code(`${i18n.wordListErr[botLanguage]}`));
-  }
-  const audioFlag = await premiumUsersService.getAudioFlag(ctx.from.id);
-  if(!audioFlag){
-    return ctx.reply(code(`${i18n.duplicateAudioErr[botLanguage]}`));
-  }
-  return ctx.reply(code('This feature is not available now'));
+
+  const wordList = await usersService.getWordList(ctx.from.id);
+  if (!wordList) return ctx.reply(i18n.wordListErr[botLanguage]);
+  const { can_generate_audio } = await usersService.getFlag(ctx.from.id, 'can_generate_audio');
+  if (!can_generate_audio) return ctx.reply(i18n.duplicateAudioErr[botLanguage]);
+  await ctx.reply(i18n.audioWarning[botLanguage]);
+
+  openAI.audio(wordList)
+    .then(audioData => {
+    ctx.replyWithAudio({ source: audioData });
+    })
+    .catch((err) => {
+      ctx.reply(i18n.audioErr[botLanguage]);
+    })
+  await usersService.updateData('can_generate_audio', false, ctx.from.id);
 })
 
 bot.action('defTrue', async (ctx) => {
@@ -308,8 +310,10 @@ bot.on(message('text'), async (ctx) => {
   await usersService.updateData('topic', ctx.update.message.text, ctx.from.id);
   const userData = await usersService.getUserData(ctx.from.id);
   const prompt = prompts.createPrompt(userData);
+  await ctx.reply(code(`${i18n.ack[bot_language]}: '${userData.topic}'. ${i18n.warning[bot_language]}`));
   await processPrompt(ctx, prompt, bot_language);
   await usersService.updateData('is_topic_selected', false, ctx.from.id);
+  await usersService.updateData('can_generate_audio',true, ctx.from.id);
 });
 
 bot.on([message('photo'), message('document')], async (ctx) => {
