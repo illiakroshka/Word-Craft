@@ -68,6 +68,15 @@ const getFlag = async (telegramId,flag) => {
   return value[0];
 }
 
+const alterWordList = async (telegramId, wordList) => {
+  return usersRepository.update({word_list: wordList}, {telegram_id: telegramId});
+}
+
+const getWordList = async (telegramId) => {
+  const wordList =  await usersRepository.select({telegram_id: telegramId}, ['word_list']);
+  return wordList[0].word_list;
+}
+
 module.exports = {
   getOrCreateUser,
   getUserBotLanguage,
@@ -82,4 +91,6 @@ module.exports = {
   getFreeRequests,
   getSpecificUserData,
   getFlag,
+  alterWordList,
+  getWordList,
 }

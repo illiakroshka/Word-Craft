@@ -34,7 +34,7 @@ const languageCodes = {
 const sendPrompt = (ctx, text) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const messages = [{ role: openAI.roles.USER, content: text },{ role: openAI.roles.SYSTEM, content: 'You are a helpful assistant designed to generate word lists' }];
+      const messages = [{ role: openAI.roles.USER, content: text },{ role: openAI.roles.SYSTEM, content: 'You are a helpful assistant designed to generate word lists'}];
       const response = await openAI.chat(messages);
       resolve(response.content);
     } catch (error) {
@@ -130,14 +130,13 @@ const chooseTopic = async (ctx) => {
   await usersService.updateData('is_topic_selected',true, ctx.from.id);
 }
 
-const processPrompt = async (ctx, userData, botLanguage, premiumSubscription, freeRequests) => {
+const processPrompt = async (ctx, prompt, botLanguage) => {
   await ctx.reply(code(`${i18n.ack[botLanguage]}. ${i18n.warning[botLanguage]}`));
-  const prompt = prompts.createPrompt(userData);
-  console.log(prompt);
   sendPrompt(ctx, prompt)
     .then(reply => {
       ctx.reply(reply);
       usersService.incrementRequests(ctx.from.id, REQUEST_INCREMENT);
+      usersService.alterWordList(ctx.from.id, reply);
     })
     .catch(err => {
       ctx.reply(`${i18n.genErr[botLanguage]} promise`);
@@ -190,14 +189,14 @@ bot.hears(commands.help, async (ctx) => {
 bot.hears(commands.regenerate, async (ctx) => {
   const botLanguage = await usersService.getBotLanguage(ctx.from.id);
   const userData = await usersService.getUserData(ctx.from.id);
-  const freeRequests = await usersService.getFreeRequests(ctx.from.id);
-  const premiumSubscription = await premiumUsersService.getSubscriptionStatus(ctx.from.id);
-  const { language, level, topic } = userData;
+  const wordList = await usersService.getWordList(ctx.from.id);
+  const { language, level, topic , definition } = userData;
 
-  if (!language || !level || !topic) {
+  if (!language || !level || !topic || !wordList) {
     return  ctx.reply(code(`${i18n.RegErr[botLanguage]}`));
   }
-  await processPrompt(ctx, userData, botLanguage, premiumSubscription, freeRequests);
+  const prompt = prompts.improveListPrompt(level,language,topic, definition, wordList);
+  await processPrompt(ctx, prompt, botLanguage);
 })
 
 bot.command('topics', async (ctx) => {
@@ -308,7 +307,8 @@ bot.on(message('text'), async (ctx) => {
   if (!is_topic_selected) return  ctx.reply(code(i18n.inputErr[bot_language]));
   await usersService.updateData('topic', ctx.update.message.text, ctx.from.id);
   const userData = await usersService.getUserData(ctx.from.id);
-  await processPrompt(ctx, userData, bot_language);
+  const prompt = prompts.createPrompt(userData);
+  await processPrompt(ctx, prompt, bot_language);
   await usersService.updateData('is_topic_selected', false, ctx.from.id);
 });
 
