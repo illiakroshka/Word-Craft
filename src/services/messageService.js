@@ -1,5 +1,5 @@
 const i18n = require('../internationalization/i18n.json');
-const {Markup} = require("telegraf");
+const { Markup} = require("telegraf");
 
 const getWelcomeMessage = (botLanguage, userName) => {
   const welcomeMessage = `${i18n.greeting[botLanguage]}, ${userName}!\n\n`+
