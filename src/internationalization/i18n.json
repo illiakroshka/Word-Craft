@@ -4,8 +4,8 @@
     "ukr": "Ласкаво просимо до бота"
   },
   "introduction": {
-    "en": "This bot is used to generate word lists on a specific topic for a specific level of English.\n\nBefore start, we are happy to inform you that you have 14 requests to create word lists for free\n\n• Run bot - start working with bot\n\n• Profile - check the status of your premium subscription and the statistics of your requests and activity.\n\n• Translate bot - translate bot\n\n• Help - commands navigation",
-    "ukr": "Цей бот використовується для генерації списків слів на конкретну тему для певного рівня англійської мови.\n\nПеред тим як почати, раді повідомити що ви маєте 14 запитів на створення списків слів абсолютно безкоштовно\n\n• Запустити бота - почати роботу з ботом\n\n• Профіль - перевірити статус преміум підписки та статистики ваших запитів та активності.\n\n• Змінити мову бота - перекласти бот на іншу мову\n\n• Допомога - навігація команд"
+    "en": "This chatbot makes English learning more efficient with AI!\n\nUsage overview:\n\n• Run bot \uD83D\uDE80 - start word list creation\n\n• Generate audio \uD83D\uDD0A - generate audio for word list or video vocabulary\n\n• Video Vocabulary Scan \uD83C\uDFA5 - generate YouTube video vocabulary \n\n• Translate bot \uD83C\uDDEC\uD83C\uDDE7 - translate bot\n\n• Help \uD83D\uDEDF - commands navigation",
+    "ukr": "Цей чат-бот робить вивчення англійської мови ефективнішим за допомогою штучного інтелекту!\n\n• Запустити бота \uD83D\uDE80 - почати створення списку слів\n\n• Згенерувати аудіо \uD83D\uDD0A - згенерувати аудіо для списку слів або для словника відео.\n\n• Сканувати словник відео \uD83C\uDFA5 - згенерувати словник YouTube відео\n\n• Змінити мову бота \uD83C\uDDEC\uD83C\uDDE7 - перекласти бот на іншу мову\n\n• Допомога \uD83D\uDEDF - навігація команд"
   },
   "level": {
     "en": "What is your level of English?",
@@ -16,8 +16,8 @@
     "ukr": "На яку мову перекладати слова?"
   },
   "topic": {
-    "en": "Write the topic of words that you want to learn",
-    "ukr": "Напишіть тему слів, слова з якої хочете вивчити"
+    "en": "Write the topic of words that you want to learn ✍\uFE0F",
+    "ukr": "Напишіть тему слів, слова з якої хочете вивчити ✍\uFE0F"
   },
   "topicsR": {
     "en": "Topics you might be interested in:",
@@ -52,11 +52,11 @@
     }
   },
   "help": {
-    "en": "• Run bot - start working with bot \n• Premium - purchase premium subscription\n• Generate audio - generate an audio version of the word list\n• Change topic - change the topic of the word list \n• Regenerate list - regenerate the list if you know most of the words \n• Translate bot - translate the bot \n• Profile - check the status of your premium subscription and the statistics of your requests and activity. \n• Info - information about the bot\n• /topics - suggests popular example topics for your level",
-    "ukr": "• Запустити бота - почати роботу з ботом. \n• Преміум - придбати преміум підписку\n• Згенерувати аудіо - створення аудіо зі списку слів.\n• Змінити тему списку - обрати нову тему списку слів.\n• Регенерувати список - оновити список, якщо ви знаєте більшість слів.\n• Змінити мову бота - перекласти бот на іншу мову.\n• Профіль - перевірити статус преміум підписки та статистики ваших запитів та активності.\n• Інформація - надає інформацію про бота та його можливості.\n• /topics - пропонує популярні приклади тем для вашого рівня вивчення."
+    "en": "• Run bot \uD83D\uDE80 - start word list creation \n• Generate audio \uD83D\uDD0A - generate audio for word list or video vocabulary\n• Video Vocabulary Scan \uD83C\uDFA5 - generate YouTube video vocabulary\n• Change topic ✒\uFE0F - change the topic of the word list \n• Regenerate list \uD83D\uDD03 - regenerate the list if you know most of the words \n• Translate bot \uD83C\uDDEC\uD83C\uDDE7 - translate the bot \n• Profile \uD83D\uDC64 - check requests statistic. \n• Info ℹ\uFE0F - information about the bot",
+    "ukr": "• Запустити бота \uD83D\uDE80 - почати створення списку слів \n• Згенерувати аудіо \uD83D\uDD0A - згенерувати аудіо для списку слів або для словника відео\n• Сканувати словник відео \uD83C\uDFA5 - згенерувати словник YouTube відео\n• Змінити тему списку ✒\uFE0F - обрати нову тему списку слів.\n• Регенерувати список \uD83D\uDD03 - оновити список, якщо ви знаєте більшість слів.\n• Змінити мову бота \uD83C\uDDEC\uD83C\uDDE7 - перекласти бот на іншу мову.\n• Профіль \uD83D\uDC64 - статистика ваших запитів.\n• Інформація ℹ\uFE0F - надає інформацію про бота та його можливості.\n"
   },
   "info": {
-    "en": "This bot is used to generate word lists on a specific topic for a specific level of English. Also, you can choose the language in which to translate these words.\n• Help - command for navigation",
+    "en": "This chatbot makes English learning more efficient with AI!\n\nFeatures:\n\n• Topic based word list generation - bot generates word lists based on your level of English and topic of words that you want to learn.\n\n• Text to speech generation - you can easily learn pronunciation of new words by generation audio\n\n• YouTube video scanning - you can get specific words related to the topic of the video, by simply providing the link on video\n\n• Help - command for navigation",
     "ukr": "Цей бот використовується для створення списків слів на певну тему для певного рівня англійської. Крім того, ви можете обрати мову, якою перекладати ці слова.\n• Допомога - команда для навігації"
   },
   "warning": {
@@ -220,5 +220,9 @@
   "videoScanWar": {
     "en": "Video is scanning it can take some time",
     "ukr": "Відео сканується, це може зайняти деякий час "
+  },
+  "callToAction": {
+    "en": "• Generate audio \uD83D\uDD0A - generate audio for word list\n• Regenerate list \uD83D\uDD03 - regenerate the list if you know most of the words\n",
+    "uk": "• Згенерувати аудіо \uD83D\uDD0A - згенерувати аудіо для списку слів або для словника відео\n • Регенерувати список \uD83D\uDD03 - оновити список, якщо ви знаєте більшість слів."
   }
 }

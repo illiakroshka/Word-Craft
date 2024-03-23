@@ -24,21 +24,21 @@ const getTopics = (botLanguage, level) => {
 }
 
 const getProfileMessage = (botLanguage, userId, requests, freeRequests, subscriptionDetails, options) => {
-  let replyMessage = `${i18n.idMessage[botLanguage]} \`${userId}\`\n\n` +
-    `${i18n.requests[botLanguage]} ${requests}\n\n` +
-    `${i18n.freeRequestsStatus[botLanguage]} ${freeRequests}\n\n`;
-  if (!subscriptionDetails){
-    replyMessage += `${i18n.subscriptionMessage[botLanguage]} ${i18n.subscriptionInactive[botLanguage]}`;
-    return replyMessage;
-  }
-  const { end_date, is_active } = subscriptionDetails;
-  if (is_active) {
-    replyMessage += `${i18n.subscriptionMessage[botLanguage]} ${i18n.subscriptionActive[botLanguage]}\n\n`;
-    replyMessage += `${i18n.endDateMessage[botLanguage]} ${end_date.toLocaleDateString('uk-UA', options)}`;
-  }else {
-    replyMessage += `${i18n.subscriptionMessage[botLanguage]} ${i18n.subscriptionInactive[botLanguage]}\n\n`;
-  }
-  return replyMessage;
+  return `${i18n.idMessage[botLanguage]} \`${userId}\`\n\n` +
+    `${i18n.requests[botLanguage]} ${requests}\n\n`;
+  //  `${i18n.freeRequestsStatus[botLanguage]} ${freeRequests}\n\n`;
+  // if (!subscriptionDetails){
+  //   replyMessage += `${i18n.subscriptionMessage[botLanguage]} ${i18n.subscriptionInactive[botLanguage]}`;
+  //   return replyMessage;
+  // }
+  // const { end_date, is_active } = subscriptionDetails;
+  // if (is_active) {
+  //   replyMessage += `${i18n.subscriptionMessage[botLanguage]} ${i18n.subscriptionActive[botLanguage]}\n\n`;
+  //   replyMessage += `${i18n.endDateMessage[botLanguage]} ${end_date.toLocaleDateString('uk-UA', options)}`;
+  // }else {
+  //   replyMessage += `${i18n.subscriptionMessage[botLanguage]} ${i18n.subscriptionInactive[botLanguage]}\n\n`;
+  // }
+  // return replyMessage;
 }
 
 const getPremiumMessage = (botLanguage) => {
