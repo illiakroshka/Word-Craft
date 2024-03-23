@@ -113,8 +113,7 @@ const handleLevelAction = async (ctx) => {
 
 const chooseTopic = async (ctx) => {
   const botLanguage = await usersService.getBotLanguage(ctx.from.id);
-  await ctx.reply(`${i18n.topic[botLanguage]}\n`+
-  `${i18n.topicInfo[botLanguage]}`);
+  await ctx.reply(`${i18n.topic[botLanguage]}`);
   await usersService.updateData('is_topic_selected',true, ctx.from.id);
 }
 
@@ -201,10 +200,13 @@ bot.hears(commands.audio, async (ctx) => {
   const { can_generate_audio } = await usersService.getFlag(ctx.from.id, 'can_generate_audio');
   if (!can_generate_audio) return ctx.reply(i18n.duplicateAudioErr[botLanguage]);
   await ctx.reply(i18n.audioWarning[botLanguage]);
-
+  const { topic } = await usersService.getUserData(ctx.from.id);
   openAI.audio(wordList)
     .then(audioData => {
-    ctx.replyWithAudio({ source: audioData });
+    ctx.replyWithAudio({
+      filename: `${topic}`,
+      source: audioData,
+    });
     })
     .catch((err) => {
       ctx.reply(i18n.audioErr[botLanguage]);
@@ -215,16 +217,6 @@ bot.hears(commands.audio, async (ctx) => {
 bot.hears(commands.video, async (ctx) => {
   return ctx.reply('provide youtube video')
 })
-
-bot.command('topics', async (ctx) => {
-  const botLanguage = await usersService.getBotLanguage(ctx.from.id);
-  const { level } = await usersService.getUserData(ctx.from.id);
-  if(!level) {
-    return ctx.reply(i18n.topicsErr[botLanguage]);
-  }
-  const topicList = messageService.getTopics(botLanguage,level);
-  await ctx.replyWithMarkdownV2(topicList);
-});
 
 bot.action('defTrue', async (ctx) => {
   await usersService.updateData('definition', true, ctx.from.id);
