@@ -2,7 +2,6 @@
 
 require('dotenv').config({ path: './config/.env' });
 const { Database } = require('metasql')
-const {values} = require("pg/lib/native/query");
 
 const configJSON = process.env.NEW_DATABASE_CONFIG_JSON;
 const config = JSON.parse(configJSON);
@@ -30,7 +29,7 @@ class TemplateRepository {
   }
 
   async query(sql, values) {
-    return this.db.query(sql,values);
+    return this.db.query(sql, values);
   }
 }
 

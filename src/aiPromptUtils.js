@@ -87,4 +87,36 @@ const improveListPrompt = (level, language, topic, definition, wordList) => {
   }
 };
 
-module.exports = { createPrompt, improveListPrompt };
+const analyzeVideoPrompt = (videoText, language) => {
+  if (language === 'without translation') {
+    return `I will provide you text of the video, and your tasks is to:
+     1) Determine the topic of the text
+     2) Analyze it and find specific words used in this text related to it's topic
+     3) Find idioms used in this text 
+  
+  TEXT: ${videoText}
+  
+  Your output should use the following template:
+  Topic of the video
+  
+  Words:
+  1. list of words
+  Idioms:
+  1. list of idioms`
+  }
+  return `I will provide you text of the video, and your tasks is:
+   1) To determine the topic of the text 
+   2) Analyze it and find specific words used in this text related to it's topic and to translate these words in ${language} language 
+   3) Find idioms used in this text and write the meaning in ${language} language 
+  
+  TEXT: ${videoText}
+  
+  Your output should use the following template:
+  Topic of the video
+  Words:
+  1. list of words - translation in ${language}
+  Idioms:
+  1. list of idioms - meaning in ${language}`
+}
+
+module.exports = { createPrompt, improveListPrompt, analyzeVideoPrompt };

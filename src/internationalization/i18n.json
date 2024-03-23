@@ -108,8 +108,8 @@
     "ukr": "Зроблено запитів: "
   },
   "menuOptions": {
-    "en": [["Run bot \uD83D\uDE80"], ["Generate audio \uD83D\uDD0A"], ["Change topic✒\uFE0F", "Regenerate list \uD83D\uDD03"], ["Translate bot \uD83C\uDDEC\uD83C\uDDE7", "Profile \uD83D\uDC64"], ["Help \uD83D\uDEDF", "Info ℹ\uFE0F"]],
-    "ukr": [["Запустити бота \uD83D\uDE80"], ["Згенерувати аудіо \uD83D\uDD0A"], ["Змінити тему списку ✒\uFE0F", "Регенерувати список \uD83D\uDD03"], ["Змінити мову бота \uD83C\uDDEC\uD83C\uDDE7", "Профіль \uD83D\uDC64"], ["Допомога \uD83D\uDEDF", "Інформація ℹ\uFE0F"]]
+    "en": [["Run bot \uD83D\uDE80"], ["Generate audio \uD83D\uDD0A"],["Video Vocabulary Scan \uD83C\uDFA5"], ["Change topic ✒\uFE0F", "Regenerate list \uD83D\uDD03"], ["Translate bot \uD83C\uDDEC\uD83C\uDDE7", "Profile \uD83D\uDC64"], ["Help \uD83D\uDEDF", "Info ℹ\uFE0F"]],
+    "ukr": [["Запустити бота \uD83D\uDE80"], ["Згенерувати аудіо \uD83D\uDD0A"],["Сканувати словник відео \uD83C\uDFA5"], ["Змінити тему списку ✒\uFE0F", "Регенерувати список \uD83D\uDD03"], ["Змінити мову бота \uD83C\uDDEC\uD83C\uDDE7", "Профіль \uD83D\uDC64"], ["Допомога \uD83D\uDEDF", "Інформація ℹ\uFE0F"]]
   },
   "engButton": {
     "en": "English",
@@ -207,7 +207,7 @@
   },
   "audioWarning": {
     "en": "The audio is generating it can take some time",
-    "ukr": "Аудіо генерується це може зайняти деякий час"
+    "ukr": "Аудіо генерується, це може зайняти деякий час"
   },
   "audioErr": {
     "en": "Error while sending audio",
@@ -216,5 +216,9 @@
   "duplicateAudioErr": {
     "en": "You can't generate audio for the same word list twice",
     "ukr": "Ви не можете створити аудіо для того самого списку слів двічі"
+  },
+  "videoScanWar": {
+    "en": "Video is scanning it can take some time",
+    "ukr": "Відео сканується, це може зайняти деякий час "
   }
 }

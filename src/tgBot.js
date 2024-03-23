@@ -11,6 +11,7 @@ const prompts = require('./aiPromptUtils');
 const usersService = require('./services/userService.js');
 const premiumUsersService = require('./services/premiumUsersService.js');
 const dateService = require('./services/dateService.js');
+const subtitlesService = require('./services/subtitlesService.js');
 require('dotenv').config({ path: './config/.env' });
 
 const REQUEST_INCREMENT = 1;
@@ -29,23 +30,6 @@ const languageCodes = {
   ru: 'ukr',
   uk: 'ukr',
 }
-
-const sendPrompt = (ctx, text) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      const messages = [{ role: openAI.roles.USER, content: text },{ role: openAI.roles.SYSTEM, content: 'You are a helpful assistant designed to generate word lists'}];
-      const response = await openAI.chat(messages);
-      resolve(response.content);
-    } catch (error) {
-      reject(error);
-    }
-  });
-};
-
-const handleLevelAction = async (ctx) => {
-  await usersService.updateData('level',ctx.match[0].toUpperCase(),ctx.from.id);
-  await chooseLanguage(ctx);
-};
 
 const chooseLevel = async (ctx) => {
   await ctx.reply(i18n.level[await usersService.getBotLanguage(ctx.from.id)],{
@@ -122,23 +106,16 @@ const setSubscription = async (ctx, userId) => {
   })
 }
 
+const handleLevelAction = async (ctx) => {
+  await usersService.updateData('level',ctx.match[0].toUpperCase(),ctx.from.id);
+  await chooseLanguage(ctx);
+};
+
 const chooseTopic = async (ctx) => {
   const botLanguage = await usersService.getBotLanguage(ctx.from.id);
   await ctx.reply(`${i18n.topic[botLanguage]}\n`+
   `${i18n.topicInfo[botLanguage]}`);
   await usersService.updateData('is_topic_selected',true, ctx.from.id);
-}
-
-const processPrompt = async (ctx, prompt, botLanguage) => {
-  sendPrompt(ctx, prompt)
-    .then(reply => {
-      ctx.reply(reply);
-      usersService.incrementRequests(ctx.from.id, REQUEST_INCREMENT);
-      usersService.alterWordList(ctx.from.id, reply);
-    })
-    .catch(err => {
-      ctx.reply(`${i18n.genErr[botLanguage]} promise`);
-    });
 }
 
 bot.start(async (ctx) => {
@@ -199,16 +176,6 @@ bot.hears(commands.regenerate, async (ctx) => {
   await usersService.updateData('can_generate_audio',true, ctx.from.id);
 })
 
-bot.command('topics', async (ctx) => {
-  const botLanguage = await usersService.getBotLanguage(ctx.from.id);
-  const { level } = await usersService.getUserData(ctx.from.id);
-  if(!level) {
-    return ctx.reply(i18n.topicsErr[botLanguage]);
-  }
-  const topicList = messageService.getTopics(botLanguage,level);
-  await ctx.replyWithMarkdownV2(topicList);
-});
-
 bot.hears(commands.profile, async (ctx) => {
   const botLanguage = await usersService.getBotLanguage(ctx.from.id);
   const requests = await usersService.getUsersRequests(ctx.from.id);
@@ -244,6 +211,20 @@ bot.hears(commands.audio, async (ctx) => {
     })
   await usersService.updateData('can_generate_audio', false, ctx.from.id);
 })
+
+bot.hears(commands.video, async (ctx) => {
+  return ctx.reply('provide youtube video')
+})
+
+bot.command('topics', async (ctx) => {
+  const botLanguage = await usersService.getBotLanguage(ctx.from.id);
+  const { level } = await usersService.getUserData(ctx.from.id);
+  if(!level) {
+    return ctx.reply(i18n.topicsErr[botLanguage]);
+  }
+  const topicList = messageService.getTopics(botLanguage,level);
+  await ctx.replyWithMarkdownV2(topicList);
+});
 
 bot.action('defTrue', async (ctx) => {
   await usersService.updateData('definition', true, ctx.from.id);
@@ -306,14 +287,23 @@ bot.action(/(day|week|month|year|refuse):(.+)/, async (ctx) => {
 
 bot.on(message('text'), async (ctx) => {
   const { is_topic_selected, bot_language } = await usersService.getSpecificUserData(ctx.from.id, ['is_topic_selected','bot_language']);
+
+  const youtubeRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+
+  const match = ctx.message.text.match(youtubeRegex);
+  if (match) {
+    await ctx.reply(i18n.videoScanWar[bot_language]);
+    try {
+      const youtubeVideoId = match[1];
+      await videoVocabularyScan(youtubeVideoId, ctx);
+      return;
+    }catch (error) {
+      return ctx.reply(error.message)
+    }
+  }
+
   if (!is_topic_selected) return  ctx.reply(code(i18n.inputErr[bot_language]));
-  await usersService.updateData('topic', ctx.update.message.text, ctx.from.id);
-  const userData = await usersService.getUserData(ctx.from.id);
-  const prompt = prompts.createPrompt(userData);
-  await ctx.reply(code(`${i18n.ack[bot_language]}: '${userData.topic}'. ${i18n.warning[bot_language]}`));
-  await processPrompt(ctx, prompt, bot_language);
-  await usersService.updateData('is_topic_selected', false, ctx.from.id);
-  await usersService.updateData('can_generate_audio',true, ctx.from.id);
+  await generateWordList(ctx, bot_language);
 });
 
 bot.on([message('photo'), message('document')], async (ctx) => {
@@ -326,6 +316,56 @@ bot.on([message('photo'), message('document')], async (ctx) => {
   await ctx.reply(i18n.paymentConfirmation[botLanguage])
   await usersService.updateData('photo_upload_enabled',false, ctx.from.id);
 })
+
+const processPrompt = async (ctx, prompt, botLanguage) => {
+  sendPrompt(ctx, prompt)
+    .then(reply => {
+      ctx.reply(reply);
+      usersService.incrementRequests(ctx.from.id, REQUEST_INCREMENT);
+      usersService.alterWordList(ctx.from.id, reply);
+    })
+    .catch(err => {
+      ctx.reply(`${i18n.genErr[botLanguage]} promise`);
+    });
+}
+
+const sendPrompt = (ctx, text) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const messages = [{ role: openAI.roles.USER, content: text },{ role: openAI.roles.SYSTEM, content: 'You are a helpful assistant designed to generate word lists'}];
+      const response = await openAI.chat(messages);
+      resolve(response.content);
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+const videoVocabularyScan = async (videoId, ctx) => {
+  try {
+    const subtitles = await subtitlesService.downloadSubtitles(videoId);
+    const { language } = await usersService.getUserData(ctx.from.id);
+    const trLang = language ? language : 'without translation';
+    const prompt = prompts.analyzeVideoPrompt(subtitles, trLang);
+    sendPrompt(ctx,prompt).then((data)=> {
+      ctx.reply(data);
+      usersService.alterWordList(ctx.from.id, data);
+      usersService.updateData('can_generate_audio',true, ctx.from.id);
+    })
+  }catch (error) {
+    throw error;
+  }
+}
+
+const generateWordList = async (ctx, botLanguage) => {
+  await usersService.updateData('topic', ctx.update.message.text, ctx.from.id);
+  const userData = await usersService.getUserData(ctx.from.id);
+  const prompt = prompts.createPrompt(userData);
+  await ctx.reply(code(`${i18n.ack[botLanguage]}: '${userData.topic}'. ${i18n.warning[botLanguage]}`));
+  await processPrompt(ctx, prompt, botLanguage);
+  await usersService.updateData('is_topic_selected', false, ctx.from.id);
+  await usersService.updateData('can_generate_audio',true, ctx.from.id);
+}
 
 bot.launch();
 

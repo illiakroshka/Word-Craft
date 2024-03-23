@@ -7,5 +7,6 @@
   "botLanguage": ["Translate bot \uD83C\uDDEC\uD83C\uDDE7", "Змінити мову бота \uD83C\uDDEC\uD83C\uDDE7"],
   "runBot": ["Run bot \uD83D\uDE80", "Запустити бота \uD83D\uDE80"],
   "premium": ["Premium", "Преміум"],
-  "audio": ["Generate audio \uD83D\uDD0A", "Згенерувати аудіо \uD83D\uDD0A"]
+  "audio": ["Generate audio \uD83D\uDD0A", "Згенерувати аудіо \uD83D\uDD0A"],
+  "video":["Video Vocabulary Scan \uD83C\uDFA5", "Сканувати словник відео \uD83C\uDFA5"]
 }
