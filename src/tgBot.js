@@ -12,6 +12,7 @@ const usersService = require('./services/userService.js');
 const premiumUsersService = require('./services/premiumUsersService.js');
 const dateService = require('./services/dateService.js');
 const subtitlesService = require('./services/subtitlesService.js');
+const promptService = require('./services/promptsService.js');
 require('dotenv').config({ path: './config/.env' });
 
 const REQUEST_INCREMENT = 1;
@@ -169,9 +170,15 @@ bot.hears(commands.regenerate, async (ctx) => {
   if (!language || !level || !topic || !wordList) {
     return  ctx.reply(code(`${i18n.RegErr[botLanguage]}`));
   }
-  const prompt = prompts.improveListPrompt(level,language,topic, definition, wordList);
+  const { prompt, systemMessage } = promptService.improveListPrompt(
+    level,
+    language,
+    topic,
+    definition,
+    wordList
+  );
   await ctx.reply(code(`${i18n.ackReg[botLanguage]}. ${i18n.warning[botLanguage]}`));
-  await processPrompt(ctx, prompt, botLanguage);
+  await processPrompt(ctx, prompt, systemMessage, botLanguage);
   await usersService.updateData('can_generate_audio',true, ctx.from.id);
 })
 
@@ -309,8 +316,8 @@ bot.on([message('photo'), message('document')], async (ctx) => {
   await usersService.updateData('photo_upload_enabled',false, ctx.from.id);
 })
 
-const processPrompt = async (ctx, prompt, botLanguage) => {
-  sendPrompt(ctx, prompt)
+const processPrompt = async (ctx, prompt, systemMessage, botLanguage) => {
+  sendPrompt(ctx, prompt, systemMessage)
     .then(reply => {
       ctx.reply(reply);
       usersService.incrementRequests(ctx.from.id, REQUEST_INCREMENT);
@@ -321,10 +328,10 @@ const processPrompt = async (ctx, prompt, botLanguage) => {
     });
 }
 
-const sendPrompt = (ctx, text) => {
+const sendPrompt = (ctx, prompt, systemMessage) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const messages = [{ role: openAI.roles.USER, content: text },{ role: openAI.roles.SYSTEM, content: 'You are a helpful assistant designed to generate word lists'}];
+      const messages = [{ role: openAI.roles.USER, content: prompt },{ role: openAI.roles.SYSTEM, content: systemMessage}];
       const response = await openAI.chat(messages);
       resolve(response.content);
     } catch (error) {
@@ -338,8 +345,8 @@ const videoVocabularyScan = async (videoId, ctx) => {
     const subtitles = await subtitlesService.downloadSubtitles(videoId);
     const { language } = await usersService.getUserData(ctx.from.id);
     const trLang = language ? language : 'without translation';
-    const prompt = prompts.analyzeVideoPrompt(subtitles, trLang);
-    sendPrompt(ctx,prompt).then((data)=> {
+    const { prompt, systemMessage } = promptService.analyzeVideoPrompt(subtitles, trLang);
+    sendPrompt(ctx, prompt, systemMessage).then((data)=> {
       ctx.reply(data);
       usersService.alterWordList(ctx.from.id, data);
       usersService.updateData('can_generate_audio',true, ctx.from.id);
@@ -352,9 +359,9 @@ const videoVocabularyScan = async (videoId, ctx) => {
 const generateWordList = async (ctx, botLanguage) => {
   await usersService.updateData('topic', ctx.update.message.text, ctx.from.id);
   const userData = await usersService.getUserData(ctx.from.id);
-  const prompt = prompts.createPrompt(userData);
+  const { prompt, systemMessage } = promptService.createPrompt(userData);
   await ctx.reply(code(`${i18n.ack[botLanguage]}: '${userData.topic}'. ${i18n.warning[botLanguage]}`));
-  await processPrompt(ctx, prompt, botLanguage);
+  await processPrompt(ctx, prompt, systemMessage, botLanguage);
   await usersService.updateData('is_topic_selected', false, ctx.from.id);
   await usersService.updateData('can_generate_audio',true, ctx.from.id);
 }
