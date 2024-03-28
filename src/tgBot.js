@@ -7,7 +7,6 @@ const { openAI } = require('./openAI');
 const i18n = require('./internationalization/i18n.json');
 const messageService = require('./services/messageService.js');
 const commands = require('./internationalization/commands.json');
-const prompts = require('./aiPromptUtils');
 const usersService = require('./services/userService.js');
 const premiumUsersService = require('./services/premiumUsersService.js');
 const dateService = require('./services/dateService.js');
@@ -90,6 +89,22 @@ const setBotLanguage = async (ctx) => {
   })
 }
 
+const setNumberOfWords = async (ctx) => {
+  const botLanguage = await usersService.getBotLanguage(ctx.from.id);
+  await ctx.reply(`${i18n.wordsNumber[botLanguage]}`, {
+    reply_markup: {
+      inline_keyboard: [
+        [
+          { text: 15, callback_data: '15' },
+          { text: 20, callback_data: '20' },
+          { text: 25, callback_data: '25' },
+          { text: 30, callback_data: '30' },
+        ]
+      ]
+    }
+  })
+}
+
 const setSubscription = async (ctx, userId) => {
   const adminId = process.env.ADMIN_ID;
   await bot.telegram.sendMessage(adminId, `Set subscription for user ${userId}`,{
@@ -165,7 +180,7 @@ bot.hears(commands.regenerate, async (ctx) => {
   const botLanguage = await usersService.getBotLanguage(ctx.from.id);
   const userData = await usersService.getUserData(ctx.from.id);
   const wordList = await usersService.getWordList(ctx.from.id);
-  const { language, level, topic , definition } = userData;
+  const { language, level, topic , definition, number_words } = userData;
 
   if (!language || !level || !topic || !wordList) {
     return  ctx.reply(code(`${i18n.RegErr[botLanguage]}`));
@@ -175,6 +190,7 @@ bot.hears(commands.regenerate, async (ctx) => {
     language,
     topic,
     definition,
+    number_words,
     wordList
   );
   await ctx.reply(code(`${i18n.ackReg[botLanguage]}. ${i18n.warning[botLanguage]}`));
@@ -227,12 +243,12 @@ bot.hears(commands.video, async (ctx) => {
 
 bot.action('defTrue', async (ctx) => {
   await usersService.updateData('definition', true, ctx.from.id);
-  await chooseTopic(ctx);
+  await setNumberOfWords(ctx);
 })
 
 bot.action('defFalse', async (ctx) => {
   await usersService.updateData('definition', false, ctx.from.id);
-  await chooseTopic(ctx);
+  await setNumberOfWords(ctx);
 })
 
 bot.action('ukr', async (ctx) => {
@@ -253,6 +269,12 @@ bot.action(/^[abc][1-2]$/, handleLevelAction);
 
 bot.action('ukrainian', async (ctx)=>{
   await usersService.updateData('language','Ukrainian',ctx.from.id);
+  await setNumberOfWords(ctx)
+  //await chooseTopic(ctx);
+})
+
+bot.action(/^(15|20|25|30)$/, async (ctx) => {
+  await usersService.updateData('number_words', parseInt(ctx.update.callback_query.data), ctx.from.id);
   await chooseTopic(ctx);
 })
 

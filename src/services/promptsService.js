@@ -24,11 +24,11 @@ const systemMessages = {
 };
 
 
-const createPrompt = ({ level, language, topic, definition }) => {
+const createPrompt = ({ level, language, topic, definition, number_words }) => {
   const nameLevel = levels[level];
   if (language === 'without translation') {
     if (definition) {
-      const prompt = `Your task is to generate a list of 15 English words that are related to ${topic} for ${nameLevel} level of English.
+      const prompt = `Your task is to generate a list of ${number_words} English words that are related to ${topic} for ${nameLevel} level of English.
       And to make a definition for each word.     
       Word list must have verbs nouns and adjectives.
       
@@ -39,7 +39,7 @@ const createPrompt = ({ level, language, topic, definition }) => {
         3. to be [adjective] - [definition]`;
       return { prompt, systemMessage: systemMessages['wlGeneration'] }
     } else {
-      const prompt = `Your task is to generate a list of 15 English words that are related to ${topic} with ${nameLevel} level of difficulty.
+      const prompt = `Your task is to generate a list of ${number_words} English words that are related to ${topic} with ${nameLevel} level of difficulty.
       Word list must have verbs nouns and adjectives.
       
       Your output should be brief and use the following template:
@@ -51,7 +51,7 @@ const createPrompt = ({ level, language, topic, definition }) => {
       return { prompt, systemMessage: systemMessages['wlGeneration'] }
     }
   } else {
-    const prompt = `Your task is to generate a list of 15 English words that are related to ${topic} with ${nameLevel} level of difficulty. 
+    const prompt = `Your task is to generate a list of ${number_words} English words that are related to ${topic} with ${nameLevel} level of difficulty. 
     And to translate these words in ${language} language.
     Word list must have verbs nouns and at least 2 adjectives.
     
@@ -65,14 +65,14 @@ const createPrompt = ({ level, language, topic, definition }) => {
   }
 };
 
-const improveListPrompt = (level, language, topic, definition, wordList) => {
+const improveListPrompt = (level, language, topic, definition, numberWords, wordList) => {
   const nameLevel = levels[level];
   if (language === 'without translation') {
     if (definition) {
       const prompt = `
       Your task is to completely redo following word list: ${wordList}, by generating more specific words
       that are related to ${topic} with ${nameLevel} level of difficulty. And to make a definition for each word
-      Word list must have verbs nouns and adjectives and must have 15 words.
+      Word list must have verbs nouns and adjectives and must have ${numberWords} words.
       
       Your output should use the following template:
       Add 'to' if the word is verb
@@ -84,7 +84,7 @@ const improveListPrompt = (level, language, topic, definition, wordList) => {
     } else {
       const prompt = `Your task is to completely redo following word list: ${wordList}, by generating new more specific words 
       that are related to ${topic} with ${nameLevel} level of difficulty.
-      Word list must have verbs nouns and adjectives and must have 15 words.
+      Word list must have verbs nouns and adjectives and must have ${numberWords} words.
            
       Your output should be brief and use the following template:
       Add 'to' if the word is verb
@@ -97,7 +97,7 @@ const improveListPrompt = (level, language, topic, definition, wordList) => {
   } else {
     const prompt = `Your task is to completely redo following word list: ${wordList}, by generating new more specific words 
       that are related to ${topic} with ${nameLevel} level of difficulty.And to translate these words in ${language} language.
-      Word list must have verbs nouns and adjectives and must have 15 words.
+      Word list must have verbs nouns and adjectives and must have ${numberWords} words.
     
     Your output should use the following template:
     Add 'to' if the word is verb
