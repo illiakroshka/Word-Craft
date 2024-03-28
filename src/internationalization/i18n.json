@@ -228,5 +228,13 @@
   "wordsNumber": {
     "en": "Set the number of words you want to get",
     "ukr": "Вкажіть кількість слів яку ви хочете отримати"
+  },
+  "roleForWl": {
+    "en": "Specify role for better word list generation ✍\uFE0F",
+    "ukr": "Вкажіть роль для кращої генераціїї списку слів ✍\uFE0F"
+  },
+  "refuseButton": {
+    "en": "Continue without role",
+    "ukr": "Продовжити без ролі"
   }
 }

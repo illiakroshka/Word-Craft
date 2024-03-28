@@ -23,7 +23,7 @@ const resetData = async (telegramId) => {
 }
 
 const getUserData = async (telegramId) => {
-  const userData = await usersRepository.select({telegram_id: telegramId}, ['level','language','topic','definition','number_words']);
+  const userData = await usersRepository.select({telegram_id: telegramId}, ['level','language','topic','definition','number_words','role']);
   return userData[0];
 }
 

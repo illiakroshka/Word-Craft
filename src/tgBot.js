@@ -105,6 +105,19 @@ const setNumberOfWords = async (ctx) => {
   })
 }
 
+const specifyRole = async (ctx) => {
+  const botLanguage = await usersService.getBotLanguage(ctx.from.id);
+  await ctx.reply(`${i18n.roleForWl[botLanguage]}`,{
+    reply_markup: {
+      inline_keyboard: [
+        [
+          { text: i18n.refuseButton[botLanguage], callback_data: 'refuse' },
+        ]
+      ]
+    }
+  })
+}
+
 const setSubscription = async (ctx, userId) => {
   const adminId = process.env.ADMIN_ID;
   await bot.telegram.sendMessage(adminId, `Set subscription for user ${userId}`,{
@@ -180,7 +193,7 @@ bot.hears(commands.regenerate, async (ctx) => {
   const botLanguage = await usersService.getBotLanguage(ctx.from.id);
   const userData = await usersService.getUserData(ctx.from.id);
   const wordList = await usersService.getWordList(ctx.from.id);
-  const { language, level, topic , definition, number_words } = userData;
+  const { language, level, topic , definition, number_words, role } = userData;
 
   if (!language || !level || !topic || !wordList) {
     return  ctx.reply(code(`${i18n.RegErr[botLanguage]}`));
@@ -191,7 +204,8 @@ bot.hears(commands.regenerate, async (ctx) => {
     topic,
     definition,
     number_words,
-    wordList
+    wordList,
+    role
   );
   await ctx.reply(code(`${i18n.ackReg[botLanguage]}. ${i18n.warning[botLanguage]}`));
   await processPrompt(ctx, prompt, systemMessage, botLanguage);
@@ -283,6 +297,12 @@ bot.action('without translation',async (ctx)=>{
   await queryDefinition(ctx);
 })
 
+bot.action('refuse', async (ctx) => {
+  const botLanguage = await usersService.getBotLanguage(ctx.from.id);
+  await usersService.updateData('role','', ctx.from.id);
+  await generateWordList(ctx, botLanguage);
+})
+
 bot.action(/(day|week|month|year|refuse):(.+)/, async (ctx) => {
   const action = ctx.match[1];
   const userId = ctx.match[2];
@@ -307,7 +327,7 @@ bot.action(/(day|week|month|year|refuse):(.+)/, async (ctx) => {
 });
 
 bot.on(message('text'), async (ctx) => {
-  const { is_topic_selected, bot_language } = await usersService.getSpecificUserData(ctx.from.id, ['is_topic_selected','bot_language']);
+  const { is_topic_selected, bot_language, is_role_selected } = await usersService.getSpecificUserData(ctx.from.id, ['is_topic_selected','bot_language','is_role_selected']);
 
   const youtubeRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
 
@@ -323,8 +343,18 @@ bot.on(message('text'), async (ctx) => {
     }
   }
 
-  if (!is_topic_selected) return  ctx.reply(code(i18n.inputErr[bot_language]));
-  await generateWordList(ctx, bot_language);
+  if (is_topic_selected) {
+    await usersService.updateData('is_topic_selected',false, ctx.from.id);
+    await usersService.updateData('is_role_selected', true, ctx.from.id);
+    await usersService.updateData('topic', ctx.update.message.text, ctx.from.id);
+    return specifyRole(ctx);
+  }
+  if (is_role_selected) {
+    await usersService.updateData('is_role_selected', false, ctx.from.id);
+    await usersService.updateData('role', ctx.message.text, ctx.from.id);
+    return generateWordList(ctx, bot_language);
+  }
+  return ctx.reply(code(i18n.inputErr[bot_language]))
 });
 
 bot.on([message('photo'), message('document')], async (ctx) => {
@@ -379,12 +409,12 @@ const videoVocabularyScan = async (videoId, ctx) => {
 }
 
 const generateWordList = async (ctx, botLanguage) => {
-  await usersService.updateData('topic', ctx.update.message.text, ctx.from.id);
+  // await usersService.updateData('topic', ctx.update.message.text, ctx.from.id);
   const userData = await usersService.getUserData(ctx.from.id);
   const { prompt, systemMessage } = promptService.createPrompt(userData);
   await ctx.reply(code(`${i18n.ack[botLanguage]}: '${userData.topic}'. ${i18n.warning[botLanguage]}`));
   await processPrompt(ctx, prompt, systemMessage, botLanguage);
-  await usersService.updateData('is_topic_selected', false, ctx.from.id);
+  // await usersService.updateData('is_topic_selected', false, ctx.from.id);
   await usersService.updateData('can_generate_audio',true, ctx.from.id);
 }
 
