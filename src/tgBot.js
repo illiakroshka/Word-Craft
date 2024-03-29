@@ -395,9 +395,10 @@ const sendPrompt = (ctx, prompt, systemMessage) => {
 const videoVocabularyScan = async (videoId, ctx) => {
   try {
     const subtitles = await subtitlesService.downloadSubtitles(videoId);
-    const { language } = await usersService.getUserData(ctx.from.id);
+    const { language, level} = await usersService.getUserData(ctx.from.id);
     const trLang = language ? language : 'without translation';
-    const { prompt, systemMessage } = promptService.analyzeVideoPrompt(subtitles, trLang);
+    const userLevel = level ? level : 'B1';
+    const { prompt, systemMessage } = promptService.analyzeVideoPrompt(subtitles, trLang, level);
     sendPrompt(ctx, prompt, systemMessage).then((data)=> {
       ctx.reply(data);
       usersService.alterWordList(ctx.from.id, data);
@@ -409,12 +410,10 @@ const videoVocabularyScan = async (videoId, ctx) => {
 }
 
 const generateWordList = async (ctx, botLanguage) => {
-  // await usersService.updateData('topic', ctx.update.message.text, ctx.from.id);
   const userData = await usersService.getUserData(ctx.from.id);
   const { prompt, systemMessage } = promptService.createPrompt(userData);
   await ctx.reply(code(`${i18n.ack[botLanguage]}: '${userData.topic}'. ${i18n.warning[botLanguage]}`));
   await processPrompt(ctx, prompt, systemMessage, botLanguage);
-  // await usersService.updateData('is_topic_selected', false, ctx.from.id);
   await usersService.updateData('can_generate_audio',true, ctx.from.id);
 }
 

@@ -9,31 +9,45 @@ const levels = {
 }
 
 const systemMessages = {
-  wlGeneration: 'You are assistant designed to create word lists on designated topics while adhering to specified levels of English difficulty.\n' +
-    'How you should work:\n' +
-    'Step 1: Generates English words pertinent to the provided topic and aligned with the requested difficulty level.\n' +
-    'Step 2: Meticulously evaluates the generated words for both topical relevance and English proficiency level.\n' +
-    'Should any discrepancies arise, where the words deviate from the topic or the prescribed difficulty level, they are promptly replaced with more suitable alternatives. These alternatives are carefully chosen to be both more challenging and directly related to the chosen topic.',
-  wlGenerationWithRole: "You are an assistant tasked with creating word lists tailored to specific topics, English difficulty levels, and the user's role in the topic.\n" +
+  wlGeneration:
+    "You are assistant designed to create word lists on designated topics while adhering to specified levels of English difficulty.\n" +
+    "How you should work:\n" +
+    "Step 1: Generates English words pertinent to the provided topic and aligned with the requested difficulty level.\n" +
+    "Step 2: Meticulously evaluates the generated words for both topical relevance and English proficiency level.\n" +
+    "Should any discrepancies arise, where the words deviate from the topic or the prescribed difficulty level, they are promptly replaced with more suitable alternatives. These alternatives are carefully chosen to be both more challenging and directly related to the chosen topic.",
+  wlGenerationWithRole:
+    "You are an assistant tasked with creating word lists tailored to specific topics, English difficulty levels, and the user's role in the topic.\n" +
     "Here's how you should operate:\n" +
     "Step 1: Generate English words relevant to the provided topic and aligned with the requested difficulty level.\n" +
     "Step 2: Carefully assess the role of the user in the topic and consider the relevant words from this topic that user will encounter\n" +
     "Step 3: Meticulously evaluate the generated words for topical relevance, English proficiency level, and alignment with the user's role.\n" +
     "Should any discrepancies arise, where the words deviate from the topic, the prescribed difficulty level, or fail to reflect the user's role adequately, promptly replace them with more suitable alternatives.\n" +
     "These alternatives should not only be more challenging and directly related to the chosen topic but also consider the user's perspective and responsibilities within that context.",
-  wlRegeneration: 'You are assistant specialized in regenerating word lists based on designated topics and specified levels of English difficulty.\n' +
-    'How you should work:\n' +
-    'Step 1: Takes as input a word list, along with the desired level of English proficiency and topic.\n' +
-    'Step 2: Generates entirely new words related to the topic, while maintaining the same level of difficulty (level of English).\n' +
-    'Step 3: Meticulously evaluates the generated words for both topical relevance and English proficiency level.\n' +
-    'Should any discrepancies arise, where the words deviate from the topic or the prescribed difficulty level, they are promptly replaced with more suitable alternatives. These alternatives are carefully chosen to be both more challenging and directly related to the chosen topic.',
-  wlRegenerationWithRole: "You are an assistant specialized in regenerating word lists tailored to specific topics, English difficulty levels, and the user's role in the topic.\n" +
+  wlRegeneration:
+    "You are assistant specialized in regenerating word lists based on designated topics and specified levels of English difficulty.\n" +
+    "How you should work:\n" +
+    "Step 1: Takes as input a word list, along with the desired level of English proficiency and topic.\n" +
+    "Step 2: Generates entirely new words related to the topic, while maintaining the same level of difficulty (level of English).\n" +
+    "Step 3: Meticulously evaluates the generated words for both topical relevance and English proficiency level.\n" +
+    "Should any discrepancies arise, where the words deviate from the topic or the prescribed difficulty level, they are promptly replaced with more suitable alternatives. These alternatives are carefully chosen to be both more challenging and directly related to the chosen topic.",
+  wlRegenerationWithRole:
+    "You are an assistant specialized in regenerating word lists tailored to specific topics, English difficulty levels, and the user's role in the topic.\n" +
     "How you should operate:\n" +
     "Step 1: Takes as input a word list, along with the desired level of English proficiency, topic, and user's role.\n" +
     "Step 2: Generates entirely new words related to the topic, while considering the user's role and maintaining the same level of difficulty (level of English).\n" +
     "Step 3: Meticulously evaluates the generated words for topical relevance, alignment with the user's role, and English proficiency level.\n" +
-    "Should any discrepancies arise, where the words deviate from the topic, the prescribed difficulty level, or fail to reflect the user's role adequately, they are promptly replaced with more suitable alternatives. These alternatives are carefully chosen to be both more challenging and directly related to the chosen topic and user's role" ,
-  videoScanning: 'You are a helpful assistant designed to analyze text',
+    "Should any discrepancies arise, where the words deviate from the topic, the prescribed difficulty level, or fail to reflect the user's role adequately, they are promptly replaced with more suitable alternatives. These alternatives are carefully chosen to be both more challenging and directly related to the chosen topic and user's role",
+  videoScanning:
+    "You are a helpful assistant designed to analyze text" +
+    "Step 1 - define the main topic of the text" +
+    "Step 2 - Identify Keywords and Phrases:\n" +
+    "- Search for words and phrases that are central to the topic of the text. Look for nouns, verbs, and adjectives that convey key concepts and themes.  Prioritize vocabulary suitable for the specified level of English proficiency\n" +
+    "Step 3 - Analyze Grammar Constructions:\n" +
+    "- Examine sentence structures for complexity and variety, while ensuring they align with the designated level of English proficiency. Identify and analyze grammatical constructions appropriate for the specified proficiency level. Provide formulas or patterns for grammatical constructions.\n" +
+    "Step 4 - Detect Idioms and Figurative Language:\n" +
+    "- Recognize idiomatic expressions, metaphors, and other figurative language used in the text. Pay attention to phrases that convey abstract concepts or evoke imagery beyond their literal meanings.\n" +
+    "Step 5 - Detect phrasal verbs\n" +
+    "- Identify phrasal verbs used in the text, along with their corresponding meanings and contextual usage. ",
 };
 
 
@@ -170,7 +184,6 @@ const improveListPrompt = (level, language, topic, definition, numberWords, word
 
 const improveListWithRole = (level, language, topic, definition, numberWords, wordList, role) => {
   const nameLevel = levels[level];
-  console.log('hello')
 
   if (language === 'without translation') {
     if (definition) {
@@ -216,13 +229,11 @@ const improveListWithRole = (level, language, topic, definition, numberWords, wo
   }
 }
 
-const analyzeVideoPrompt = (videoText, language) => {
+const analyzeVideoPrompt = (videoText, language, level) => {
+  const nameLevel = levels[level];
+
   if (language === 'without translation') {
-    const prompt = `I will provide you text of the video, and your tasks is to:
-     1) Determine the topic of the text
-     2) Analyze it and find specific words used in this text related to it's topic
-     3) Find idioms used in this text 
-  
+    const prompt = `
     TEXT: ${videoText}
   
     Your output should use the following template:
@@ -230,23 +241,34 @@ const analyzeVideoPrompt = (videoText, language) => {
    
     Words:
     1. list of words
+    
+    Grammar constructions:
+    1. list of grammar constructions
+    
     Idioms:
-    1. list of idioms`
+    1. list of idioms - example of usage from text
+    
+    Phrasal verbs: 
+    1. list of phrasal verbs - meaning in the context - example of usage from text`;
     return { prompt, systemMessage: systemMessages['videoScanning'] }
   }
-  const prompt = `I will provide you text of the video, and your tasks is:
-   1) To determine the topic of the text 
-   2) Analyze it and find specific words used in this text related to it's topic and to translate these words in ${language} language 
-   3) Find idioms used in this text and write the meaning in ${language} language 
-  
+  const prompt = `
   TEXT: ${videoText}
   
   Your output should use the following template:
   Topic of the video
   Words:
-  1. list of words - translation in ${language}
+  1. list of words - translation in ${language} language
+   
+  Grammar constructions:
+  1. list of grammar constructions - example from video
+  
   Idioms:
-  1. list of idioms - meaning in ${language}`
+  1. list of idioms - meaning in ${language} language
+  
+  Phrasal verbs: 
+  1. phrasal verb - explanation of usage in the context in ${language} language - example of usage from text
+  2. phrasal verb - explanation of usage in the context in ${language} language - example of usage from text`
   return { prompt, systemMessage: systemMessages['videoScanning'] }
 }
 
