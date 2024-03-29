@@ -223,6 +223,18 @@
   },
   "callToAction": {
     "en": "• Generate audio \uD83D\uDD0A - generate audio for word list\n• Regenerate list \uD83D\uDD03 - regenerate the list if you know most of the words\n",
-    "uk": "• Згенерувати аудіо \uD83D\uDD0A - згенерувати аудіо для списку слів або для словника відео\n • Регенерувати список \uD83D\uDD03 - оновити список, якщо ви знаєте більшість слів."
+    "ukr": "• Згенерувати аудіо \uD83D\uDD0A - згенерувати аудіо для списку слів або для словника відео\n • Регенерувати список \uD83D\uDD03 - оновити список, якщо ви знаєте більшість слів."
+  },
+  "wordsNumber": {
+    "en": "Set the number of words you want to get",
+    "ukr": "Вкажіть кількість слів яку ви хочете отримати"
+  },
+  "roleForWl": {
+    "en": "Specify role for better word list generation ✍\uFE0F",
+    "ukr": "Вкажіть роль для кращої генераціїї списку слів ✍\uFE0F"
+  },
+  "refuseButton": {
+    "en": "Continue without role",
+    "ukr": "Продовжити без ролі"
   }
 }
