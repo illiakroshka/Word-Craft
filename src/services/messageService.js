@@ -8,14 +8,9 @@ const getWelcomeMessage = (botLanguage, userName) => {
   const menuOptions = Markup.keyboard(i18n.menuOptions[botLanguage]).resize();
   return {boldText, menuOptions};
 };
-const getInfoMessage = (botLanguage) => {
-  const infoText = i18n.info[botLanguage];
-  return infoText.replace(/(•\s*)(.*?) -/g, '$1*$2* -');
-}
 
-const getHelpMessage = (botLanguage) => {
-  const helpText = i18n.help[botLanguage];
-  return helpText.replace(/(•\s*)(.*?) -/g, '$1*$2* -');
+const getSelectedText = (text) => {
+  return text.replace(/(•\s*)(.*?) -/g, '$1*$2* -');
 }
 
 const getTopics = (botLanguage, level) => {
@@ -50,9 +45,8 @@ const getPremiumMessage = (botLanguage) => {
 
 module.exports = {
   getWelcomeMessage,
-  getInfoMessage,
-  getHelpMessage,
   getTopics,
   getProfileMessage,
   getPremiumMessage,
+  getSelectedText,
 }
