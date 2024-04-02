@@ -179,13 +179,13 @@ bot.hears(commands.changeTopic,async (ctx) => {
 
 bot.hears(commands.info, async (ctx) => {
   const botLanguage = await usersService.getBotLanguage(ctx.from.id);
-  const info = messageService.getInfoMessage(botLanguage);
+  const info = messageService.getSelectedText(i18n.info[botLanguage]);
   await ctx.replyWithMarkdown(info);
 })
 
 bot.hears(commands.help, async (ctx) => {
   const botLanguage = await usersService.getBotLanguage(ctx.from.id);
-  const help = messageService.getHelpMessage(botLanguage);
+  const help = messageService.getSelectedText(i18n.help[botLanguage]);
   await ctx.replyWithMarkdown(help);
 });
 
@@ -240,10 +240,14 @@ bot.hears(commands.audio, async (ctx) => {
   const { topic } = await usersService.getUserData(ctx.from.id);
   openAI.audio(wordList)
     .then(audioData => {
-    ctx.replyWithAudio({
-      filename: `${topic}`,
-      source: audioData,
-    });
+      return ctx.replyWithAudio({
+        filename: `${topic}`,
+        source: audioData,
+      });
+    })
+    .then(() => {
+      const callToAction = messageService.getSelectedText(i18n.callAfterVideo[botLanguage])
+      return ctx.replyWithMarkdown(callToAction);
     })
     .catch((err) => {
       ctx.reply(i18n.audioErr[botLanguage]);
@@ -252,7 +256,8 @@ bot.hears(commands.audio, async (ctx) => {
 })
 
 bot.hears(commands.video, async (ctx) => {
-  return ctx.reply('provide youtube video')
+  const botLanguage = await usersService.getBotLanguage(ctx.from.id);
+  return ctx.reply(i18n.videoAction[botLanguage])
 })
 
 bot.action('defTrue', async (ctx) => {
@@ -371,9 +376,17 @@ bot.on([message('photo'), message('document')], async (ctx) => {
 const processPrompt = async (ctx, prompt, systemMessage, botLanguage) => {
   sendPrompt(ctx, prompt, systemMessage)
     .then(reply => {
-      ctx.reply(reply);
-      usersService.incrementRequests(ctx.from.id, REQUEST_INCREMENT);
-      usersService.alterWordList(ctx.from.id, reply);
+      return ctx.reply(reply)
+        .then(() => {
+          return Promise.all([
+            usersService.incrementRequests(ctx.from.id, REQUEST_INCREMENT),
+            usersService.alterWordList(ctx.from.id, reply)
+          ]);
+        })
+    })
+    .then(() => {
+      const callToAction = messageService.getSelectedText(i18n.callToAction[botLanguage]);
+      return ctx.replyWithMarkdown(callToAction);
     })
     .catch(err => {
       ctx.reply(`${i18n.genErr[botLanguage]} promise`);
@@ -398,12 +411,22 @@ const videoVocabularyScan = async (videoId, ctx) => {
     const { language, level} = await usersService.getUserData(ctx.from.id);
     const trLang = language ? language : 'without translation';
     const userLevel = level ? level : 'B1';
+    const botLanguage = await usersService.getBotLanguage(ctx.from.id);
     const { prompt, systemMessage } = promptService.analyzeVideoPrompt(subtitles, trLang, level);
     sendPrompt(ctx, prompt, systemMessage).then((data)=> {
-      ctx.reply(data);
-      usersService.alterWordList(ctx.from.id, data);
-      usersService.updateData('can_generate_audio',true, ctx.from.id);
+      return ctx.reply(data)
+        .then(() => {
+          return Promise.all([
+            usersService.alterWordList(ctx.from.id, data),
+            usersService.updateData('can_generate_audio',true, ctx.from.id),
+            usersService.updateData('topic','video',ctx.from.id)
+          ])
+        })
     })
+      .then(() => {
+        const callToAction = messageService.getSelectedText(i18n.videoCallToAction[botLanguage])
+        return ctx.replyWithMarkdown(callToAction);
+      })
   }catch (error) {
     throw error;
   }

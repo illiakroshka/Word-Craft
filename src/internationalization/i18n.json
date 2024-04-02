@@ -222,19 +222,31 @@
     "ukr": "Відео сканується, це може зайняти деякий час "
   },
   "callToAction": {
-    "en": "• Generate audio \uD83D\uDD0A - generate audio for word list\n• Regenerate list \uD83D\uDD03 - regenerate the list if you know most of the words\n",
-    "ukr": "• Згенерувати аудіо \uD83D\uDD0A - згенерувати аудіо для списку слів або для словника відео\n • Регенерувати список \uD83D\uDD03 - оновити список, якщо ви знаєте більшість слів."
+    "en": "• Generate audio \uD83D\uDD0A - generate audio for word list\n\n• Change topic ✒\uFE0F - change word list topic\n\n• Regenerate list \uD83D\uDD03 - regenerate the list if you are not satisfied with the words",
+    "ukr": "• Згенерувати аудіо \uD83D\uDD0A - згенерувати аудіо для списку слів\n\n• Змінити тему списку ✒\uFE0F - змінити тему списку слів \n\n• Регенерувати список \uD83D\uDD03 - оновити список, якщо ви не задоволені словами."
+  },
+  "callAfterVideo":{
+    "en": "• Change topic ✒\uFE0F - change word list topic\n\n• Run bot \uD83D\uDE80 - generate new word list\n\n• Video Vocabulary Scan \uD83C\uDFA5 - scan YouTube video vocabulary",
+    "ukr": "• Змінити тему списку ✒\uFE0F - змінити тему списку слів \n\n• Запустити бота \uD83D\uDE80 - згенерувати новий список слів\n\n• Сканувати словник відео \uD83C\uDFA5 - сканування граматики YouTube відео"
   },
   "wordsNumber": {
     "en": "Set the number of words you want to get",
     "ukr": "Вкажіть кількість слів яку ви хочете отримати"
   },
   "roleForWl": {
-    "en": "Specify role for better word list generation ✍\uFE0F",
-    "ukr": "Вкажіть роль для кращої генераціїї списку слів ✍\uFE0F"
+    "en": "You can write user's role in this topic for better word list generation ✍\uFE0F",
+    "ukr": "Ви можете вказати роль користувача у цій темі для кращої генераціїї списку слів ✍\uFE0F"
   },
   "refuseButton": {
     "en": "Continue without role",
     "ukr": "Продовжити без ролі"
+  },
+  "videoAction": {
+    "en": "Send a link to the YouTube video \uD83D\uDE3C",
+    "ukr": "Надішліть поситання на YouTube відео \uD83D\uDE3C"
+  },
+  "videoCallToAction": {
+    "en": "• Video Vocabulary Scan \uD83C\uDFA5 - scan one more video\n\n• Generate audio \uD83D\uDD0A - generate audio for vocabulary\n\n• Run bot \uD83D\uDE80 - generate new word list",
+    "ukr": "• Сканувати словник відео \uD83C\uDFA5 - сканувати ще одне YouTube відео\n\n• Згенерувати аудіо \uD83D\uDD0A - згенерувати аудіо для словника відео\n\n• Запустити бота \uD83D\uDE80 - згенерувати новий список слів"
   }
 }
